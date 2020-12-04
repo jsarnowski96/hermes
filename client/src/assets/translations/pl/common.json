@@ -1,0 +1,61 @@
+{
+    "home": {
+        "title": "Witaj w Systemach Hermes!"
+    },
+    "about": {
+        "title": "O aplikacji",
+        "body": "Hermes wspiera pracę zespołów i pomaga w organizacji pracy w projektach informatycznych."
+    },
+    "contact": {
+        "title": "Kontakt",
+        "body": "Jeżeli masz uwagi odnośnie funkcjonowania serwisu bądź napotkałeś problem w trakcie korzystania z niego, wypełnij poniższy formularz."
+    },
+    "login": {
+        "title": "Logowanie",
+        "email": "Adres email",
+        "password": "Hasło",
+        "submit": "Zaloguj",
+        "cancel": "Anuluj"
+    },
+    "register": {
+        "title": "Rejestracja",
+        "email": "Adres email",
+        "username": "Nazwa użytkownika",
+        "firstname": "Imię",
+        "lastname": "Nazwisko",
+        "position": "Stanowisko",
+        "company": "Firma",
+        "phone": "Numer telefonu",
+        "password": "Hasło",
+        "confirm": "Potwierdź hasło",
+        "submit": "Zarejestruj",
+        "cancel": "Anuluj",
+        "reset": "Wyczyść",
+        "loginSnippet": "Masz już konto? Żaden problem!",
+        "loginLink": "Zaloguj się"
+    },
+    "navbar": {
+        "home": "Strona główna",
+        "about": "O aplikacji",
+        "contact": "Kontakt",
+        "login": "Login",
+        "register": "Rejestracja"
+    },
+    "dashboard": {
+        "projects": {
+
+        },
+        "teams": {
+
+        },
+        "repositories": {
+
+        },
+        "tasks": {
+
+        },
+        "users": {
+
+        }
+    }
+}

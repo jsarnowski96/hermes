@@ -1,0 +1,39 @@
+.vertical-navbar {
+    overflow: hidden;
+}
+
+@media (min-width: 577px) {
+    .vertical-navbar {
+        min-height: 100vh;
+    }
+}
+
+
+.navbar-item, .navbar-link, .navbar-brand {
+    color: whitesmoke;
+}
+
+.navbar-link {
+    display: block;
+    text-decoration: none;
+}
+
+.navbar-link:hover, .navbar-link:focus {
+    color: black;
+    /* color: rgb(182, 182, 182); */
+    background-color: lightblue;
+    text-decoration: none;
+}
+
+.navbar-brand {
+    width: 100%;
+}
+
+.navbar-brand:hover {
+    text-decoration: none;
+    color: whitesmoke;
+}
+
+.btn:hover {
+    color: black;
+}

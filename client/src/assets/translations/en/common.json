@@ -1,0 +1,61 @@
+{
+    "home": {
+        "title": "Welcome to Hermes Systems!"
+    },
+    "about": {
+        "title": "About",
+        "body": "Hermes wspiera pracę zespołów i pomaga w organizacji pracy w projektach informatycznych."
+    },
+    "contact": {
+        "title": "Contact",
+        "body": "If you have any suggestions regarding the website or you have encountered an issue, please fill in the below form."
+    },
+    "login": {
+        "title": "Login",
+        "email": "Email address",
+        "password": "Password",
+        "submit": "Login",
+        "cancel": "Cancel"
+    },
+    "register": {
+        "title": "Register",
+        "email": "Email address",
+        "username": "Username",
+        "firstname": "First name",
+        "lastname": "Last name",
+        "position": "Position",
+        "company": "Company",
+        "phone": "Phone number",
+        "password": "Password",
+        "confirm": "Confirm password",
+        "submit": "Register",
+        "cancel": "Cancel",
+        "reset": "Clear",
+        "loginSnippet": "Already have an account? No problem!",
+        "loginLink": "Login here"
+    },
+    "navbar": {
+        "home": "Home",
+        "about": "About",
+        "contact": "Contact",
+        "login": "Login",
+        "register": "Sign up"
+    },
+    "dashboard": {
+        "projects": {
+
+        },
+        "teams": {
+
+        },
+        "repositories": {
+
+        },
+        "tasks": {
+
+        },
+        "users": {
+            
+        }
+    }
+}
