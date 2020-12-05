@@ -1,26 +1,24 @@
 import React from 'react';
+import {Link} from 'react-router-dom';
 import {withTranslation} from 'react-i18next';
 
 class Login extends React.Component {
     render() {
         const {t} = this.props;
         return(
-            <div className="col-12 col-lg-6 mx-auto">
-                <hr /><h1 className="text-center">{t('login.title')}</h1><hr />
-                <form id="register-form">
-                    <div className="form-group">
-                        <label for="email">{t('login.email')}</label>
-                        <input type="email" className="form-control" id="email" />
-                    </div>
-                    <div className="form-group">
-                        <label for="password">{t('login.password')}</label>
-                        <input type="password" className="form-control" id="password" />
-                    </div>
-                    <div className="form-row">
-                        <button type="submit" className="btn btn-success mx-auto">{t('login.submit')}</button>
-                        <a role="button" className="btn btn-danger mx-auto" href="/">{t('register.cancel')}</a>
+            <div className="card">
+                <p className="card-title">{t('login.title')}</p><hr className="card-hr" />
+                <form className="card-form">
+                    <label htmlFor="email">{t('login.email')}</label>
+                    <input type="email" className="" id="email" />
+                    <label htmlFor="password">{t('login.password')}</label>
+                    <input type="password" className="" id="password" />
+                    <div class="card-form-divider">
+                        <button type="submit" className="card-form-button">{t('login.submit')}</button>
+                        <button type="button" className="card-form-button"><Link to="/" className="card-form-button-link">{t('login.cancel')}</Link></button>
                     </div>
                 </form>
+                <p className="card-form-reminder">{t('login.registerTip')} <Link to="/register">{t('login.registerLink')}</Link></p>
             </div>
         )
     }    

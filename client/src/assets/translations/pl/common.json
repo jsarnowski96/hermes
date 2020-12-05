@@ -1,6 +1,6 @@
 {
     "home": {
-        "title": "Witaj w Systemach Hermes!"
+        "title": "Witaj w Systemie Hermes!"
     },
     "about": {
         "title": "O aplikacji",
@@ -15,7 +15,9 @@
         "email": "Adres email",
         "password": "Hasło",
         "submit": "Zaloguj",
-        "cancel": "Anuluj"
+        "cancel": "Anuluj",
+        "registerTip": "Nie masz jeszcze konta?",
+        "registerLink": "Zarejestruj się"
     },
     "register": {
         "title": "Rejestracja",
@@ -31,7 +33,7 @@
         "submit": "Zarejestruj",
         "cancel": "Anuluj",
         "reset": "Wyczyść",
-        "loginSnippet": "Masz już konto? Żaden problem!",
+        "loginTip": "Masz już konto? Żaden problem!",
         "loginLink": "Zaloguj się"
     },
     "navbar": {

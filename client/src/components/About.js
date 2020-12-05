@@ -5,8 +5,8 @@ class About extends React.Component {
     render() {
         const {t} = this.props;
         return(
-            <div className="col-6 mx-auto">
-                <hr /><h1 className="text-center">{t('about.title')}</h1><hr />
+            <div className="">
+                <hr /><h1 className="">{t('about.title')}</h1><hr />
             </div>
         )
     }

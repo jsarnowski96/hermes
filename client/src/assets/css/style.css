@@ -1,0 +1,115 @@
+:root {
+    font-size: 16px;
+    font-family: 'Open Sans', sans-serif;
+    --text-primary: #b6b6b6;
+    --text-secondary: #ececec;
+    --bg-primary: #23232e;
+    --bg-secondary: #141418;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    color: black;
+    background-color: whitesmoke;
+}
+
+body::-webkit-scrollbar {
+    width: 0.25rem;
+}
+
+body::-webkit-scrollbar-track {
+    background: #1e1e24;
+}
+
+body::-webkit-scrollbar-thumb {
+    background: #342c47;
+}
+
+main {
+    margin-left: 3rem;
+}
+
+.card {
+    margin: 10vh auto;
+    padding: 0;
+    background: rgb(231, 231, 236);
+    border: 1px outset black;
+    border-radius: 10px;
+    box-shadow: 3px 3px 3px black;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.card-title {
+    width: 100%;
+    margin: 1rem 0 0 0;
+    font-weight: bold;
+    font-size: 2rem;
+    text-align: center;
+}
+
+.card-form {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.card-form label, .card-form input {
+    margin-top: 0.5rem;
+}
+
+.card-form-divider {
+    margin: 2rem 0 1rem 0;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+.card-form-button {
+    padding: 0.5rem;
+    margin: 0.25rem;
+}
+
+.card-form-button-link {
+    text-decoration: none;
+    color: inherit;
+}
+
+.card-form-button-link:hover {    
+    text-decoration: none;
+    color: inherit;
+}
+
+.card-form-reminder {
+    margin-top: 2rem auto;
+    font-size: 1rem;
+    text-align: center;
+}
+
+.card-hr {
+    color: black;
+    width: 90%;
+    margin-bottom: 1rem;
+}
+
+@media screen and (max-width: 599px) {
+    .card {
+        height: 100%;
+        width: 100%;
+        margin: 0 auto;
+    }
+}
+
+@media screen and (min-width: 600px) {
+    .card {
+        height: 100%;
+        width: 25vw;
+    }
+}

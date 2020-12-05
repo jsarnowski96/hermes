@@ -1,5 +1,9 @@
 import React from 'react';
+import {Link} from 'react-router-dom';
 import {withTranslation} from 'react-i18next';
+
+import '../assets/css/register.css';
+import '../assets/css/style.css';
 
 class Register extends React.Component {
     resetForm() {
@@ -10,51 +14,34 @@ class Register extends React.Component {
         const {t} = this.props;
 
         return(
-            <div className="col-12 col-lg-6 mx-auto">
-                <hr /><h1 className="text-center">{t('register.title')}</h1><hr />
-                <form id="register-form">
-                    <div className="form-group">
-                        <label for="username">{t('register.username')}</label>
-                        <input type="username" className="form-control" id="username" />
-                    </div>
-                    <div className="form-group">
-                        <label for="firstname">{t('register.firstname')}</label>
-                        <input type="firstname" className="form-control" id="firstname" />
-                    </div>
-                    <div className="form-group">
-                        <label for="lastname">{t('register.lastname')}</label>
-                        <input type="lastname" className="form-control" id="lastname" />
-                    </div>
-                    <div className="form-group">
-                        <label for="email">{t('register.email')}</label>
-                        <input type="email" className="form-control" id="email" />
-                    </div>
-                    <div className="form-group">
-                        <label for="phone">{t('register.phone')}</label>
-                        <input type="phone" className="form-control" id="phone" />
-                    </div>
-                    <div className="form-group">
-                        <label for="position">{t('register.position')}</label>
-                        <input type="position" className="form-control" id="position" />
-                    </div>
-                    <div className="form-group">
-                        <label for="company">{t('register.company')}</label>
-                        <input type="company" className="form-control" id="company" />
-                    </div>
-                    <div className="form-group">
-                        <label for="password">{t('register.password')}</label>
-                        <input type="password" className="form-control" id="password" />
-                    </div>
-                    <div className="form-group">
-                        <label for="confirm">{t('register.confirm')}</label>
-                        <input type="password" className="form-control" id="confirm" />
-                    </div>
-                    <div className="form-row">
-                        <button type="submit" className="btn btn-success mx-auto">{t('register.submit')}</button>
-                        <button type="reset" onClick={this.resetForm} className="btn btn-warning mx-auto">{t('register.reset')}</button>
-                        <a role="button" className="btn btn-danger mx-auto" href="/">{t('register.cancel')}</a>
+            <div className="card">
+                <p className="card-title">{t('register.title')}</p><hr className="card-hr" />
+                <form className="card-form">
+                    <label htmlFor="firstname">{t('register.firstname')}</label>
+                    <input type="firstname" className="" id="firstname" />
+                    <label htmlFor="lastname">{t('register.lastname')}</label>
+                    <input type="lastname" className="" id="lastname" />
+                    <label htmlFor="username">{t('register.username')}</label>
+                    <input type="username" className="" id="username" />
+                    <label htmlFor="email">{t('register.email')}</label>
+                    <input type="email" className="" id="email" />
+                    <label htmlFor="phone">{t('register.phone')}</label>
+                    <input type="phone" className="" id="phone" />
+                    <label htmlFor="position">{t('register.position')}</label>
+                    <input type="position" className="" id="position" />
+                    <label htmlFor="company">{t('register.company')}</label>
+                    <input type="company" className="" id="company" />
+                    <label htmlFor="password">{t('register.password')}</label>
+                    <input type="password" className="" id="password" />
+                    <label htmlFor="confirm">{t('register.confirm')}</label>
+                    <input type="password" className="" id="confirm" />
+                    <div class="card-form-divider">
+                        <button type="submit" className="card-form-button">{t('register.submit')}</button>
+                        <button type="reset" onClick={this.resetForm} className="card-form-button">{t('register.reset')}</button>
+                        <button type="button" className="card-form-button"><Link to="/" className="card-form-button-link">{t('register.cancel')}</Link></button>
                     </div>
                 </form>
+                <p className="card-form-reminder">{t('register.loginTip')} <Link to="/login">{t('register.loginLink')}</Link></p>
             </div>
         )
     }    

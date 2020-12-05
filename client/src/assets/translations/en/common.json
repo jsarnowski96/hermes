@@ -1,6 +1,6 @@
 {
     "home": {
-        "title": "Welcome to Hermes Systems!"
+        "title": "Welcome to Hermes System!"
     },
     "about": {
         "title": "About",
@@ -15,7 +15,9 @@
         "email": "Email address",
         "password": "Password",
         "submit": "Login",
-        "cancel": "Cancel"
+        "cancel": "Cancel",
+        "registerTip": "Don't have an account?",
+        "registerLink": "Register"
     },
     "register": {
         "title": "Register",
@@ -31,7 +33,7 @@
         "submit": "Register",
         "cancel": "Cancel",
         "reset": "Clear",
-        "loginSnippet": "Already have an account? No problem!",
+        "loginTip": "Already have an account? No problem!",
         "loginLink": "Login here"
     },
     "navbar": {

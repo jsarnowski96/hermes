@@ -6,7 +6,7 @@ import i18next from "i18next";
 import common_pl from "./assets/translations/pl/common.json";
 import common_en from "./assets/translations/en/common.json";
 
-import 'bootstrap/dist/css/bootstrap.min.css';
+//import 'bootstrap/dist/css/bootstrap.min.css';
 
 import App from './components/App';
 
