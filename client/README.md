@@ -1,2 +1,3 @@
-# Hermes
-Project management system written in MERN stack.
+# Hermes frontend
+
+## Table of contents
