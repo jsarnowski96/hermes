@@ -71,8 +71,11 @@ class Login extends React.Component {
                     }
             }).then((response) => {
                 if(response.data.user !== 'undefined' && response.data.token !== 'undefined') {
-
-                }
+                    this.setState({
+                        userId: response.data.user._id,
+                        refreshToken: response.data.token
+                    })
+                };
             })
             .catch(function(error) {
                 let err = document.getElementById('serverErrorMsg');

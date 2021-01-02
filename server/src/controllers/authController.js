@@ -17,11 +17,11 @@ router.post('/', async function(req, res, next) {
                     });
                 }
 
-                req.login(user, {session: false}, (err) => {
-                    return res.status(200).json({user, token});
-                })
-                // req.user = user;
-                // next();
+                // req.login(user, {session: false}, (err) => {
+                //     return res.status(200).json({user, token});
+                // })
+                req.user = user;
+                res.status(200).json({message: 'Refresh Token is working'});
             });
         })(req, res);
     } else if(req.headers.authorization.includes('Basic')) {
