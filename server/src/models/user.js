@@ -4,44 +4,77 @@ const UserSchema = new mongoose.Schema({
     _id: mongoose.Schema.Types.ObjectId,
     username: {
         type: String,
-        required: true
+        trim: true,
+        required: true,
+        validate: /^[a-zA-Z0-9\-_.]+$/,
+        unique: true
     },
     firstname: {
         type: String,
+        trim: true,
+        validate: /^[a-zA-Z_ ]+$/,
         required: true
     },
     lastname: {
         type: String,
+        trim: true,
+        validate: /^[a-zA-Z_ ]+$/,
         required: true
     },
     password: {
         type: String,
-        required: true
+        required: true,
+        trim: true,
+        select: false
     },
     role: {
-        type: String,
-        default: "employee"
+        type: mongoose.Types.ObjectId,
+        default: null
     },
     position: {
         type: String,
+        trim: true,
+        validate: /^[a-zA-Z_ ]+$/,
         required: true
     },
     company: {
         type: String,
+        trim: true,
+        validate: /^[a-zA-Z0-9\-_.]+$/,
         required: true
+    },
+    avatar_url: {
+        type: String,
+        trim: true,
+        default: 'localhost:3300/images/avatars/default.png'
     },
     email: {
         type: String,
-        validate: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
-        required: true
+        trim: true,
+        validate: /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/,
+        required: true,
+        unique: true
     },
     phone: {
         type: String,
-        required: true
+        trim: true,
+        validate: /^\+?([0-9]{2})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{3}?[-. ]?([0-9]{3}))$/,
+        validate: /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{3})$/,
+        validate: /^([0-9]{9})$/,
+        required: true,
+        unique: true
     },
     created_at: {
         type: Date,
+        required: true,
         default: Date.now
+    }
+}, {
+    virtuals: true,
+    versionKey: false,
+    transform: function (doc, ret) {
+        delete ret._id;
+        delete ret.password;
     }
 });
 

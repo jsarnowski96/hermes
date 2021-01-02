@@ -1,5 +1,7 @@
 :root {
     font-size: 16px;
+    margin: 0;
+    padding: 0;
     font-family: 'Open Sans', sans-serif;
     --text-primary: #b6b6b6;
     --text-secondary: #ececec;
@@ -15,7 +17,7 @@ body {
 }
 
 body::-webkit-scrollbar {
-    width: 0;
+    width: 0.25rem;
 }
 
 body::-webkit-scrollbar-track {
@@ -27,11 +29,19 @@ body::-webkit-scrollbar-thumb {
 }
 
 main {
-    margin-left: 3rem;
+    margin: 0 4rem auto;
+    padding: 0;
+    top: 0;
+}
+
+main section {
+    margin: auto;
+    padding: 0;
+    top: 0;
 }
 
 .card {
-    margin: 10vh auto;
+    margin: 5% auto;
     padding: 0;
     background: rgb(231, 231, 236);
     border: 1px outset black;

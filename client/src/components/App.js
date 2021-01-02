@@ -1,15 +1,13 @@
 import React from 'react';
-import axios from 'axios';
 import { BrowserRouter as Router, Route } from 'react-router-dom';
 
-import Sidebar from './Sidebar';
-import About from './About';
-import Contact from './Contact';
-import Login from './Login';
-import Register from './Register';
-import Home from './Home';
-import Dashboard from './Dashboard';
-import Footer from './Footer';
+import Sidebar from './Nav/Sidebar';
+import About from './Nav/About';
+import Contact from './Nav/Contact';
+import Login from './Nav/Login';
+import Register from './Nav/Register';
+import Home from './Nav/Home';
+import Dashboard from './Dashboard/Dashboard';
 
 import '../assets/css/style.css';
 

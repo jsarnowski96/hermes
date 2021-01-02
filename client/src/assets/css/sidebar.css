@@ -3,6 +3,9 @@
 .navbar {
     width: 3rem;
     height: 100vh;
+    margin: 0;
+    top: 0;
+    padding: 0;
     position: fixed;
     background-color: var(--bg-primary);
     transition: 200ms linear;
@@ -99,9 +102,8 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin: 0;
+    margin-bottom: 0.5rem;
     padding: 0;    
-    transition: flex-direction ease 200ms;
 }
 
 .lng-button {

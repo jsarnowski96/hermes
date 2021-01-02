@@ -1,0 +1,85 @@
+{
+    "home": {
+        "title": "Welcome to Hermes System!"
+    },
+    "about": {
+        "title": "About",
+        "body": "Hermes wspiera pracę zespołów i pomaga w organizacji pracy w projektach informatycznych."
+    },
+    "contact": {
+        "title": "Contact",
+        "body": "If you have any suggestions regarding the website or you have encountered an issue, please fill in the below form."
+    },
+    "login": {
+        "title": "Login",
+        "login": "Username or email",
+        "password": "Password",
+        "submit": "Login",
+        "cancel": "Cancel",
+        "registerTip": "Don't have an account?",
+        "registerLink": "Register"
+    },
+    "register": {
+        "title": "Register",
+        "email": "Email address",
+        "username": "Username",
+        "firstname": "First name",
+        "lastname": "Last name",
+        "position": "Position",
+        "company": "Company",
+        "phone": "Phone number",
+        "password": "Password",
+        "confirm": "Confirm password",
+        "submit": "Register",
+        "cancel": "Cancel",
+        "reset": "Clear",
+        "loginTip": "Already have an account? No problem!",
+        "loginLink": "Login here",
+        "errors": {
+            "serverResponses": {
+                "emptyInputForm": "Provided form is empty",
+                "userAlreadyExists": "There is already an account using that username or email"
+            },
+            "requiredFieldIsEmpty": " is required",
+            "allowedCharsOnly": "Only these characters are allowed: ",
+            "digitsOnly": "Only digits are allowed",
+            "emailNotValid": "Provided email address does not meet the required format",
+            "loginNotValid": "Provided login does not meet required username or email format",
+            "passwordsDoNotMatch": "Passwords are not identical",
+            "phoneIncorrectFormat": "Incorrect phone number format",
+            "passwordTooShort": "Password has to be at least 6 characters long",
+            "confirmPasswordIsEmpty": "Confirm your password in order to register an account",
+            "incorrectPhoneFormat": "Phone format is incorrect"
+        },
+        "success": "You have successfully registered!"
+    },
+    "navbar": {
+        "home": "Home",
+        "about": "About",
+        "contact": "Contact",
+        "login": "Login",
+        "register": "Sign up"
+    },
+    "dashboard": {
+        "projects": {
+            "title": "Projects"
+        },
+        "team": {
+            "title": "Team"
+        },
+        "tasks": {
+            "title": "Tasks"
+        },
+        "activities": {
+            "title": "Operations"
+        },
+        "recent": {
+            "title": "Recent activity"
+        }
+    },
+    "misc": {
+        "phrases": {
+            "field": "Field"
+        }
+    }
+}

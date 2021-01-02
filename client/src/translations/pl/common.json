@@ -1,0 +1,85 @@
+{
+    "home": {
+        "title": "Witaj w Systemie Hermes!"
+    },
+    "about": {
+        "title": "O aplikacji",
+        "body": "Hermes wspiera pracę zespołów i pomaga w organizacji pracy w projektach informatycznych."
+    },
+    "contact": {
+        "title": "Kontakt",
+        "body": "Jeżeli masz uwagi odnośnie funkcjonowania serwisu bądź napotkałeś problem w trakcie korzystania z niego, wypełnij poniższy formularz."
+    },
+    "login": {
+        "title": "Logowanie",
+        "login": "Nazwa użytkownika lub email",
+        "password": "Hasło",
+        "submit": "Zaloguj",
+        "cancel": "Anuluj",
+        "registerTip": "Nie masz jeszcze konta?",
+        "registerLink": "Zarejestruj się"
+    },
+    "register": {
+        "title": "Rejestracja",
+        "email": "Adres email",
+        "username": "Nazwa użytkownika",
+        "firstname": "Imię",
+        "lastname": "Nazwisko",
+        "position": "Stanowisko",
+        "company": "Firma",
+        "phone": "Numer telefonu",
+        "password": "Hasło",
+        "confirm": "Potwierdź hasło",
+        "submit": "Zarejestruj",
+        "cancel": "Anuluj",
+        "reset": "Wyczyść",
+        "loginTip": "Masz już konto? Żaden problem!",
+        "loginLink": "Zaloguj się",
+        "errors": {
+            "serverResponses": {
+                "emptyInputForm": "Przesłany formularz jest pusty",
+                "userAlreadyExists": "Istnieje już użytkownik o podanym loginie lub adresie email"
+            },
+            "requiredFieldIsEmpty": " jest wymagane",
+            "allowedCharsOnly": "Dozwolone są wyłącznie następujące znaki: ",
+            "digitsOnly": "Dozwolone sa wyłącznie cyfry",
+            "emailNotValid": "Podany adres email nie spełnia wymagań dotyczących formatu",
+            "loginNotValid": "Podany login nie spełnia wymagań dotyczących nazwy użytkownika lub adresu email",
+            "passwordsDoNotMatch": "Podane hasła nie są identyczne",
+            "phoneIncorrectFormat": "Niepoprawny format numeru telefonu",
+            "passwordTooShort": "Hasło musi mieć przynajmniej 6 znaków długości",
+            "confirmPasswordIsEmpty": "Potwierdź hasło, aby zarejestrować konto",
+            "incorrectPhoneFormat": "Numer telefonu ma niepoprawny format"
+        },
+        "success": "Pomyślnie się zarejestrowałeś!"
+    },
+    "navbar": {
+        "home": "Strona główna",
+        "about": "O aplikacji",
+        "contact": "Kontakt",
+        "login": "Logowanie",
+        "register": "Rejestracja"
+    },
+    "dashboard": {
+        "projects": {
+            "title": "Projekty"
+        },
+        "team": {
+            "title": "Zespół"
+        },
+        "tasks": {
+            "title": "Zadania"
+        },
+        "activities": {
+            "title": "Operacje"
+        },
+        "recent": {
+            "title": "Ostatnia aktywność"
+        }
+    },
+    "misc": {
+        "phrases": {
+            "field": "Pole"
+        }
+    }
+}
