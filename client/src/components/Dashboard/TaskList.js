@@ -4,6 +4,17 @@ import {withTranslation} from 'react-i18next';
 import '../../assets/css/dashboard.css';
 
 class Tasks extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            auth: {
+                refreshToken: '',
+                accessToken: '',
+                userId: ''
+            }
+        };
+    }
+
     render() {
         const {t} = this.props;
         return(

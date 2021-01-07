@@ -5,8 +5,8 @@ import common_en from "../translations/en/common.json";
 
 i18n.init({
     interpolation: { escapeValue: false},
-    lng: localStorage.getItem('lng'),
-    fallbackLng: 'pl',
+    lng: 'pl',
+    fallbackLng: 'en',
     resources: {
         en: {
             common: common_en

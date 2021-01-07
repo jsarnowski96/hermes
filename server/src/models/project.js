@@ -29,7 +29,7 @@ const ProjectSchema = new mongoose.Schema({
     created_at: {
         type: Date,
         required: true,
-        default: Date.now.toString()
+        default: Date.now()
     }
 });
 

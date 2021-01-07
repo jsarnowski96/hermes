@@ -1,0 +1,3 @@
+export const USER_LOGIN = 'USER_LOGIN';
+export const GRANT_ACCESS_TOKEN = 'GRANT_ACCESS_TOKEN';
+export const SET_LANGUAGE = 'SET_LANGUAGE';

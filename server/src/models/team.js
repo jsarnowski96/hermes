@@ -1,6 +1,6 @@
 const mongoose  = require('mongoose');
 
-const ProjectSchema = new mongoose.Schema({
+const TeamSchema = new mongoose.Schema({
     _id: mongoose.Schema.Types.ObjectId,
     name: {
         type: String,
@@ -35,6 +35,6 @@ const ProjectSchema = new mongoose.Schema({
     }
 });
 
-const Project = mongoose.model('Project', ProjectSchema);
+const Team = mongoose.model('Team', TeamSchema);
 
-module.exports = Project;
+module.exports = Team;

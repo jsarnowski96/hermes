@@ -25,9 +25,9 @@ passport.use(new LocalStrategy({
             try {
                 const user = await User.findOne({ username: login }).select('password');
                 if (user) {
-                    console.log(login);
-                    console.log(password);
-                    console.log(user.password);
+                    // console.log(login);
+                    // console.log(password);
+                    // console.log(user.password);
                     bcrypt.compare(password, user.password, (err, result) => {
                         if (result) {
                             return done(null, user, { message: 'JWT Authentication successfull' });
@@ -38,7 +38,7 @@ passport.use(new LocalStrategy({
                         }
                     });
                 } else {
-                    return done(null, false, { message: 'Issue while retrieving user\'s data' });
+                    return done(null, false, { message: 'Incorrect username or password' });
                 }
             } catch (error) {
                 console.log(error);
@@ -50,9 +50,9 @@ passport.use(new LocalStrategy({
             try {
                 const user = await User.findOne({ email: login }).select('password');
                 if (user) {
-                    console.log(login);
-                    console.log(password);
-                    console.log(user.password);
+                    // console.log(login);
+                    // console.log(password);
+                    // console.log(user.password);
                     bcrypt.compare(password, user.password, (err, result) => {
                         if (result) {
                             return done(null, user, { message: 'JWT Authentication successfull' });
@@ -63,7 +63,7 @@ passport.use(new LocalStrategy({
                         }
                     });
                 } else {
-                    return done(null, false, { message: 'Issue while retrieving user\'s data' });
+                    return done(null, false, { message: 'Incorrect email or password' });
                 }
             } catch (error) {
                 console.log(error);
@@ -79,34 +79,28 @@ passport.use(new JwtStrategy({
     opts: opts
     },
     async (jwt_payload, done) => {
-        if(jwt_payload.login.match(/^[a-zA-Z0-9\-_.]+$/)) {
-            try {
-                const user = await User.findOne({ username: jwt_payload.login });
-                if (user) {
-                    return done(null, user, { message: 'JWT Authentication successfull' });
-                } else {
-                    return done(null, false, { message: 'Issue while retrieving user\'s data' });
-                }
-            } catch (error) {
-                console.log(error);
-                return done(error, false, { message: 'Error' });
+        try {
+            const user = await User.findById({ _id: jwt_payload._id});
+            if (user) {
+                return done(null, user, { message: 'JWT Authentication successfull' });
+            } else {
+                return done(null, false, { message: 'Issue while retrieving user\'s data' });
             }
-        }
-        
-        if(jwt_payload.login.match(/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/)) {
-            try {
-                const user = await User.findOne({ email: jwt_payload.login });
-                if (user) {
-                    return done(null, user, { message: 'JWT Authentication successfull' });
-                } else {
-                    return done(null, false, { message: 'Issue while retrieving user\'s data' });
-                }
-            } catch (error) {
-                console.log(error);
-                return done(error, false, { message: 'Error' });
-            }
+        } catch (error) {
+            console.log(error);
+            return done(error, false, { message: 'Error' });
         }
     }
 ));
+
+passport.serializeUser(function(user, done) {
+    done(null, user);
+});
+
+passport.deserializeUser(function(id, done) {
+    User.findById(id, function(error, user) {
+        done(error, user);
+    });
+});
 
 // TODO: Handle Bearer Token auth on refresh/renew

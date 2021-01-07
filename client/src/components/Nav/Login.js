@@ -1,14 +1,20 @@
 import React from 'react';
 import {Link} from 'react-router-dom';
 import {withTranslation} from 'react-i18next';
+import {Redirect} from 'react-router';
 import axios from 'axios';
+
+import Dashboard from '../Dashboard/Dashboard'
 
 class Login extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            refreshToken: '',
-            userId: '',
+            auth: {
+                refreshToken: '',
+                accessToken: '',
+                userId: ''
+            },
             fields: {},
             errors: {}
         };
@@ -55,7 +61,7 @@ class Login extends React.Component {
         const fields = this.state.fields;
         const {t} = this.props;
 
-        const reqPayload = Buffer.from(`${fields['login']}:${fields['password']}`, 'utf8').toString('base64');
+        //const reqPayload = Buffer.from(`${fields['login']}:${fields['password']}`, 'utf8').toString('base64');
 
         if(this.validateForm()) {
             axios.post('http://localhost:3300/auth/login', 
@@ -72,8 +78,11 @@ class Login extends React.Component {
             }).then((response) => {
                 if(response.data.user !== 'undefined' && response.data.token !== 'undefined') {
                     this.setState({
-                        userId: response.data.user._id,
-                        refreshToken: response.data.token
+                        auth: {
+                            ...this.state.auth,
+                            userId: response.data.user._id,
+                            refreshToken: response.data.refreshToken
+                        }
                     })
                 };
             })
@@ -96,6 +105,13 @@ class Login extends React.Component {
 
     render() {
         const {t} = this.props;
+
+        if(this.state.auth.userId !== '' && this.state.auth.refreshToken !== '') {
+            return(
+                <Dashboard userId={this.state.auth.userId} refreshToken={this.state.auth.refreshToken} />
+            )
+        }
+
         return(
             <div className="card">
                 <p className="card-title">{t('login.title')}</p><hr className="card-hr" />

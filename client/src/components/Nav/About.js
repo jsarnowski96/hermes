@@ -2,6 +2,17 @@ import React from 'react';
 import {withTranslation} from 'react-i18next';
 
 class About extends React.Component {    
+    constructor(props) {
+        super(props);
+        this.state = {
+            auth: {
+                refreshToken: '',
+                accessToken: '',
+                userId: ''
+            }
+        };
+    }
+
     render() {
         const {t} = this.props;
         return(
