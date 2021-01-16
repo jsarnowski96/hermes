@@ -12,8 +12,9 @@ import Register from './Nav/Register';
 import Home from './Nav/Home';
 import Dashboard from './Dashboard/Dashboard';
 import NewProject from './Project/NewProject';
+import ProjectList from './Dashboard/ProjectList';
 
-import {getLanguageFromLocalStorage} from '../services/languageChanger';
+import {getLanguageFromLocalStorage} from '../middleware/languageChanger';
 
 import '../assets/css/style.css';
 
@@ -37,8 +38,9 @@ class App extends React.Component {
                     <Route path="/register" component={Register} />
                     <Route path="/about" component={About} />
                     <Route path="/contact" component={Contact} />
-                    <Route path="/dashboard" component={Dashboard} />
-                    <Route path="/project/create" component={NewProject} />
+                    <Route path="/dashboard" render={(props) => <Dashboard {...props}/>} />
+                    <Route path="/project/create" render={(props) => <NewProject {...props}/>} />
+                    <Route path="/project/list" render={(props) => <ProjectList {...props}/>} />
                 </main>
             </BrowserRouter>
         )

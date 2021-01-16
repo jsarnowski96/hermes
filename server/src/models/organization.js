@@ -19,12 +19,12 @@ const OrganizationSchema = new mongoose.Schema({
         default: 'localhost:3300/images/avatars/org-default.png'
     },
     owner_id: {
-        type: mongoose.Types.ObjectId,
+        type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         required: true
     },
     org_id: {
-        type: mongoose.Types.ObjectId,
+        type: mongoose.Schema.Types.ObjectId,
         ref: 'Organization',
         required: true
     },

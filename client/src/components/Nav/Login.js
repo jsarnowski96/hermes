@@ -70,13 +70,14 @@ class Login extends React.Component {
                     password: fields['password'],
                 }, 
                 {
+                    withCredentials: true,
                     auth: 
                     {
                         username: fields['login'],
                         password: fields['password']
                     }
             }).then((response) => {
-                if(response.data.user !== 'undefined' && response.data.token !== 'undefined') {
+                if((response.data.user._id !== 'undefined' || response.data.user._id !== '' || response.data.user._id !== null) && (response.data.refreshToken !== 'undefined' || response.data.refreshToken !== '' || response.data.refreshToken !== null)) {
                     this.setState({
                         auth: {
                             ...this.state.auth,
@@ -104,12 +105,10 @@ class Login extends React.Component {
     }
 
     render() {
-        const {t} = this.props;
+        const {t, i18n} = this.props;
 
-        if(this.state.auth.userId !== '' && this.state.auth.refreshToken !== '') {
-            return(
-                <Dashboard userId={this.state.auth.userId} refreshToken={this.state.auth.refreshToken} />
-            )
+        if((this.state.auth.userId !== '' && this.state.auth.userId !== 'undefined' && this.state.auth.userId !== null) && (this.state.auth.refreshToken !== '' && this.state.auth.refreshToken !== 'undefined' && this.state.auth.refreshToken !== null)) {
+            return <Dashboard userId={this.state.auth.userId} refreshToken={this.state.auth.refreshToken} />
         }
 
         return(

@@ -47,12 +47,19 @@ class NewProject extends React.Component {
         axios.post('http://localhost:3300/project/create', {
             name: fields['name'],
             category: fields['category'],
+            requirements: fields['requirements'],
+            userId: this.state.auth.userId,
             due_date: fields['due_date']
         }).then((response) => {
             if(response) {
-                console.log(response.data.message);
+                console.log(response.data);
+            } else {
+                console.log('Could not retrieve response data');
             }
         })
+        .catch(error => {
+            console.log(error);
+        }) 
     }
 
     render() {

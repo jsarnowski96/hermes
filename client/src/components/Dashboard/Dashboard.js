@@ -11,7 +11,9 @@ import TaskList from './TaskList';
 import Recent from './Recent';
 import ActivityList from './ActivityList';
 
-import checkLocalStorage from '../../services/languageChanger';
+import Login from '../Nav/Login';
+
+import checkLocalStorage from '../../middleware/languageChanger';
 
 import '../../assets/css/style.css';
 import '../../assets/css/dashboard.css';
@@ -43,9 +45,9 @@ class Dashboard extends React.Component {
     }
 
     render() {
-        const {t} = this.props;
+        const {t, i18n} = this.props;
 
-        if(this.state.auth.userId !== '' && this.state.auth.refreshToken !== '') {
+        if((this.state.auth.userId !== '' && this.state.auth.userId !== 'undefined' && this.state.auth.userId !== null) && (this.state.auth.refreshToken !== '' && this.state.auth.refreshToken !== 'undefined' && this.state.auth.refreshToken !== null)) {
             return(
                 <div className="dashboard">
                     <div className="tab projects">
@@ -71,13 +73,7 @@ class Dashboard extends React.Component {
                 </div>
             )
         } else {
-            return(
-                <Redirect
-                    to={{
-                        pathname: "/login"
-                    }}
-                />
-            )
+            return <Login />
         }
         
     }

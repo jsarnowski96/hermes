@@ -12,19 +12,14 @@ const atlasConnection = require('./middleware/atlasConnection');
 const app = express();
 
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.urlencoded({extended: true}));
 
 app.use(cors({
-    methods: 'GET, POST, OPTIONS',
+    methods: 'GET, POST, PUT, DELETE, PATCH, OPTIONS',
     origin: true,
     credentials: true
 }));
 
-// app.use(function(req, res, next) {
-//     res.header('Access-Control-Allow-Methods', 'POST, GET, OPTIONS');
-//     next();
-//  });
-  
 app.use(errorHandler);
 
 app.use(morgan('common'));
@@ -39,21 +34,20 @@ const taskRouter = require('./routes/protected/task');
 const teamRouter = require('./routes/protected/team');
 const repositoryRouter = require('./routes/protected/repository');
 const userRouter = require('./routes/protected/user');
+const { ensureAuthenticated } = require('./middleware/auth');
   
 app.use(passport.initialize());
-
-// app.use((req, res, next) => {
-//     res.locals.user = req.user;
-//     next();
-// })
 
 app.use('/auth/login', authRouter);
 app.use('/auth/register', registerRouter);
 
+// Enforce JWT token auth middleware for every route within the app
+app.all('*', ensureAuthenticated);
+
 app.use('/project', projectRouter);
-app.use('/task', passport.authenticate('jwt', {session: false}), taskRouter);
-app.use('/team', passport.authenticate('jwt', {session: false}), teamRouter);
-app.use('/repository', passport.authenticate('jwt', {session: false}), repositoryRouter);
-app.use('/user', passport.authenticate('jwt', {session: false}), userRouter);
+app.use('/task', taskRouter);
+app.use('/team', teamRouter);
+app.use('/repository', repositoryRouter);
+app.use('/user', userRouter);
 
 module.exports = app;

@@ -3,14 +3,14 @@ import {withTranslation} from 'react-i18next';
 import axios from 'axios';
 
 //import config from '../../constants/request-config';
-import checkLocalStorage from '../../services/languageChanger';
+import checkLocalStorage from '../../middleware/languageChanger';
 
 import ProjectItem from '../Project/Project';
 import NewProject from '../Project/NewProject';
 
-import '../../assets/css/dashboard.css';
+import Login from '../Nav/Login';
 
-let config = {}
+import '../../assets/css/dashboard.css';
 
 class ProjectList extends React.Component {
     // state = { first: ['A', 'B', 'C', 'D'], second: ['1', '2', '3', '4']};
@@ -23,76 +23,78 @@ class ProjectList extends React.Component {
                 accessToken: '',
                 userId: '',
             },
-            projects: []
+            associatedProjects: []
         };
+
+        this.getProjectList = this.getProjectList.bind(this);
 
         checkLocalStorage();
     }
 
-    componentDidMount(props) {
+    componentDidMount() {
         this.setState({
             auth: {
                 ...this.state.auth,
                 userId: this.props.userId,
                 refreshToken: this.props.refreshToken
             }
-        })
-
-        config = {
-            withCredentials: true,
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': 'Bearer ' + this.state.auth.refreshToken
-            },
-        };
-
-        this.getProjectList();
+        });
     }
 
-    getProjectList() {
-        axios.get('http://localhost:3300/project/list', config)
+    async getProjectList() {
+        const headers = {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${this.state.auth.refreshToken}`
+        };
+
+        await axios.post('http://localhost:3300/project/list', 
+        {
+            _id: this.state.auth.userId    
+        },
+        {
+            withCredentials: true,
+            headers: headers
+        })
         .then((response) => {
-            if(response.data.projects !== 'undefined' || response.data.projects !== '' || response.data.projects.length > 0) {
-                this.setState({projects: response.data.projects});
+            if(response.data.associatedProjects !== 'undefined' && response.data.associatedProjects !== '' && response.data.associatedProjects !== null && response.data.associatedProjects.length > 0) {
+                this.setState({associatedProjects: response.data.associatedProjects});
             }
         })
+        .catch((error) => {
+            console.log(error);
+            console.log(error.response);
+        });
     }
 
     render() {
-        // let items = [];
-        // this.state.first.forEach(first => {
-        //     this.state.second.forEach(second => {
-        //         items.push(<ProjectItem first={first} second={second} />)
-        //     });
-        // });
-        const {t} = this.props;
+        const {t, i18n} = this.props;
 
-        // if(this.state.userId !== '' && this.state.refreshToken !== '') {
-        //     return(
-        //         <NewProject userId={this.state.userId} refreshToken={this.state.refreshToken} />
-        //     )
-        // }
-
-        return(
-            <table class="tab-table">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Category</th>
-                        <th>Due date</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {this.state.projects.map((project, index) => (
+        if(this.state.auth.userId !== '' && this.state.auth.userId !== 'undefined' && this.state.auth.userId !== null && this.state.auth.refreshToken !== '' && this.state.auth.refreshToken !== null) {
+            this.getProjectList();
+            
+            return(
+                <table class="tab-table">
+                    <thead>
                         <tr>
-                            <td>{project.name}</td>
-                            <td>{project.category}</td>
-                            <td>{project.due_date}</td>
+                            <th>Name</th>
+                            <th>Category</th>
+                            <th>Due date</th>
                         </tr>
-                    ))}
-                </tbody>
-            </table>
-        )
+                    </thead>
+                    <tbody>
+                        {this.state.associatedProjects.map((project, index) => (
+                            <tr>
+                                <td>{project.name}</td>
+                                <td>{project.category}</td>
+                                <td>{project.due_date}</td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            )
+        } else {
+            return <Login />
+        }
     }    
 }
 

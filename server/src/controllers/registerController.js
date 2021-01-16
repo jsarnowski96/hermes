@@ -2,11 +2,7 @@ const express = require('express');
 const router = express.Router();
 const registerService = require('../services/registerService');
 
-router.post('/', registerUser);
-
-module.exports = router;
-
-function registerUser(req, res, next) {
+router.post('/', (req, res, next) => {
     registerService.registerUser(req.body)
     .then((result) => {
         if(result) {
@@ -20,6 +16,8 @@ function registerUser(req, res, next) {
     .catch(error => {
         res.status(400).json({type: 'UnknownError', message: error})
     });
-}
+});
+
+module.exports = router;
 
 

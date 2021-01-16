@@ -9,65 +9,52 @@ const User = require('../models/user');
 
 require('dotenv').config({ path: __dirname + './../../.env'});
 
-var opts = {};
-
-opts.secretOrKey = process.env.REFRESH_TOKEN_SECRET;
-opts.issuer = process.env.ISSUER;
-opts.audience = process.env.AUDIENCE;
-
 passport.use(new LocalStrategy({
     usernameField: 'login',
-    passwordField: 'password',
-    opts: opts
+    passwordField: 'password'
     },
     async (login, password, done) => {
         if(login.match(/^[a-zA-Z0-9\-_.]+$/)) {
             try {
-                const user = await User.findOne({ username: login }).select('password');
+                const user = await User.findOne({ username: login }).select('username password');
                 if (user) {
-                    // console.log(login);
-                    // console.log(password);
-                    // console.log(user.password);
                     bcrypt.compare(password, user.password, (err, result) => {
                         if (result) {
-                            return done(null, user, { message: 'JWT Authentication successfull' });
+                            done(null, user, { message: 'JWT Authentication successfull' });
                         }
                         if (err) {
                             console.log(err);
-                            return done(err, false, { message: 'Error' });
+                            done(err, false, { message: 'Error' });
                         }
                     });
                 } else {
-                    return done(null, false, { message: 'Incorrect username or password' });
+                    done(null, false, { message: 'Incorrect username or password' });
                 }
             } catch (error) {
                 console.log(error);
-                return done(error, false, { message: 'Error' });
+                done(error, false, { message: 'Error' });
             }
         } 
         
         if(login.match(/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/)) {
             try {
-                const user = await User.findOne({ email: login }).select('password');
+                const user = await User.findOne({ email: login }).select('email password');
                 if (user) {
-                    // console.log(login);
-                    // console.log(password);
-                    // console.log(user.password);
                     bcrypt.compare(password, user.password, (err, result) => {
                         if (result) {
-                            return done(null, user, { message: 'JWT Authentication successfull' });
+                            done(null, user, { message: 'JWT Authentication successfull' });
                         }
                         if (err) {
                             console.log(err);
-                            return done(err, false, { message: 'Error' });
+                            done(err, false, { message: 'Error' });
                         }
                     });
                 } else {
-                    return done(null, false, { message: 'Incorrect email or password' });
+                    done(null, false, { message: 'Incorrect email or password' });
                 }
             } catch (error) {
                 console.log(error);
-                return done(error, false, { message: 'Error' });
+                done(error, false, { message: 'Error' });
             }
         }
     }
@@ -76,22 +63,35 @@ passport.use(new LocalStrategy({
 passport.use(new JwtStrategy({
     jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
     secretOrKey: process.env.REFRESH_TOKEN_SECRET,
-    opts: opts
+    issuer: process.env.ISSUER,
+    audience: process.env.AUDIENCE,
+    passReqToCallback: true
     },
-    async (jwt_payload, done) => {
+    (jwt_payload, done) => {
         try {
-            const user = await User.findById({ _id: jwt_payload._id});
-            if (user) {
-                return done(null, user, { message: 'JWT Authentication successfull' });
-            } else {
-                return done(null, false, { message: 'Issue while retrieving user\'s data' });
+            if(Date.now() > jwt_payload.expiresIn) {
+                return done('JWT Expired');
             }
-        } catch (error) {
+
+            User.findOne({id: jwt_payload._id}, function(err, user) {
+        
+                // This flow look familiar?  It is the same as when we implemented
+                // the `passport-local` strategy
+                if (err) {
+                    return done(err, false);
+                }
+                if (user) {
+                    return done(null, user);
+                } else {
+                    return done(null, false);
+                }
+                
+            });
+        } catch(error) {
             console.log(error);
-            return done(error, false, { message: 'Error' });
+            return done(error, false);
         }
-    }
-));
+    }));
 
 passport.serializeUser(function(user, done) {
     done(null, user);

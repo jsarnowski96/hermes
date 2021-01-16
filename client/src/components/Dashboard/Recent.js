@@ -15,6 +15,16 @@ class Recent extends React.Component {
         };
     }
 
+    componentDidMount(props) {
+        this.setState({
+            auth: {
+                ...this.state.auth,
+                userId: this.props.userId,
+                refreshToken: this.props.refreshToken
+            }
+        })
+    }
+
     render() {
         const {t} = this.props;
         return(

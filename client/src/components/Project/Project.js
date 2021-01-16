@@ -1,6 +1,6 @@
 import React from 'react';
 
-class ProjectItem extends React.Component {
+class Project extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -9,6 +9,7 @@ class ProjectItem extends React.Component {
                 accessToken: '',
                 userId: ''
             },
+            projectId: '',
             fields: {},
             errors: {}
         };
@@ -20,7 +21,8 @@ class ProjectItem extends React.Component {
                 ...this.state.auth,
                 userId: this.props.userId,
                 refreshToken: this.props.refreshToken
-            }
+            },
+            projectId: this.props.projectId
         })
     }
     
@@ -34,5 +36,5 @@ class ProjectItem extends React.Component {
     }    
 }
 
-export default ProjectItem;
+export default Project;
 

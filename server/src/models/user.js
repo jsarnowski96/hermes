@@ -28,7 +28,7 @@ const UserSchema = new mongoose.Schema({
         select: false
     },
     role: {
-        type: mongoose.Types.ObjectId,
+        type: mongoose.Schema.Types.ObjectId,
         default: null
     },
     position: {
