@@ -6,18 +6,36 @@ import axios from 'axios';
 
 import Dashboard from '../Dashboard/Dashboard'
 
+import {getJwtDataFromSessionStorage, setJwtDataInSessionStorage} from '../../middleware/jwtSessionStorage';
+
 class Login extends React.Component {
     constructor(props) {
         super(props);
+        this.jwt = getJwtDataFromSessionStorage();
+
         this.state = {
-            auth: {
-                refreshToken: '',
-                accessToken: '',
-                userId: ''
-            },
+            unauthorized: true,
+            redirected: false,
             fields: {},
             errors: {}
         };
+
+        if(this.props.location) {
+            if(this.props.location.state.unauthorized && this.props.location.state.redirected) {
+                this.setState({
+                    unauthorized: true,
+                    redirected: true
+                })
+            } else if(!this.props.location.unauthorized) {
+                this.setState({
+                    unauthorized: false
+                })
+            }
+        }
+    }
+
+    componentDidMount() {
+        
     }
 
     onChange(field, event) {
@@ -37,9 +55,7 @@ class Login extends React.Component {
         if(!fields['login']) {
             isValid = false;
             errors['login'] = t('misc.phrases.field') + ' \'' + t('register.login') + '\'' + t('register.errors.requiredFieldIsEmpty');
-        }
-
-        if(typeof fields['login'] != 'undefined') {
+        } else if(typeof fields['login'] !== 'undefined') {
             if(!fields['login'].match(/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/) && !fields['login'].match(/^[a-zA-Z0-9\-_.]+$/)) {
                 isValid = false;
                 errors['login'] = t('register.errors.loginNotValid');
@@ -61,8 +77,6 @@ class Login extends React.Component {
         const fields = this.state.fields;
         const {t} = this.props;
 
-        //const reqPayload = Buffer.from(`${fields['login']}:${fields['password']}`, 'utf8').toString('base64');
-
         if(this.validateForm()) {
             axios.post('http://localhost:3300/auth/login', 
                 {
@@ -78,13 +92,10 @@ class Login extends React.Component {
                     }
             }).then((response) => {
                 if((response.data.user._id !== 'undefined' || response.data.user._id !== '' || response.data.user._id !== null) && (response.data.refreshToken !== 'undefined' || response.data.refreshToken !== '' || response.data.refreshToken !== null)) {
-                    this.setState({
-                        auth: {
-                            ...this.state.auth,
-                            userId: response.data.user._id,
-                            refreshToken: response.data.refreshToken
-                        }
-                    })
+                    setJwtDataInSessionStorage(response.data.user._id, response.data.refreshToken);
+                    if(this.jwt !== null && this.jwt !== '' && this.jwt !== 'undefined') {
+                        return <Redirect to="/dashboard" />
+                    }
                 };
             })
             .catch(function(error) {
@@ -107,25 +118,25 @@ class Login extends React.Component {
     render() {
         const {t, i18n} = this.props;
 
-        if((this.state.auth.userId !== '' && this.state.auth.userId !== 'undefined' && this.state.auth.userId !== null) && (this.state.auth.refreshToken !== '' && this.state.auth.refreshToken !== 'undefined' && this.state.auth.refreshToken !== null)) {
-            return <Dashboard userId={this.state.auth.userId} refreshToken={this.state.auth.refreshToken} />
-        }
-
         return(
             <div className="card">
                 <p className="card-title">{t('login.title')}</p><hr className="card-hr" />
                 <form className="card-form" onSubmit={this.onFormSubmit}>
                     <label htmlFor="login">{t('login.login')}</label>
-                    <input onChange={this.onChange.bind(this, 'login')} value={this.state.fields['login']} type="login" className="" id="login" />
-                    <span id="errorSpan" className="error-msg-span">{this.state.errors["login"]}</span>
+                    <input onChange={this.onChange.bind(this, 'login')} value={this.state.fields['login']} type="login" className="" id="login" name="login" />
+                    <span className="error-msg-span">{this.state.errors["login"]}</span>
                     <label htmlFor="password">{t('login.password')}</label>
-                    <input onChange={this.onChange.bind(this, 'password')} value={this.state.fields['password']} type="password" className="" id="password" />
-                    <span id="errorSpan" className="error-msg-span">{this.state.errors["password"]}</span>
+                    <input onChange={this.onChange.bind(this, 'password')} value={this.state.fields['password']} type="password" className="" id="password" name="password" />
+                    <span className="error-msg-span">{this.state.errors["password"]}</span>
                     <div class="card-form-divider">
                         <button type="submit" className="card-form-button">{t('login.submit')}</button>
                         <button type="button" className="card-form-button"><Link to="/" className="card-form-button-link">{t('login.cancel')}</Link></button>
                     </div>
-                    <span className="error-msg-span" id="serverErrorMsg"></span>
+                    {this.state.unauthorized && this.state.redirected ? (
+                        <span className="error-msg-span" style={{display: "block"}} id="serverErrorMsg">UNAUTHORIZED</span>
+                    ) : (
+                        <span className="error-msg-span" id="serverErrorMsg"></span>
+                    )}
                 </form>
                 <p className="card-form-reminder">{t('login.registerTip')} <Link to="/register">{t('login.registerLink')}</Link></p>
             </div>
@@ -136,3 +147,5 @@ class Login extends React.Component {
 const LoginTranslation = withTranslation('common')(Login);
 
 export default LoginTranslation;
+
+// TODO 18.01 - FIX REACT ROUTER/REDIRECT ISSUE WITH LOGIN/DASHBOARD

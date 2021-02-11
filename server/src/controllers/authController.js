@@ -8,7 +8,7 @@ require('dotenv').config({ path: __dirname + './../../.env'});
 router.post('/', async function(req, res, next) {
     passport.authenticate('local', {session: false}, (err, user, info) => {
         if (err || !user) {
-            res.status(400).json({
+            return res.status(400).json({
                 message: info ? info.message : 'Login failed',
                 user: user
             });
@@ -18,17 +18,18 @@ router.post('/', async function(req, res, next) {
             userId: user._id,
             login: req.body.login,
             //role: user.role,
-            expiresIn: Date.now() + parseInt(process.env.REFRESH_TOKEN_LIFETIME)
+            //expiresIn: process.env.REFRESH_TOKEN_LIFETIME
+            //expiresIn: Date.now() + parseInt(process.env.REFRESH_TOKEN_LIFETIME)
         }
 
         req.login(payload, {session: false}, (err) => {
             if(err) {
-                res.status(401).send(err);
                 console.log(err);
+                return res.status(401).send(err);
             }
 
-            const refreshToken = jwt.sign(payload, process.env.REFRESH_TOKEN_SECRET);
-            res.status(200).json({user, refreshToken});
+            const refreshToken = jwt.sign(payload, process.env.REFRESH_TOKEN_SECRET, { expiresIn: process.env.REFRESH_TOKEN_LIFETIME, issuer: process.env.ISSUER, audience: process.env.AUDIENCE});
+            return res.status(200).json({user, refreshToken});
         });
     })(req, res);
 });

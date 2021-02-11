@@ -179,7 +179,7 @@ class Register extends React.Component {
                 company: fields['company'],
                 password: fields['password']
             }).then((response) => {
-                alert(t('register.success'));
+                console.log(response);
             })
             .catch(error => {
                 let err = document.getElementById('serverErrorMsg');

@@ -16,8 +16,8 @@ router.get('/:id', (req, res, next) => {
     res.status(200).json({message: 'Project ID route'});
 });
 
-router.post('/list', async (req, res, next) => {
-    var associatedProjects = await project.getProjectList(req.body._id);
+router.post('/list', (req, res, next) => {
+    var associatedProjects = project.getProjectList(req.body._id);
     if(associatedProjects.length > 0) {
         console.log(associatedProjects);
         res.status(200).json({associatedProjects});

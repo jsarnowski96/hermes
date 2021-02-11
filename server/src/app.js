@@ -38,10 +38,10 @@ const { ensureAuthenticated } = require('./middleware/auth');
   
 app.use(passport.initialize());
 
-app.use('/auth/login', authRouter);
 app.use('/auth/register', registerRouter);
+app.use('/auth/login', authRouter);
 
-// Enforce JWT token auth middleware for every route within the app
+// Enforce JWT token auth middleware for every main route within the app
 app.all('*', ensureAuthenticated);
 
 app.use('/project', projectRouter);

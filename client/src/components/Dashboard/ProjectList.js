@@ -2,8 +2,8 @@ import React from 'react';
 import {withTranslation} from 'react-i18next';
 import axios from 'axios';
 
-//import config from '../../constants/request-config';
-import checkLocalStorage from '../../middleware/languageChanger';
+import getLanguageFromLocalStorage from '../../middleware/languageLocalStorage';
+import getJwtDataFromSessionStorage from '../../middleware/jwtSessionStorage';
 
 import ProjectItem from '../Project/Project';
 import NewProject from '../Project/NewProject';
@@ -13,41 +13,42 @@ import Login from '../Nav/Login';
 import '../../assets/css/dashboard.css';
 
 class ProjectList extends React.Component {
-    // state = { first: ['A', 'B', 'C', 'D'], second: ['1', '2', '3', '4']};
-
     constructor(props) {
         super(props);
-        this.state = {
-            auth: {
-                refreshToken: '',
-                accessToken: '',
-                userId: '',
-            },
-            associatedProjects: []
-        };
+        var jwt = getJwtDataFromSessionStorage();
+
+        if(jwt != null) {
+            this.state = {
+                auth: {
+                    userId: jwt.userId,
+                    refreshToken: jwt.refreshToken
+                },
+                associatedProjects: []
+            }
+        } else {
+            this.state = {
+                auth: {
+                    userId: null,
+                    refreshToken: null
+                },
+                associatedProjects: []
+            }
+        }
 
         this.getProjectList = this.getProjectList.bind(this);
 
-        checkLocalStorage();
+        getLanguageFromLocalStorage();
+
+        this.getProjectList();
     }
 
-    componentDidMount() {
-        this.setState({
-            auth: {
-                ...this.state.auth,
-                userId: this.props.userId,
-                refreshToken: this.props.refreshToken
-            }
-        });
-    }
-
-    async getProjectList() {
+    getProjectList() {
         const headers = {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${this.state.auth.refreshToken}`
         };
 
-        await axios.post('http://localhost:3300/project/list', 
+        axios.post('http://localhost:3300/project/list', 
         {
             _id: this.state.auth.userId    
         },
@@ -70,7 +71,6 @@ class ProjectList extends React.Component {
         const {t, i18n} = this.props;
 
         if(this.state.auth.userId !== '' && this.state.auth.userId !== 'undefined' && this.state.auth.userId !== null && this.state.auth.refreshToken !== '' && this.state.auth.refreshToken !== null) {
-            this.getProjectList();
             
             return(
                 <table class="tab-table">

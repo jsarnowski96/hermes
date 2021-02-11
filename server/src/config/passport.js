@@ -69,14 +69,11 @@ passport.use(new JwtStrategy({
     },
     (jwt_payload, done) => {
         try {
-            if(Date.now() > jwt_payload.expiresIn) {
-                return done('JWT Expired');
+            if(Date.now() >= jwt_payload.expiresIn * 1000) {
+                return done(new TokenExpiredError, false);
             }
 
             User.findOne({id: jwt_payload._id}, function(err, user) {
-        
-                // This flow look familiar?  It is the same as when we implemented
-                // the `passport-local` strategy
                 if (err) {
                     return done(err, false);
                 }
@@ -94,12 +91,12 @@ passport.use(new JwtStrategy({
     }));
 
 passport.serializeUser(function(user, done) {
-    done(null, user);
+    return done(null, user);
 });
 
 passport.deserializeUser(function(id, done) {
     User.findById(id, function(error, user) {
-        done(error, user);
+        return done(error, user);
     });
 });
 

@@ -14,7 +14,7 @@ import Dashboard from './Dashboard/Dashboard';
 import NewProject from './Project/NewProject';
 import ProjectList from './Dashboard/ProjectList';
 
-import {getLanguageFromLocalStorage} from '../middleware/languageChanger';
+import getLanguageFromLocalStorage from '../middleware/languageLocalStorage';
 
 import '../assets/css/style.css';
 
@@ -34,10 +34,10 @@ class App extends React.Component {
                 <Sidebar />
                 <main>
                     <Route exact path="/" component={Home} />
-                    <Route path="/login" component={Login} />
+                    <Route path="/login" render={(props) => <Login {...props}/>} />
                     <Route path="/register" component={Register} />
                     <Route path="/about" component={About} />
-                    <Route path="/contact" component={Contact} />
+                    <Route path="/contact" render={(props) => <Contact {...props}/>} />
                     <Route path="/dashboard" render={(props) => <Dashboard {...props}/>} />
                     <Route path="/project/create" render={(props) => <NewProject {...props}/>} />
                     <Route path="/project/list" render={(props) => <ProjectList {...props}/>} />

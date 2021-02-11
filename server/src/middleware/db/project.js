@@ -13,19 +13,20 @@ async function getProject(id) {
 
 }
 
-async function getProjectList(id) {
+function getProjectList(id) {
     var associatedProjects = [];
-    await ProjectUser.find({user_id: id})
+    ProjectUser.find({user_id: id})
     .populate('project_id')
     .exec(function(err, projectUser) {
         if(err) {
             console.log(error);
-        } else {
-            associatedProjects.push(projectUser.project_id);
-        }
+        }// } else {
+        //     associatedProjects.push(projectUser.project_id);
+        // }
     })
     .then(result => {
         if(result) {
+            associatedProjects.push(result);
             return associatedProjects;
         } else {
             return null;
