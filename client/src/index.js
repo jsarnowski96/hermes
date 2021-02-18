@@ -2,11 +2,6 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import {I18nextProvider} from "react-i18next";
 import i18next from './services/i18n';
-//import {Provider} from 'react-redux';
-
-//import {userLogin, grantAccessToken, setLanguage} from './actions/index';
-
-//import {store} from './store';
 
 import App from './components/App';
 

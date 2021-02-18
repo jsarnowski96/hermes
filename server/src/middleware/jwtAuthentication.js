@@ -6,7 +6,7 @@ require('../config/passport');
 require('dotenv').config({ path: __dirname + './../../.env'});
 
 module.exports = {
-    ensureAuthenticated: function(req, res, next) {
+    ensureAuthenticated: function (req, res, next) {
         const authHeader = req.headers.authorization;
         if(authHeader) {
             const token = authHeader.split(' ')[1];
@@ -14,23 +14,27 @@ module.exports = {
                 if(err) {
                     if (err.name === 'TokenExpiredError') {
                         console.log('JWT Token expired');
-                    }
-                    
-                    if (err.name === 'JsonWebTokenError') {
+                        return res.status(403).json({message: 'JwtTokenExpired'});
+                    } else if (err.name === 'JsonWebTokenError') {
                         console.log('JWT Token malformed');
+                        return res.status(406).json({message: 'JwtTokenMalformed'});
+                    } else {
+                        console.log(err.name + "\n" + err.message);
+                        return res.status(500).json({message: err.name + "\n" + err.message});
                     }
                 } else {
                     if(payload) {
-                        console.log(payload);
-                        console.log('Your JWT was successfully validated!');
+                        //console.log('JWT Token successfully validated');
                         passport.authenticate('jwt', { session: false });
                     } else {
-                        console.log('Payload missing');
+                        console.log('Missing JWT Token payload');
+                        return res.status(406).json({message: 'MissingJwtTokenPayload'});
                     }
                 }
             });
         } else {
-            console.log('Missing Auth Headers');
+            console.log('Missing Auth Header');
+            return res.status(403).json({message: 'MissingAuthHeader'});
         }
     }
 }

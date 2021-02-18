@@ -5,7 +5,7 @@ const LocalStrategy = require('passport-local').Strategy;
 const JwtStrategy = passportJwt.Strategy;
 const ExtractJwt = passportJwt.ExtractJwt;
 
-const User = require('../models/user');
+const User = require('../models/User');
 
 require('dotenv').config({ path: __dirname + './../../.env'});
 
@@ -19,20 +19,23 @@ passport.use(new LocalStrategy({
                 const user = await User.findOne({ username: login }).select('username password');
                 if (user) {
                     bcrypt.compare(password, user.password, (err, result) => {
-                        if (result) {
-                            done(null, user, { message: 'JWT Authentication successfull' });
-                        }
                         if (err) {
                             console.log(err);
-                            done(err, false, { message: 'Error' });
+                            done(err, false);
+                        }
+                        
+                        if (result) {
+                            done(null, user, { message: 'JWT Authentication successfull' });
+                        } else {
+                            done(null, false, new Error("usernameOrPasswordIncorrect"));
                         }
                     });
                 } else {
-                    done(null, false, { message: 'Incorrect username or password' });
+                    done(null, false, new Error("usernameOrPasswordIncorrect"));
                 }
             } catch (error) {
                 console.log(error);
-                done(error, false, { message: 'Error' });
+                done(error, false);
             }
         } 
         
@@ -41,20 +44,23 @@ passport.use(new LocalStrategy({
                 const user = await User.findOne({ email: login }).select('email password');
                 if (user) {
                     bcrypt.compare(password, user.password, (err, result) => {
-                        if (result) {
-                            done(null, user, { message: 'JWT Authentication successfull' });
-                        }
                         if (err) {
                             console.log(err);
-                            done(err, false, { message: 'Error' });
+                            done(err, false);
+                        }
+                        
+                        if (result) {
+                            done(null, user, { message: 'JWT Authentication successfull' });
+                        } else {
+                            done(null, false, new Error("usernameOrPasswordIncorrect"));
                         }
                     });
                 } else {
-                    done(null, false, { message: 'Incorrect email or password' });
+                    done(null, false, new Error("usernameOrPasswordIncorrect"));
                 }
             } catch (error) {
                 console.log(error);
-                done(error, false, { message: 'Error' });
+                done(error, false);
             }
         }
     }
@@ -73,6 +79,10 @@ passport.use(new JwtStrategy({
                 return done(new TokenExpiredError, false);
             }
 
+            if(global.invalidatedJwt.include(jwtFromRequest)) {
+                return done(null, false, new Error("InvalidatedJwt"));
+            }
+
             User.findOne({id: jwt_payload._id}, function(err, user) {
                 if (err) {
                     return done(err, false);
@@ -80,9 +90,8 @@ passport.use(new JwtStrategy({
                 if (user) {
                     return done(null, user);
                 } else {
-                    return done(null, false);
+                    return done(null, false, new Error("usernameOrPasswordIncorrect"));
                 }
-                
             });
         } catch(error) {
             console.log(error);

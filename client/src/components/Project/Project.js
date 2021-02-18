@@ -1,40 +1,44 @@
 import React from 'react';
+import {withTranslation} from 'react-i18next';
+import axios from 'axios';
+
+import {getJwtDataFromSessionStorage, removeJwtDataFromSessionStorage} from '../../middleware/jwtSessionStorage';
 
 class Project extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {
-            auth: {
-                refreshToken: '',
-                accessToken: '',
-                userId: ''
-            },
-            projectId: '',
-            fields: {},
-            errors: {}
-        };
-    }
 
-    componentDidMount(props) {
-        this.setState({
-            auth: {
-                ...this.state.auth,
-                userId: this.props.userId,
-                refreshToken: this.props.refreshToken
-            },
-            projectId: this.props.projectId
-        })
+        var jwt = getJwtDataFromSessionStorage();
+
+        if(jwt != null) {
+            this.state = {
+                auth: {
+                    userId: jwt.userId,
+                    refreshToken: jwt.refreshToken
+                },
+                fields: {},
+                errors: {}
+            }
+        } else {
+            this.state = {
+                auth: {
+                    userId: null,
+                    refreshToken: null
+                },
+                fields: {},
+                errors: {}
+            }
+        }
     }
     
     render() {
         return(
-            <tr>
-                <td>{this.props.first}</td>
-                <td>{this.props.second}</td>
-            </tr>
+            <h1>Project</h1>
         )
     }    
 }
 
-export default Project;
+const ProjectTranslation = withTranslation('common')(Project);
+
+export default ProjectTranslation;
 

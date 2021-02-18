@@ -6,19 +6,19 @@ const UserSchema = new mongoose.Schema({
         type: String,
         trim: true,
         required: true,
-        validate: /^[a-zA-Z0-9\-_.]+$/,
+        validate: /^[a-zA-Z0-9\-_.]{1,20}$/,
         unique: true
     },
     firstname: {
         type: String,
         trim: true,
-        validate: /^[a-zA-Z_ ]+$/,
+        validate: /^[ążśźęćńółĄŻŚŹĘĆŃÓŁa-zA-Z\- ]{1,20}$/,
         required: true
     },
     lastname: {
         type: String,
         trim: true,
-        validate: /^[a-zA-Z_ ]+$/,
+        validate:/^[ążśźęćńółĄŻŚŹĘĆŃÓŁa-zA-Z\- ]{1,20}$/,
         required: true
     },
     password: {
@@ -27,20 +27,15 @@ const UserSchema = new mongoose.Schema({
         trim: true,
         select: false
     },
-    role: {
-        type: mongoose.Schema.Types.ObjectId,
-        default: null
-    },
     position: {
         type: String,
         trim: true,
-        validate: /^[a-zA-Z_ ]+$/,
+        validate: /^[ążśźęćńółĄŻŚŹĘĆŃÓŁa-zA-Z\- ]{1,30}$/,
         required: true
     },
     company: {
-        type: String,
-        trim: true,
-        validate: /^[a-zA-Z0-9\-_.]+$/,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Company',
         required: true
     },
     avatar_url: {
@@ -51,6 +46,7 @@ const UserSchema = new mongoose.Schema({
     email: {
         type: String,
         trim: true,
+        validate: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
         validate: /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/,
         required: true,
         unique: true
@@ -61,8 +57,12 @@ const UserSchema = new mongoose.Schema({
         validate: /^\+?([0-9]{2})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{3}?[-. ]?([0-9]{3}))$/,
         validate: /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{3})$/,
         validate: /^([0-9]{9})$/,
+        required: true
+    },
+    modified_at: {
+        type: Date,
         required: true,
-        unique: true
+        default: Date.now
     },
     created_at: {
         type: Date,

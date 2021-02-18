@@ -5,44 +5,83 @@ const PermissionSchema = new mongoose.Schema({
     name: {
         type: String,
         trim: true,
-        required: true,
-        unique: true
+        required: true
     },
     description: {
         type: String,
         trim: true,
         required: true
     },
-    read: {
-        type: Boolean,
-        required: true,
-        default: true
-    },
-    write: {
-        type: Boolean,
-        required: true,
-        default: true
-    },
-    modify: {
-        type: Boolean,
-        required: true,
-        default: false
-    },
-    canInvitePeople: {
+    _create: {
         type: Boolean,
         required: true,
         default: function() {
-            if(this.modify === true) {
+            if(this.is_owner === true) {
                 return true;
             } else {
                 return false;
             }
         }
     },
+    _read: {
+        type: Boolean,
+        required: true,
+        default: function() {
+            if(this.is_owner === true) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+    },    
+    _update: {
+        type: Boolean,
+        required: true,
+        default: function() {
+            if(this.is_owner === true) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+    },
+    _delete: {
+        type: Boolean,
+        required: true,
+        default: function() {
+            if(this.is_owner === true) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+    },
+    is_owner: {
+        type: Boolean,
+        required: true,
+        default: false
+    },
+
+    can_invite: {
+        type: Boolean,
+        required: true,
+        default: function() {
+            if(this.is_owner === true) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+    },
+    modified_at: {
+        type: Date,
+        required: true,
+        default: Date.now
+    },
     created_at: {
         type: Date,
         required: true,
-        default: Date.now.toString()
+        default: Date.now
     }
 });
 

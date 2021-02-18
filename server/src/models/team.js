@@ -5,12 +5,11 @@ const TeamSchema = new mongoose.Schema({
     name: {
         type: String,
         trim: true,
-        required: true,
-        unique: true
+        required: true
     },
     category: {
-        type: String,
-        trim: true,
+        type: mongoose.Schema.Types.ObjectId,
+        default: '602d8a48870e03d188362605',
         required: true
     },
     avatar_url: {
@@ -18,20 +17,25 @@ const TeamSchema = new mongoose.Schema({
         trim: true,
         default: 'localhost:3300/images/avatars/team-default.png'
     },
-    owner_id: {
+    owner: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         required: true
     },
-    org_id: {
+    organization: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Organization',
         required: true
     },
+    modified_at: {
+        type: Date,
+        required: true,
+        default: Date.now
+    },
     created_at: {
         type: Date,
         required: true,
-        default: Date.now.toString()
+        default: Date.now
     }
 });
 

@@ -1,85 +1,383 @@
 {
-    "home": {
-        "title": "Welcome to Hermes System!"
-    },
-    "about": {
-        "title": "About",
-        "body": "Hermes wspiera pracę zespołów i pomaga w organizacji pracy w projektach informatycznych."
-    },
-    "contact": {
-        "title": "Contact",
-        "body": "If you have any suggestions regarding the website or you have encountered an issue, please fill in the below form."
-    },
-    "login": {
-        "title": "Login",
-        "login": "Username or email",
-        "password": "Password",
-        "submit": "Login",
-        "cancel": "Cancel",
-        "registerTip": "Don't have an account?",
-        "registerLink": "Register"
-    },
-    "register": {
-        "title": "Register",
-        "email": "Email address",
-        "username": "Username",
-        "firstname": "First name",
-        "lastname": "Last name",
-        "position": "Position",
-        "company": "Company",
-        "phone": "Phone number",
-        "password": "Password",
-        "confirm": "Confirm password",
-        "submit": "Register",
-        "cancel": "Cancel",
-        "reset": "Clear",
-        "loginTip": "Already have an account? No problem!",
-        "loginLink": "Login here",
-        "errors": {
-            "serverResponses": {
-                "emptyInputForm": "Provided form is empty",
-                "userAlreadyExists": "There is already an account using that username or email"
-            },
-            "requiredFieldIsEmpty": " is required",
-            "allowedCharsOnly": "Only these characters are allowed: ",
-            "digitsOnly": "Only digits are allowed",
-            "emailNotValid": "Provided email address does not meet the required format",
-            "loginNotValid": "Provided login does not meet required username or email format",
-            "passwordsDoNotMatch": "Passwords are not identical",
-            "phoneIncorrectFormat": "Incorrect phone number format",
-            "passwordTooShort": "Password has to be at least 6 characters long",
-            "confirmPasswordIsEmpty": "Confirm your password in order to register an account",
-            "incorrectPhoneFormat": "Phone format is incorrect"
+    "content": {
+        "home": {
+            "title": "Welcome to Hermes Systems!"
         },
-        "success": "You have successfully registered!"
-    },
-    "navbar": {
-        "home": "Home",
-        "about": "About",
-        "contact": "Contact",
-        "login": "Login",
-        "register": "Sign up"
-    },
-    "dashboard": {
+        "about": {
+            "title": "About",
+            "body": "Hermes supports teams and help organizing work in IT projects."
+        },
+        "contact": {
+            "title": "Contact",
+            "body": "If you have any suggestions regarding the website or you have encountered an issue, please fill in the below form."
+        },
+        "login": {
+            "title": "Login",
+            "login": "Username or email",
+            "password": "Password",
+            "submit": "Login",
+            "cancel": "Cancel",
+            "registerTip": "Don't have an account?",
+            "registerLink": "Register",
+            "errorMessages": {
+                "accountDoesNotExist": "Account does not exist",
+                "usernameOrPasswordIncorrect": "Username or password is incorrect",
+                "formValidation": {
+                    "emptyForm": "Provided form is empty",
+                    "requiredFieldIsEmpty": "is required"
+                }
+            }
+        },
+        "register": {
+            "title": "Register",
+            "email": "Email address",
+            "username": "Username",
+            "firstname": "First name",
+            "lastname": "Last name",
+            "position": "Position",
+            "company": "Company",
+            "phone": "Phone number",
+            "password": "Password",
+            "confirm": "Confirm password",
+            "submit": "Register",
+            "cancel": "Cancel",
+            "reset": "Clear",
+            "loginTip": "Already have an account? No problem!",
+            "loginLink": "Login here",
+            "success": "You have successfully registered!",
+            "failure": "Could not register an account",
+            "errorMessages": {
+                "userAlreadyExists": "There is already an account using that username or email",
+                "formValidation": {
+                    "emptyForm": "Provided form is empty",
+                    "requiredFieldIsEmpty": "is required",
+                    "allowedCharsOnly": "Only these characters are allowed: ",
+                    "digitsOnly": "Only digits are allowed",
+                    "emailNotValid": "Provided email address does not meet the required format",
+                    "loginNotValid": "Provided login does not meet required username or email format",
+                    "passwordsDoNotMatch": "Passwords are not identical",
+                    "phoneIncorrectFormat": "Incorrect phone number format",
+                    "passwordTooShort": "Password has to be at least 6 characters long",
+                    "confirmPasswordIsEmpty": "Confirm your password in order to register an account",
+                    "incorrectPhoneFormat": "Phone format is incorrect"
+                }
+            }
+        },
+        "navbar": {
+            "home": "Home",
+            "about": "About",
+            "contact": "Contact",
+            "login": "Login",
+            "logout": "Logout",
+            "register": "Sign up"
+        },
+        "dashboard": {
+
+        },
         "projects": {
-            "title": "Projects"
+            "title": "Projects",
+            "tableHeaders": {
+                "name": "Project name",
+                "category": "Category",
+                "assignedTeam": "Team",
+                "dueDate": "Due date"
+            },
+            "actions": {
+                "viewProject": {
+                    "fieldNames": {
+
+                    },
+                    "actionResults": {
+                        "success": "",
+                        "failure": ""
+                    }
+
+                },
+                "createProject": {
+                    "fieldNames": {
+
+                    },
+                    "actionResults": {
+                        "success": "",
+                        "failure": ""
+                    }
+                },
+                "editProject": {
+                    "fieldNames": {
+
+                    },
+                    "actionResults": {
+                        "success": "",
+                        "failure": ""
+                    }
+                },
+                "deleteProject": {
+                    "fieldNames": {
+
+                    },
+                    "actionResults": {
+                        "success": "",
+                        "failure": ""
+                    }
+                }
+            }
         },
-        "team": {
-            "title": "Team"
+        "teams": {
+            "title": "Teams",
+            "tableHeaders": {
+                "name": "Team name",
+                "leader": "Leader"
+            },
+            "actions": {
+                "viewTeam": {
+                    "fieldNames": {
+
+                    },
+                    "actionResults": {
+                        "success": "",
+                        "failure": ""
+                    }
+                },
+                "createTeam": {
+                    "fieldNames": {
+
+                    },
+                    "actionResults": {
+                        "success": "",
+                        "failure": ""
+                    }
+                },
+                "editTeam": {
+                    "fieldNames": {
+
+                    },
+                    "actionResults": {
+                        "success": "",
+                        "failure": ""
+                    }
+                },
+                "deleteTeam": {
+                    "fieldNames": {
+
+                    },
+                    "actionResults": {
+                        "success": "",
+                        "failure": ""
+                    }
+                }
+            }
         },
         "tasks": {
-            "title": "Tasks"
+            "title": "Tasks",
+            "tableHeaders": {
+                "name": "Task name",
+                "category": "Category",
+                "dueDate": "Due date"
+            },
+            "actions": {
+                "viewTask": {
+                    "fieldNames": {
+
+                    },
+                    "actionResults": {
+                        "success": "",
+                        "failure": ""
+                    }
+                },
+                "createTask": {
+                    "fieldNames": {
+
+                    },
+                    "actionResults": {
+                        "success": "",
+                        "failure": ""
+                    }
+                },
+                "editTask": {
+                    "fieldNames": {
+
+                    },
+                    "actionResults": {
+                        "success": "",
+                        "failure": ""
+                    }
+                },
+                "deleteTask": {
+                    "fieldNames": {
+
+                    },
+                    "actionResults": {
+                        "success": "",
+                        "failure": ""
+                    }
+                }
+            }
         },
-        "activities": {
-            "title": "Operations"
+        "userActions": {
+            "title": "User actions",
+            "tableHeaders": {
+                "name": "Activity name"
+            },
+            "actions": {
+                "viewActivity": {
+                    "fieldNames": {
+
+                    },
+                    "actionResults": {
+                        "success": "",
+                        "failure": ""
+                    }
+                },
+                "createActivity": {
+                    "fieldNames": {
+
+                    },
+                    "actionResults": {
+                        "success": "",
+                        "failure": ""
+                    }
+                },
+                "editActivity": {
+                    "fieldNames": {
+
+                    },
+                    "actionResults": {
+                        "success": "",
+                        "failure": ""
+                    }
+                },
+                "deleteActivity": {
+                    "fieldNames": {
+
+                    },
+                    "actionResults": {
+                        "success": "",
+                        "failure": ""
+                    }
+                }
+            }
         },
-        "recent": {
-            "title": "Recent activity"
+        "recentActivity": {
+            "title": "Recent activity",
+            "tableHeaders": {
+                "name": "Activity name",
+                "type": "Type",
+                "content": "Content"
+            },
+            "actions": {
+                "viewRecent": {
+                    "fieldNames": {
+
+                    },
+                    "actionResults": {
+                        "success": "",
+                        "failure": ""
+                    }
+                }
+            }
+        },
+        "company": {
+            "title": "Company",
+            "tableHeaders": {
+                "name": "Company name",
+                "description": "Description",
+                "owner": "Owner"
+            },
+            "actions": {
+                "viewCompany": {
+                    "fieldNames": {
+
+                    },
+                    "actionResults": {
+                        "success": "",
+                        "failure": ""
+                    }
+                },
+                "createCompany": {
+                    "fieldNames": {
+
+                    },
+                    "actionResults": {
+                        "success": "",
+                        "failure": ""
+                    }
+                },
+                "editCompany": {
+                    "fieldNames": {
+
+                    },
+                    "actionResults": {
+                        "success": "",
+                        "failure": ""
+                    }
+                },
+                "deleteCompany": {
+                    "fieldNames": {
+
+                    },
+                    "actionResults": {
+                        "success": "",
+                        "failure": ""
+                    }
+                }
+            }
+        },
+        "roles": {
+            "title": "Roles",
+            "tableHeaders": {
+                "name": "Role name",
+                "description": "Description"
+            },
+            "actions": {
+                "viewRole": {
+                    "fieldNames": {
+
+                    },
+                    "actionResults": {
+                        "success": "",
+                        "failure": ""
+                    }
+                },
+                "createRole": {
+                    "fieldNames": {
+
+                    },
+                    "actionResults": {
+                        "success": "",
+                        "failure": ""
+                    }
+                },
+                "editRole": {
+                    "fieldNames": {
+
+                    },
+                    "actionResults": {
+                        "success": "",
+                        "failure": ""
+                    }
+                },
+                "deleteRole": {
+                    "fieldNames": {
+
+                    },
+                    "actionResults": {
+                        "success": "",
+                        "failure": ""
+                    }
+                }
+            }
         }
     },
     "misc": {
         "phrases": {
-            "field": "Field"
+            "field": "Field",
+            "or": "or"
         }
+    },
+    "errorMessages": {
+        "cannotDisplayRequestedResource": "Cannot display requested resource",
+        "cannotAccessRequestedResource": "Cannot access requested resource",
+        "cannotFindRequestedResource": "Cannot find requested resource",
+        "permissionsNotSufficient": "Access to the requested resource require higher permissions"
     }
 }

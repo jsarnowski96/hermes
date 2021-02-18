@@ -3,50 +3,38 @@ import {Link} from 'react-router-dom';
 import {withTranslation} from 'react-i18next';
 import axios from 'axios';
 
-import Login from '../Nav/Login';
-
 import '../../assets/css/register.css';
 import '../../assets/css/style.css';
 import '../../assets/css/errors.css';
 
+import {getJwtDataFromSessionStorage} from '../../middleware/jwtSessionStorage';
+
 class Register extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {
-            fields: {},
-            errors: {}
-        };
+        
+        var jwt = getJwtDataFromSessionStorage();
+
+        if(jwt != null) {
+            this.state = {
+                authenticated: true,
+                fields: {},
+                errors: {}
+            };
+        } else {
+            this.state = {
+                authenticated: false,
+                fields: {},
+                errors: {}
+            };
+        }
 
         this.resetForm = this.resetForm.bind(this);
     }
 
     resetForm() {
-        let fields = this.state.fields;
-        let errors = this.state.errors;
-
-        fields['firstname'] = '';
-        fields['lastname'] = '';
-        fields['username'] = '';
-        fields['email'] = '';
-        fields['phone'] = '';
-        fields['position'] = '';
-        fields['company'] = '';
-        fields['password'] = '';
-        fields['confirm'] = '';
-
-        errors['firstname'] = '';
-        errors['lastname'] = '';
-        errors['username'] = '';
-        errors['email'] = '';
-        errors['phone'] = '';
-        errors['position'] = '';
-        errors['company'] = '';
-        errors['password'] = '';
-        errors['confirm'] = '';
-
-        document.getElementById('serverErrorMsg').innerHTML = '';
-
-        this.setState({fields, errors});
+        document.getElementById('serverResponse').innerHTML = '';
+        this.setState({fields: {}, errors: {}});
     }
 
     onChange(field, event) {
@@ -65,96 +53,103 @@ class Register extends React.Component {
 
         if(!fields['firstname']) {
             isValid = false;
-            errors['firstname'] = t('misc.phrases.field') + ' \'' + t('register.firstname') + '\'' + t('register.errors.requiredFieldIsEmpty');
-        } else if(typeof fields['firstname'] !== 'undefined') {
-            if(!fields['firstname'].match(/^[a-zA-Z_ ]+$/)) {
+            errors['firstname'] = t('misc.phrases.field') + ' \'' + t('content.register.firstname') + '\' ' + t('content.register.errorMessages.formValidation.requiredFieldIsEmpty');
+        } else if(typeof fields['firstname'] !== undefined) {
+            if(!fields['firstname'].match(/^[ążśźęćńółĄŻŚŹĘĆŃÓŁa-zA-Z\- ]{1,20}$/)) {
+                let regex = /^[ążśźęćńółĄŻŚŹĘĆŃÓŁa-zA-Z\- ]{1,20}$/;
                 isValid = false;
-                errors['firstname'] = t('register.errors.allowedCharsOnly');
+                errors['firstname'] = t('content.register.errorMessages.formValidation.allowedCharsOnly') + regex;
             }
         }
 
         if(!fields['lastname']) {
             isValid = false;
-            errors['lastname'] = t('misc.phrases.field') + ' \'' + t('register.lastname') + '\'' + t('register.errors.requiredFieldIsEmpty');
-        } else if(typeof fields['lastname'] !== 'undefined') {
-            if(!fields['lastname'].match(/^[a-zA-Z_ ]+$/)) {
+            errors['lastname'] = t('misc.phrases.field') + ' \'' + t('content.register.lastname') + '\' ' + t('content.register.errorMessages.formValidation.requiredFieldIsEmpty');
+        } else if(typeof fields['lastname'] !== undefined) {
+            if(!fields['lastname'].match(/^[ążśźęćńółĄŻŚŹĘĆŃÓŁa-zA-Z\- ]{1,20}$/)) {
+                let regex = /^[ążśźęćńółĄŻŚŹĘĆŃÓŁa-zA-Z\- ]{1,20}$/;
                 isValid = false;
-                errors['lastname'] = t('register.errors.allowedCharsOnly');
+                errors['lastname'] = t('content.register.errorMessages.formValidation.allowedCharsOnly') + regex;
             }
         }
 
         if(!fields['username']) {
             isValid = false;
-            errors['username'] = t('misc.phrases.field') + ' \'' + t('register.username') + '\'' + t('register.errors.requiredFieldIsEmpty');
-        } else if(typeof fields['username'] !== 'undefined') {
+            errors['username'] = t('misc.phrases.field') + ' \'' + t('content.register.username') + '\' ' + t('content.register.errorMessages.formValidation.requiredFieldIsEmpty');
+        } else if(typeof fields['username'] !== undefined) {
             if(!fields['username'].match(/^[a-zA-Z0-9\-_.]+$/)) {
+                let regex = /^[a-zA-Z0-9\-_.]+$/;
                 isValid = false;
-                errors['username'] = t('register.errors.allowedCharsOnly');
+                errors['username'] = t('content.register.errorMessages.formValidation.allowedCharsOnly') + regex;
             }
         }
 
         if(!fields['email']) {
             isValid = false;
-            errors['email'] = t('misc.phrases.field') + ' \'' + t('register.email') + '\'' + t('register.errors.requiredFieldIsEmpty');
-        } else if(typeof fields['email'] != 'undefined') {
-            if(!fields['email'].match(/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/)) {
-                ///^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i
+            errors['email'] = t('misc.phrases.field') + ' \'' + t('content.register.email') + '\' ' + t('content.register.errorMessages.formValidation.requiredFieldIsEmpty');
+        } else if(typeof fields['email'] != undefined) {
+            if(!fields['email'].match(/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/) && !fields['email'].match(/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/)) {
                 isValid = false;
-                errors['email'] = t('register.errors.emailNotValid');
+                errors['email'] = t('content.register.errorMessages.formValidation.emailNotValid');
             }
         }
 
         if(!fields['phone']) {
             isValid = false;
-            errors['phone'] = t('misc.phrases.field') + ' \'' + t('register.phone') + '\'' + t('register.errors.requiredFieldIsEmpty');
-        } else if(typeof fields['phone'] != 'undefined') {
+            errors['phone'] = t('misc.phrases.field') + ' \'' + t('content.register.phone') + '\' ' + t('content.register.errorMessages.formValidation.requiredFieldIsEmpty');
+        } else if(typeof fields['phone'] != undefined) {
             if(!fields['phone'].match(/^\+?([0-9]{2})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{3}?[-. ]?([0-9]{3}))$/) && !fields['phone'].match(/^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{3})$/) && !fields['phone'].match(/^([0-9]{9})$/)) {
+                let regex1 = 'yy xxx xxx xxx';
+                let regex2 = 'xxx xxx xxx';
+                let regex3 = 'xxxxxxxxx';
                 isValid = false;
-                errors['phone'] = t('register.errors.incorrectPhoneFormat');
+                errors['phone'] = t('content.register.errorMessages.formValidation.incorrectPhoneNumberFormat') + '\n\n' + regex1 + ', ' + regex2 + ' ' + t('misc.phrases.or') + ' ' + regex3;
             }
         }
 
         if(!fields['position']) {
             isValid = false;
-            errors['position'] = t('misc.phrases.field') + ' \'' + t('register.position') + '\'' +  t('register.errors.requiredFieldIsEmpty');
-        } else if(typeof fields['position'] !== 'undefined') {
-            if(!fields['position'].match(/^[a-zA-Z_ ]+$/)) {
+            errors['position'] = t('misc.phrases.field') + ' \'' + t('content.register.position') + '\' ' +  t('content.register.errorMessages.formValidation.requiredFieldIsEmpty');
+        } else if(typeof fields['position'] !== undefined) {
+            if(!fields['position'].match(/^[ążśźęćńółĄŻŚŹĘĆŃÓŁa-zA-Z\- ]{1,30}$/)) {
+                let regex = /^[ążśźęćńółĄŻŚŹĘĆŃÓŁa-zA-Z\- ]{1,30}$/;
                 isValid = false;
-                errors['position'] = t('register.errors.allowedCharsOnly');
+                errors['position'] = t('content.register.errorMessages.formValidation.allowedCharsOnly') + regex;
             }
         }
 
         if(!fields['company']) {
             isValid = false;
-            errors['company'] = t('misc.phrases.field') + ' \'' + t('register.company') + '\'' + t('register.errors.requiredFieldIsEmpty');
-        } else if(typeof fields['company'] !== 'undefined') {
-            if(!fields['company'].match(/^[a-zA-Z0-9\-. ]+$/)) {
+            errors['company'] = t('misc.phrases.field') + ' \'' + t('content.register.company') + '\' ' + t('content.register.errorMessages.formValidation.requiredFieldIsEmpty');
+        } else if(typeof fields['company'] !== undefined) {
+            if(!fields['company'].match(/^[ążśźęćńółĄŻŚŹĘĆŃÓŁA-Za-z0-9!@#$%^&*()_+\-=,./;'\\[\]<>?:"|{} ]{1,50}$/)) {
+                let regex = /^[ążśźęćńółĄŻŚŹĘĆŃÓŁA-Za-z0-9!@#$%^&*()_+\-=,./;'\\[\]<>?:"|{} ]{1,50}$/;
                 isValid = false;
-                errors['company'] = t('register.errors.allowedCharsOnly');
+                errors['company'] = t('content.register.errorMessages.formValidation.allowedCharsOnly') + regex;
             }
         }
 
         if(!fields['password']) {
             isValid = false;
-            errors['password'] = t('misc.phrases.field') + ' \'' + t('register.password') + '\'' + t('register.errors.requiredFieldIsEmpty');
-        } else if(typeof fields['password'] !== 'undefined') {
+            errors['password'] = t('misc.phrases.field') + ' \'' + t('content.register.password') + '\' ' + t('content.register.errorMessages.formValidation.requiredFieldIsEmpty');
+        } else if(typeof fields['password'] !== undefined) {
             if(fields['password'].length < 6) {
                 isValid = false;
-                errors['password'] = t('register.errors.passwordTooShort');
+                errors['password'] = t('content.register.errorMessages.formValidation.passwordTooShort');
             }
             if(fields['password'] !== fields['confirm']) {
                 isValid = false;
-                errors['password'] = t('register.errors.passwordsDoNotMatch');
+                errors['password'] = t('content.register.errorMessages.formValidation.passwordsDoNotMatch');
             }
         }
 
         if(!fields['confirm']) {
             isValid = false;
-            errors['confirm'] = t('register.errors.confirmPasswordIsEmpty');
-        } else if(typeof fields['confirm'] !== 'undefined') {
+            errors['confirm'] = t('content.register.errorMessages.formValidation.confirmPasswordIsEmpty');
+        } else if(typeof fields['confirm'] !== undefined) {
             if(fields['confirm'] !== fields['password']) {
                 isValid = false;
-                errors['confirm'] = t('register.errors.passwordsDoNotMatch');
+                errors['confirm'] = t('content.register.errorMessages.formValidation.passwordsDoNotMatch');
             }
         }
 
@@ -169,7 +164,7 @@ class Register extends React.Component {
         const {t} = this.props;
 
         if(this.validateForm()) {
-            axios.post('http://localhost:3300/auth/register', {
+            axios.post('http://localhost:3300/register', {
                 firstname: fields['firstname'],
                 lastname: fields['lastname'],
                 username: fields['username'],
@@ -182,10 +177,10 @@ class Register extends React.Component {
                 console.log(response);
             })
             .catch(error => {
-                let err = document.getElementById('serverErrorMsg');
-                if(err) {
+                let err = document.getElementById('serverResponse');
+                if(error) {
                     if(error.response.data.type === 'AccountDuplication') {
-                        err.innerHTML = t('register.errors.serverResponses.userAlreadyExists');
+                        err.innerHTML = t('content.register.errorMessages.userAlreadyExists');
                         err.style.display = 'block';
                     } else {
                         err.innerHTML = error.response;
@@ -205,43 +200,47 @@ class Register extends React.Component {
 
         return(
             <div className="card">
-                <p className="card-title">{t('register.title')}</p><hr className="card-hr" />
+                <p className="card-title">{t('content.register.title')}</p><hr className="card-hr" />
                 <form className="card-form" onSubmit={this.onFormSubmit}>
-                    <label htmlFor="firstname">{t('register.firstname')}</label>
+                    <label htmlFor="firstname">{t('content.register.firstname')}</label>
                     <input onChange={this.onChange.bind(this, 'firstname')} value={this.state.fields['firstname']} type="firstname" className="" name="firstname" />
                     <span className="error-msg-span">{this.state.errors["firstname"]}</span>
-                    <label htmlFor="lastname">{t('register.lastname')}</label>
+                    <label htmlFor="lastname">{t('content.register.lastname')}</label>
                     <input onChange={this.onChange.bind(this, 'lastname')} value={this.state.fields['lastname']} type="lastname" className="" name="lastname" />
                     <span className="error-msg-span">{this.state.errors["lastname"]}</span>
-                    <label htmlFor="username">{t('register.username')}</label>
+                    <label htmlFor="username">{t('content.register.username')}</label>
                     <input onChange={this.onChange.bind(this, 'username')} value={this.state.fields['username']} type="username" className="" name="username" />
                     <span className="error-msg-span">{this.state.errors["username"]}</span>
-                    <label htmlFor="email">{t('register.email')}</label>
+                    <label htmlFor="email">{t('content.register.email')}</label>
                     <input onChange={this.onChange.bind(this, 'email')} value={this.state.fields['email']} type="email" className="" name="email" />
                     <span className="error-msg-span">{this.state.errors["email"]}</span>
-                    <label htmlFor="phone">{t('register.phone')}</label>
+                    <label htmlFor="phone">{t('content.register.phone')}</label>
                     <input onChange={this.onChange.bind(this, 'phone')} value={this.state.fields['phone']} type="phone" className="" name="phone" />
                     <span className="error-msg-span">{this.state.errors["phone"]}</span>
-                    <label htmlFor="position">{t('register.position')}</label>
+                    <label htmlFor="position">{t('content.register.position')}</label>
                     <input onChange={this.onChange.bind(this, 'position')} value={this.state.fields['position']} type="position" className="" name="position" />
                     <span className="error-msg-span">{this.state.errors["position"]}</span>
-                    <label htmlFor="company">{t('register.company')}</label>
+                    <label htmlFor="company">{t('content.register.company')}</label>
                     <input onChange={this.onChange.bind(this, 'company')} value={this.state.fields['company']} type="company" className="" name="company" />
                     <span className="error-msg-span">{this.state.errors["company"]}</span>
-                    <label htmlFor="password">{t('register.password')}</label>
+                    <label htmlFor="password">{t('content.register.password')}</label>
                     <input type="password" onChange={this.onChange.bind(this, 'password')} value={this.state.fields['password']} className="" id="password" />
                     <span className="error-msg-span">{this.state.errors["password"]}</span>
-                    <label htmlFor="confirm">{t('register.confirm')}</label>
+                    <label htmlFor="confirm">{t('content.register.confirm')}</label>
                     <input type="password" onChange={this.onChange.bind(this, 'confirm')} value={this.state.fields['confirm']} className="" id="confirm" />
                     <span className="error-msg-span">{this.state.errors["confirm"]}</span>
                     <div class="card-form-divider">
-                        <button type="submit" className="card-form-button">{t('register.submit')}</button>
-                        <button type="reset" onClick={this.resetForm} className="card-form-button" >{t('register.reset')}</button>
-                        <button type="button" className="card-form-button"><Link to="/" className="card-form-button-link">{t('register.cancel')}</Link></button>
+                        <button type="submit" className="card-form-button">{t('content.register.submit')}</button>
+                        <button type="reset" onClick={this.resetForm} className="card-form-button" >{t('content.register.reset')}</button>
+                        <button type="button" className="card-form-button"><Link to="/" className="card-form-button-link">{t('content.register.cancel')}</Link></button>
                     </div>
-                    <span className="error-msg-span" id="serverErrorMsg"></span>
+                    {this.state.authenticated ? (
+                        <span className="error-msg-span" id="serverResponse">Already authenticated</span>
+                    ) : (
+                        <span className="error-msg-span" id="serverResponse"></span>
+                    )}
                 </form>
-                <p className="card-form-reminder">{t('register.loginTip')} <Link to="/login">{t('register.loginLink')}</Link></p>
+                <p className="card-form-reminder">{t('content.register.loginTip')} <Link to="/login">{t('content.register.loginLink')}</Link></p>
             </div>
         )
     }    

@@ -1,13 +1,11 @@
 import React from 'react';
 import {withTranslation} from 'react-i18next';
 
-import Login from '../Nav/Login';
-
-import getJwtDataFromSessionStorage from '../../middleware/jwtSessionStorage';
+import {getJwtDataFromSessionStorage} from '../../middleware/jwtSessionStorage';
 
 import '../../assets/css/dashboard.css';
 
-class Activities extends React.Component {
+class UserActions extends React.Component {
     constructor(props) {
         super(props);
         var jwt = getJwtDataFromSessionStorage();
@@ -30,15 +28,14 @@ class Activities extends React.Component {
     }
 
     render() {
-        const {t, i18n} = this.props;
+        const{t} = this.props;
 
-        if((this.state.auth.userId !== '' && this.state.auth.userId !== 'undefined' && this.state.auth.userId !== null) && (this.state.auth.refreshToken !== '' && this.state.auth.refreshToken !== 'undefined' && this.state.auth.refreshToken !== null)) {
+        if((this.state.auth.userId !== '' && this.state.auth.userId !== undefined && this.state.auth.userId !== null) && (this.state.auth.refreshToken !== '' && this.state.auth.refreshToken !== undefined && this.state.auth.refreshToken !== null)) {
             return(
                 <table class="tab-table">
                     <thead>
                         <tr>
-                            <th>Name</th>
-                            <th>Points</th>
+                            <th>{t('content.userActions.tableHeaders.name')}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -86,11 +83,11 @@ class Activities extends React.Component {
                 </table>
             )
         } else {
-            return <Login />
+            return <h2>Unauthorized</h2>
         }
     }    
 }
 
-const ActivitiesTranslation = withTranslation('common')(Activities);
+const UserActionsTranslation = withTranslation('common')(UserActions);
 
-export default ActivitiesTranslation;
+export default UserActionsTranslation;

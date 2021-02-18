@@ -1,21 +1,23 @@
 const express = require('express');
 const router = express.Router();
-const registerService = require('../services/registerService');
+const {registerUser} = require('../services/registerService');
 
-router.post('/', (req, res, next) => {
-    registerService.registerUser(req.body)
+router.post('/', async (req, res, next) => {
+    await registerUser(req.body)
     .then((result) => {
-        if(result) {
-            return res.status(200);
-        } else if(!result) {
-            return res.status(401).json({type: 'AccountDuplication'});
+        return res.status(200).json({result: result});
+    })
+    .catch((error) => {
+        if(error && error === 'KeyDuplication') {
+            return res.status(406).json({message: 'There is already an account using provided email or username'});
+        } else if(error && error === 'CompanyDoesNotExist') {
+            return res.status(404).json({message: 'Company does not exist'});
+        } else if(error && error === 'EmptyFormField') {
+            return res.status(406).json({message: 'One or more form fields are empty'});
         } else {
-            return res.status(401).json({type: 'UnknownError', message: 'Unknown error'});
+            return res.status(500).json({message: error});
         }
     })
-    .catch(error => {
-        res.status(400).json({type: 'UnknownError', message: error})
-    });
 });
 
 module.exports = router;

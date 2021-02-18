@@ -2,24 +2,25 @@ const mongoose  = require('mongoose');
 
 const CommentSchema = new mongoose.Schema({
     _id: mongoose.Schema.Types.ObjectId,
-    content: {
+    body: {
         type: String,
         trim: true,
         required: true
     },
-    user_id: {
+    user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
-        required: true
+        required: true,
     },
     modified_at: {
         type: Date,
-        required: true
+        required: true,
+        default: Date.now
     },
     created_at: {
         type: Date,
         required: true,
-        default: Date.now.toString()
+        default: Date.now
     }
 });
 

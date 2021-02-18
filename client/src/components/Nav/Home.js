@@ -1,23 +1,36 @@
 import React from 'react';
 import {withTranslation} from 'react-i18next';
 
+import {getJwtDataFromSessionStorage} from '../../middleware/jwtSessionStorage';
+
 class Home extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {
-            auth: {
-                refreshToken: '',
-                accessToken: '',
-                userId: ''
+
+        var jwt = getJwtDataFromSessionStorage();
+
+        if(jwt != null) {
+            this.state = {
+                auth: {
+                    userId: jwt.userId,
+                    refreshToken: jwt.refreshToken
+                }
             }
-        };
+        } else {
+            this.state = {
+                auth: {
+                    userId: null,
+                    refreshToken: null
+                }
+            }
+        }
     }
 
     render() {
         const {t} = this.props;
         return(
             <section>
-                <hr /><h1 className="">{t('home.title')}</h1><hr />
+                <hr /><h1 className="">{t('content.home.title')}</h1><hr />
                 
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. In tempor nibh sed dolor lobortis sodales. Pellentesque diam nulla, pretium id nunc placerat, sagittis convallis metus. Duis ac blandit mauris, vitae dictum eros. In porta, leo sit amet euismod placerat, turpis mauris mollis felis, vel gravida ligula elit sed nisl. Quisque eros libero, viverra eget sem ac, dignissim volutpat ante. Nulla tincidunt lorem iaculis volutpat porta. Sed iaculis mattis risus eu ultricies. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.
