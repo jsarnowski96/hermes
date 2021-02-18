@@ -10,7 +10,7 @@ class User extends React.Component {
 
         var jwt = getJwtDataFromSessionStorage();
 
-        if(jwt != null) {
+        if(jwt !== null) {
             this.state = {
                 auth: {
                     userId: jwt.userId,

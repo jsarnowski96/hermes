@@ -12,7 +12,7 @@ class TeamList extends React.Component {
         super(props);
         var jwt = getJwtDataFromSessionStorage();
 
-        if(jwt != null) {
+        if(jwt !== null) {
             this.state = {
                 auth: {
                     userId: jwt.userId,

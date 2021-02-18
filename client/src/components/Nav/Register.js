@@ -15,7 +15,7 @@ class Register extends React.Component {
         
         var jwt = getJwtDataFromSessionStorage();
 
-        if(jwt != null) {
+        if(jwt !== null) {
             this.state = {
                 authenticated: true,
                 fields: {},

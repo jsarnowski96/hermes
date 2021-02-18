@@ -12,7 +12,7 @@ class Login extends React.Component {
 
         this.jwt = getJwtDataFromSessionStorage();
 
-        if(this.jwt != null) {
+        if(this.jwt !== null) {
             this.state = {
                 auth: {
                     userId: this.jwt.userId,
