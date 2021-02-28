@@ -17,8 +17,8 @@ const ResourceUserRoleSchema = new mongoose.Schema({
     },
     collection_name: {
         type: String,
-        enum: ['Team', 'Project', 'Comment', 'Task', 'Organization', 'Company', 'Category'],
-        default: ['Project'],
+        enum: ['team', 'project', 'comment', 'task', 'organization', 'company', 'category'],
+        default: 'project',
         trim: true,
         required: true
     },
@@ -26,12 +26,13 @@ const ResourceUserRoleSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: function() {
             switch(this.collection_name) {
-                case 'Team': return 'Team';
-                case 'Project': return 'Project';
-                case 'Comment': return 'Comment';
-                case 'Organization': return 'Organization';
-                case 'Company': return 'Company';
-                case 'Category': return 'Category';
+                case 'team': return 'Team';
+                case 'project': return 'Project';
+                case 'comment': return 'Comment';
+                case 'task': return 'Task';
+                case 'organization': return 'Organization';
+                case 'company': return 'Company';
+                case 'category': return 'Category';
                 default: return null;
             }
         },

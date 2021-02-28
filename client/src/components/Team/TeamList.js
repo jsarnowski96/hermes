@@ -2,7 +2,6 @@ import React from 'react';
 import {withTranslation} from 'react-i18next';
 import axios from 'axios';
 
-import {getLanguageFromLocalStorage} from '../../middleware/languageLocalStorage';
 import {getJwtDataFromSessionStorage} from '../../middleware/jwtSessionStorage';
 
 import '../../assets/css/dashboard.css';
@@ -10,16 +9,22 @@ import '../../assets/css/dashboard.css';
 class TeamList extends React.Component {
     constructor(props) {
         super(props);
-        var jwt = getJwtDataFromSessionStorage();
+        
+        this.jwt = getJwtDataFromSessionStorage();
 
-        if(jwt !== null) {
+        if(this.jwt !== null) {
             this.state = {
                 auth: {
-                    userId: jwt.userId,
-                    refreshToken: jwt.refreshToken
+                    userId: this.jwt.userId,
+                    refreshToken: this.jwt.refreshToken
                 },
                 teams: []
             }
+
+            this.headers = {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${this.state.auth.refreshToken}`
+            };
         } else {
             this.state = {
                 auth: {
@@ -29,37 +34,26 @@ class TeamList extends React.Component {
                 teams: []
             }
         }
-
-        this.getTeamList = this.getTeamList.bind(this);
-
-        getLanguageFromLocalStorage();
-
-        this.getTeamList();
     }
 
     getTeamList() {
-        const headers = {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${this.state.auth.refreshToken}`
-        };
-
-        axios.post('http://localhost:3300/team/list', 
-        {
-            userId: this.state.auth.userId    
-        },
-        {
-            withCredentials: true,
-            headers: headers
-        })
-        .then((response) => {
-            if(response.data.teams !== undefined && response.data.teams !== '' && response.data.teams !== null && response.data.teams.length > 0) {
-                this.setState({teams: response.data.teams});
-            }
-        })
-        .catch((error) => {
-            console.log(error);
-            console.log(error.response);
-        });
+        try {
+            axios.post('http://localhost:3300/team/list', 
+            {
+                userId: this.state.auth.userId    
+            }, {headers: this.headers, withCredentials: true})
+            .then((response) => {
+                if(response.data.teams !== undefined && response.data.teams !== '' && response.data.teams !== null && response.data.teams.length > 0) {
+                    this.setState({teams: response.data.teams});
+                }
+            })
+            .catch((error) => {
+                console.log(error);
+                console.log(error.response);
+            });
+        } catch(e) {
+            console.log(e);
+        }
     }
 
     render() {
@@ -68,8 +62,8 @@ class TeamList extends React.Component {
             <table class="tab-table">
                 <thead>
                     <tr>
-                        <th>{t('content.teams.tableHeaders.name')}</th>
-                        <th>{t('content.teams.tableHeaders.leader')}</th>
+                        <th>{t('content.teams.fieldNames.name')}</th>
+                        <th>{t('content.teams.fieldNames.leader')}</th>
                     </tr>
                 </thead>
                 <tbody>

@@ -91,7 +91,7 @@
         row-gap: 1rem;
     }
 
-    .projects, .teams, .tasks, .recent, .userActions {
+    .project, .teams, .tasks, .recent, .userActions {
         grid-column: 1;
     }
 
@@ -108,7 +108,7 @@
         row-gap: 0.5rem;
     }
 
-    .projects {
+    .project {
         grid-column: span 2;
         grid-row: 1;
     }

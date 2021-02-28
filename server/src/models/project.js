@@ -4,6 +4,7 @@ const ProjectSchema = new mongoose.Schema({
     _id: mongoose.Schema.Types.ObjectId,
     name: {
         type: String,
+        validate: /^[ążśźęćńółĄŻŚŹĘĆŃÓŁA-Za-z0-9!@#$%^&*()_+\-=,./;'\\[\]<>?:"|{} ]{1,50}$/,
         trim: true,
         required: true
     },
@@ -19,17 +20,18 @@ const ProjectSchema = new mongoose.Schema({
     },
     requirements: {
         type: String,
+        validate: /^.{1,500}$/,
         trim: true,
         required: true
     },
     status: {
         type: String,
-        enum: ['todo', 'in progress', 'in review', 'postponed', 'completed'],
+        enum: ['To do', 'In progress', 'In review', 'Postponed', 'Done'],
         trim: true,
         required: true,
-        default: ['todo']
+        default: 'To do'
     },
-    due_date: {
+    dueDate: {
         type: Date,
         required: true
     },
@@ -37,7 +39,7 @@ const ProjectSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Role',
         default: function() {
-            if(this.restricted_access) {
+            if(this.restricted_access === true && this.restricted_access !== null) {
                 return null
             } else {
                 return '602d82fb870e03d1883625fc'

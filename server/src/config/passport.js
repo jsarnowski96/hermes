@@ -21,21 +21,21 @@ passport.use(new LocalStrategy({
                     bcrypt.compare(password, user.password, (err, result) => {
                         if (err) {
                             console.log(err);
-                            done(err, false);
+                            return done(err, false);
                         }
                         
                         if (result) {
-                            done(null, user, { message: 'JWT Authentication successfull' });
+                            return done(null, user, { message: 'JWT Authentication successfull' });
                         } else {
-                            done(null, false, new Error("usernameOrPasswordIncorrect"));
+                            return done(null, false, new Error("usernameOrPasswordIncorrect"));
                         }
                     });
                 } else {
-                    done(null, false, new Error("usernameOrPasswordIncorrect"));
+                    return done(null, false, new Error("usernameOrPasswordIncorrect"));
                 }
             } catch (error) {
                 console.log(error);
-                done(error, false);
+                return done(error, false);
             }
         } 
         
@@ -46,21 +46,21 @@ passport.use(new LocalStrategy({
                     bcrypt.compare(password, user.password, (err, result) => {
                         if (err) {
                             console.log(err);
-                            done(err, false);
+                            return done(err, false);
                         }
                         
                         if (result) {
-                            done(null, user, { message: 'JWT Authentication successfull' });
+                            return done(null, user, { message: 'JWT Authentication successfull' });
                         } else {
-                            done(null, false, new Error("usernameOrPasswordIncorrect"));
+                            return done(null, false, new Error("usernameOrPasswordIncorrect"));
                         }
                     });
                 } else {
-                    done(null, false, new Error("usernameOrPasswordIncorrect"));
+                    return done(null, false, new Error("usernameOrPasswordIncorrect"));
                 }
             } catch (error) {
                 console.log(error);
-                done(error, false);
+                return done(error, false);
             }
         }
     }

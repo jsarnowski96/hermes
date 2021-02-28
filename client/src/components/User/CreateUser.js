@@ -14,17 +14,22 @@ class CreateUser extends React.Component {
     constructor(props) {
         super(props);
 
-        var jwt = getJwtDataFromSessionStorage();
+        this.jwt = getJwtDataFromSessionStorage();
 
-        if(jwt !== null) {
+        if(this.jwt !== null) {
             this.state = {
                 auth: {
-                    userId: jwt.userId,
-                    refreshToken: jwt.refreshToken
+                    userId: this.jwt.userId,
+                    refreshToken: this.jwt.refreshToken
                 },
                 fields: {},
                 errors: {}
             }
+
+            this.headers = {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${this.state.auth.refreshToken}`
+            };
         } else {
             this.state = {
                 auth: {
@@ -57,51 +62,46 @@ class CreateUser extends React.Component {
         const {t} = this.props;
         const fields = this.state.fields;
 
-        const headers = {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${this.state.auth.refreshToken}`
-        };
-
-        axios.post('http://localhost:3300/project/create', {
-            name: fields['name'],
-            category: fields['category'],
-            requirements: fields['requirements'],
-            userId: this.state.auth.userId,
-            due_date: fields['due_date']
-        },
-        {
-            withCredentials: true,
-            headers: headers
-        })
-        .then((response) => {
-            let res = document.getElementById('serverResponse');
-            if(response.data.message === 'ProjectCreateSuccess') {
-                res.innerHTML = t('content.projects.createProject.actionResults.success');
-                res.style.color = 'green';
-            } else if(response.data.message === 'ProjectCreateFailure') {
-                res.innerHTML = t('content.projects.createProject.actionResults.failure');
-            } else {
-                res.innerHTML = response.data.message;
-            }
-            res.style.display = 'block';            
-        })
-        .catch(error => {
-            let sr = document.getElementById('serverResponse');
-            if(error) {
-                if(error.response.data.message === 'JwtTokenExpired') {
-                    removeJwtDataFromSessionStorage();
+        try {
+            axios.post('http://localhost:3300/project/create', {
+                name: fields['name'],
+                category: fields['category'],
+                requirements: fields['requirements'],
+                userId: this.state.auth.userId,
+                dueDate: fields['dueDate']
+            }, {headers: this.headers, withCredentials: true})
+            .then((response) => {
+                let res = document.getElementById('serverResponse');
+                if(response.data.message === 'ProjectCreateSuccess') {
+                    res.innerHTML = t('content.project.createProject.actionResults.success');
+                    res.style.color = 'green';
+                } else if(response.data.message === 'ProjectCreateFailure') {
+                    res.innerHTML = t('content.project.createProject.actionResults.failure');
                 } else {
-                    sr.innerHTML = error;
-                    sr.style.display = 'block';
+                    res.innerHTML = response.data.message;
                 }
-            }
-        }) 
+                res.style.display = 'block';            
+            })
+            .catch(error => {
+                let sr = document.getElementById('serverResponse');
+                if(error) {
+                    if(error.response.data.message === 'JwtTokenExpired') {
+                        removeJwtDataFromSessionStorage();
+                    } else {
+                        sr.innerHTML = error;
+                        sr.style.display = 'block';
+                    }
+                }
+            }) 
+        } catch(e) {
+            console.log(e);
+        }
     }
 
     render() {
         const {t} = this.props;
 
-        if(this.state.auth.userId !== '' && this.state.auth.userId !== undefined && this.state.auth.userId !== null && this.state.auth.refreshToken !== '' && this.state.auth.refreshToken !== undefined && this.state.auth.refreshToken !== null) {
+        if(this.jwt !== null && this.state.auth.userId !== null && this.state.auth.refreshToken !== null) {
             return(
                 <div className="card">
                     <p className="card-title">Create new project</p><hr className="card-hr" />
@@ -120,10 +120,10 @@ class CreateUser extends React.Component {
                         <label htmlFor="requirements">Requirements</label>
                         <textarea onChange={this.onChange.bind(this, 'requirements')} value={this.state.fields['requirements']} type="requirements" className="" name="requirements" />
                         <span className="error-msg-span">{this.state.errors["requirements"]}</span>
-                        <label htmlFor="due_date">Due date</label>
-                        <input onChange={this.onChange.bind(this, 'due_date')} value={this.state.fields['due_date']} type="date" className="" name="due_date"
+                        <label htmlFor="dueDate">Due date</label>
+                        <input onChange={this.onChange.bind(this, 'dueDate')} value={this.state.fields['dueDate']} type="date" className="" name="dueDate"
                             min="2021-02-01" max="2022-12-31" />
-                        <span className="error-msg-span">{this.state.errors["due_date"]}</span>
+                        <span className="error-msg-span">{this.state.errors["dueDate"]}</span>
                         <div class="card-form-divider">
                             <button type="submit" className="card-form-button">Create</button>
                             <button type="reset" className="card-form-button" onClick={this.resetForm}>Reset</button>
@@ -139,7 +139,7 @@ class CreateUser extends React.Component {
                     {{
                         pathname: '/login',
                         state: {
-                            unauthorized: true,
+                            authenticated: false,
                             redirected: true
                         }
                     }}

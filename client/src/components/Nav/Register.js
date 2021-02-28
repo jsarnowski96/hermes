@@ -13,9 +13,9 @@ class Register extends React.Component {
     constructor(props) {
         super(props);
         
-        var jwt = getJwtDataFromSessionStorage();
+        this.jwt = getJwtDataFromSessionStorage();
 
-        if(jwt !== null) {
+        if(this.jwt !== null) {
             this.state = {
                 authenticated: true,
                 fields: {},
@@ -42,7 +42,7 @@ class Register extends React.Component {
         let errors = this.state.errors;
         fields[field] = event.target.value;       
         errors[field] = '';
-        this.setState({fields});
+        this.setState({fields, errors});
     }
 
     validateForm() {
@@ -164,29 +164,33 @@ class Register extends React.Component {
         const {t} = this.props;
 
         if(this.validateForm()) {
-            axios.post('http://localhost:3300/register', {
-                firstname: fields['firstname'],
-                lastname: fields['lastname'],
-                username: fields['username'],
-                email: fields['email'],
-                phone: fields['phone'],
-                position: fields['position'],
-                company: fields['company'],
-                password: fields['password']
-            }).then((response) => {
-                console.log(response);
-            })
-            .catch(error => {
-                let err = document.getElementById('serverResponse');
-                if(error) {
-                    if(error.response.data.type === 'AccountDuplication') {
-                        err.innerHTML = t('content.register.errorMessages.userAlreadyExists');
-                        err.style.display = 'block';
-                    } else {
-                        err.innerHTML = error.response;
+            try {
+                axios.post('http://localhost:3300/register', {
+                    firstname: fields['firstname'],
+                    lastname: fields['lastname'],
+                    username: fields['username'],
+                    email: fields['email'],
+                    phone: fields['phone'],
+                    position: fields['position'],
+                    company: fields['company'],
+                    password: fields['password']
+                }).then((response) => {
+                    console.log(response);
+                })
+                .catch(error => {
+                    let err = document.getElementById('serverResponse');
+                    if(error) {
+                        if(error.response.data.type === 'AccountDuplication') {
+                            err.innerHTML = t('content.register.errorMessages.dataValidation.userAlreadyExists');
+                            err.style.display = 'block';
+                        } else {
+                            err.innerHTML = error.response;
+                        }
                     }
-                }
-            });
+                });
+            } catch(e) {
+                console.log(e);
+            }
         } else {
             let errors = document.querySelectorAll('.error-msg-span');
             for(var i = 0; i < errors.length; i++) {

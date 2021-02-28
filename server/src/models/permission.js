@@ -16,7 +16,7 @@ const PermissionSchema = new mongoose.Schema({
         type: Boolean,
         required: true,
         default: function() {
-            if(this.is_owner === true) {
+            if(this.is_owner === true && this.is_owner !== null) {
                 return true;
             } else {
                 return false;
@@ -27,7 +27,7 @@ const PermissionSchema = new mongoose.Schema({
         type: Boolean,
         required: true,
         default: function() {
-            if(this.is_owner === true) {
+            if(this.is_owner === true && this.is_owner !== null) {
                 return true;
             } else {
                 return false;
@@ -38,7 +38,7 @@ const PermissionSchema = new mongoose.Schema({
         type: Boolean,
         required: true,
         default: function() {
-            if(this.is_owner === true) {
+            if(this.is_owner === true && this.is_owner !== null) {
                 return true;
             } else {
                 return false;
@@ -49,7 +49,7 @@ const PermissionSchema = new mongoose.Schema({
         type: Boolean,
         required: true,
         default: function() {
-            if(this.is_owner === true) {
+            if(this.is_owner === true && this.is_owner !== null) {
                 return true;
             } else {
                 return false;

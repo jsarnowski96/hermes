@@ -9,16 +9,21 @@ import '../../assets/css/dashboard.css';
 class RepositoryList extends React.Component {
     constructor(props) {
         super(props);
-        var jwt = getJwtDataFromSessionStorage();
+        this.jwt = getJwtDataFromSessionStorage();
 
-        if(jwt !== null) {
+        if(this.jwt !== null) {
             this.state = {
                 auth: {
-                    userId: jwt.userId,
-                    refreshToken: jwt.refreshToken
+                    userId: this.jwt.userId,
+                    refreshToken: this.jwt.refreshToken
                 },
                 repositories: []
             }
+
+            this.headers = {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${this.state.auth.refreshToken}`
+            };
         } else {
             this.state = {
                 auth: {
@@ -28,35 +33,26 @@ class RepositoryList extends React.Component {
                 repositories: []
             }
         }
-
-        this.getRepositoryList = this.getRepositoryList.bind(this);
-
-        this.getRepositoryList();
     }
 
     getRepositoryList() {
-        const headers = {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${this.state.auth.refreshToken}`
-        };
-
-        axios.post('http://localhost:3300/repository/list', 
-        {
-            userId: this.state.auth.userId    
-        },
-        {
-            withCredentials: true,
-            headers: headers
-        })
-        .then((response) => {
-            if(response.data.repositories !== undefined && response.data.repositories !== '' && response.data.repositories !== null && response.data.repositories.length > 0) {
-                this.setState({repositories: response.data.repositories});
-            }
-        })
-        .catch((error) => {
-            console.log(error);
-            console.log(error.response);
-        });
+        try {
+            axios.post('http://localhost:3300/repository/list', 
+            {
+                userId: this.state.auth.userId    
+            }, {headers: this.headers, withCredentials: true})
+            .then((response) => {
+                if(response.data.repositories !== undefined && response.data.repositories !== '' && response.data.repositories !== null && response.data.repositories.length > 0) {
+                    this.setState({repositories: response.data.repositories});
+                }
+            })
+            .catch((error) => {
+                console.log(error);
+                console.log(error.response);
+            });
+        } catch(e) {
+            console.log(e);
+        }
     }
 
     render() {
@@ -65,9 +61,9 @@ class RepositoryList extends React.Component {
             <table class="tab-table">
                 <thead>
                     <tr>
-                        <th>{t('content.repositories.tableHeaders.name')}</th>
-                        <th>{t('content.repositories.tableHeaders.type')}</th>
-                        <th>{t('content.repositories.tableHeaders.content')}</th>
+                        <th>{t('content.repositories.fieldNames.name')}</th>
+                        <th>{t('content.repositories.fieldNames.type')}</th>
+                        <th>{t('content.repositories.fieldNames.content')}</th>
                     </tr>
                 </thead>
                 <tbody>

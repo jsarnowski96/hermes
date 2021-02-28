@@ -1,4 +1,5 @@
 import React from 'react';
+import {Redirect} from 'react-router-dom';
 import {withTranslation} from 'react-i18next';
 
 import {getJwtDataFromSessionStorage} from '../../middleware/jwtSessionStorage';
@@ -8,15 +9,21 @@ import '../../assets/css/dashboard.css';
 class UserActions extends React.Component {
     constructor(props) {
         super(props);
-        var jwt = getJwtDataFromSessionStorage();
+        
+        this.jwt = getJwtDataFromSessionStorage();
 
-        if(jwt !== null) {
+        if(this.jwt !== null) {
             this.state = {
                 auth: {
-                    userId: jwt.userId,
-                    refreshToken: jwt.refreshToken
+                    userId: this.jwt.userId,
+                    refreshToken: this.jwt.refreshToken
                 }
             }
+
+            this.headers = {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${this.state.auth.refreshToken}`
+            };
         } else {
             this.state = {
                 auth: {
@@ -30,12 +37,12 @@ class UserActions extends React.Component {
     render() {
         const{t} = this.props;
 
-        if((this.state.auth.userId !== '' && this.state.auth.userId !== undefined && this.state.auth.userId !== null) && (this.state.auth.refreshToken !== '' && this.state.auth.refreshToken !== undefined && this.state.auth.refreshToken !== null)) {
+        if(this.jwt !== null && this.state.auth.userId !== null && this.state.auth.refreshToken !== null) {
             return(
                 <table class="tab-table">
                     <thead>
                         <tr>
-                            <th>{t('content.userActions.tableHeaders.name')}</th>
+                            <th>{t('content.userActions.fieldNames.name')}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -83,7 +90,17 @@ class UserActions extends React.Component {
                 </table>
             )
         } else {
-            return <h2>Unauthorized</h2>
+            return(
+                <Redirect to=
+                    {{
+                        pathname: '/login',
+                        state: {
+                            authenticated: false,
+                            redirected: true
+                        }
+                    }}
+                />
+            ) 
         }
     }    
 }

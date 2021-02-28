@@ -2,7 +2,6 @@ import React from 'react';
 import {withTranslation} from 'react-i18next';
 import axios from 'axios';
 
-import {getLanguageFromLocalStorage} from '../../middleware/languageLocalStorage';
 import {getJwtDataFromSessionStorage} from '../../middleware/jwtSessionStorage';
 
 import '../../assets/css/dashboard.css';
@@ -10,16 +9,22 @@ import '../../assets/css/dashboard.css';
 class TaskList extends React.Component {
     constructor(props) {
         super(props);
-        var jwt = getJwtDataFromSessionStorage();
+        
+        this.jwt = getJwtDataFromSessionStorage();
 
-        if(jwt !== null) {
+        if(this.jwt !== null) {
             this.state = {
                 auth: {
-                    userId: jwt.userId,
-                    refreshToken: jwt.refreshToken
+                    userId: this.jwt.userId,
+                    refreshToken: this.jwt.refreshToken
                 },
                 tasks: []
             }
+
+            this.headers = {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${this.state.auth.refreshToken}`
+            };
         } else {
             this.state = {
                 auth: {
@@ -29,37 +34,26 @@ class TaskList extends React.Component {
                 tasks: []
             }
         }
-
-        this.getTaskList = this.getTaskList.bind(this);
-
-        getLanguageFromLocalStorage();
-
-        this.getTaskList();
     }
 
     getTaskList() {
-        const headers = {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${this.state.auth.refreshToken}`
-        };
-
-        axios.post('http://localhost:3300/task/list', 
-        {
-            userId: this.state.auth.userId    
-        },
-        {
-            withCredentials: true,
-            headers: headers
-        })
-        .then((response) => {
-            if(response.data.tasks !== undefined && response.data.tasks !== '' && response.data.tasks !== null && response.data.tasks.length > 0) {
-                this.setState({tasks: response.data.tasks});
-            }
-        })
-        .catch((error) => {
-            console.log(error);
-            console.log(error.response);
-        });
+        try {
+            axios.post('http://localhost:3300/task/list', 
+            {
+                userId: this.state.auth.userId    
+            }, {headers: this.headers, withCredentials: true})
+            .then((response) => {
+                if(response.data.tasks !== undefined && response.data.tasks !== '' && response.data.tasks !== null && response.data.tasks.length > 0) {
+                    this.setState({tasks: response.data.tasks});
+                }
+            })
+            .catch((error) => {
+                console.log(error);
+                console.log(error.response);
+            });
+        } catch(e) {
+            console.log(e);
+        }
     }
 
     render() {
@@ -68,9 +62,9 @@ class TaskList extends React.Component {
             <table class="tab-table">
                 <thead>
                     <tr>
-                        <th>{t('content.tasks.tableHeaders.name')}</th>
-                        <th>{t('content.tasks.tableHeaders.category')}</th>
-                        <th>{t('content.tasks.tableHeaders.dueDate')}</th>
+                        <th>{t('content.tasks.fieldNames.name')}</th>
+                        <th>{t('content.tasks.fieldNames.category')}</th>
+                        <th>{t('content.tasks.fieldNames.dueDate')}</th>
                     </tr>
                 </thead>
                 <tbody>

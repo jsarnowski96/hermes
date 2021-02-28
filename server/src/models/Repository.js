@@ -1,6 +1,6 @@
 const mongoose  = require('mongoose');
 
-const CategorySchema = new mongoose.Schema({
+const RepositorySchema = new mongoose.Schema({
     _id: mongoose.Schema.Types.ObjectId,
     name: {
         type: String,
@@ -13,12 +13,11 @@ const CategorySchema = new mongoose.Schema({
         required: true,
         default: null
     },
-    category_type: {
-        type: String,
-        enum: ['team', 'project', 'task'],
+    owner: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
         required: true,
-        trim: true,
-        default: 'project'
+        default: null
     },
     modified_at: {
         type: Date,
@@ -32,6 +31,6 @@ const CategorySchema = new mongoose.Schema({
     }
 });
 
-const Category = mongoose.model('Category', CategorySchema);
+const Repository = mongoose.model('Repository', RepositorySchema);
 
-module.exports = Category;
+module.exports = Repository;

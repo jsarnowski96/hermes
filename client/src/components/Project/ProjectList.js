@@ -1,85 +1,81 @@
 import React from 'react';
 import {withTranslation} from 'react-i18next';
+import {Redirect} from 'react-router-dom';
 import axios from 'axios';
 
 import {getJwtDataFromSessionStorage} from '../../middleware/jwtSessionStorage';
-
-import CreateProject from './CreateProject';
-
-import Login from '../Nav/Login';
 
 import '../../assets/css/dashboard.css';
 
 class ProjectList extends React.Component {
     constructor(props) {
         super(props);
-        var jwt = getJwtDataFromSessionStorage();
 
-        if(jwt !== null) {
+        this.jwt = getJwtDataFromSessionStorage();
+
+        if(this.jwt !== null) {
             this.state = {
                 auth: {
-                    userId: jwt.userId,
-                    refreshToken: jwt.refreshToken
+                    userId: this.jwt.userId,
+                    refreshToken: this.jwt.refreshToken
                 },
-                projects: []
+                project: []
             }
+
+            this.headers = {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${this.state.auth.refreshToken}`
+            };
         } else {
             this.state = {
                 auth: {
                     userId: null,
                     refreshToken: null
                 },
-                projects: []
+                project: []
             }
         }
-
-        this.getProjectList = this.getProjectList.bind(this);
-
+        
         this.getProjectList();
     }
 
     getProjectList() {
-        const headers = {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${this.state.auth.refreshToken}`
-        };
-
-        axios.post('http://localhost:3300/project/list', 
-        {
-            userId: this.state.auth.userId    
-        },
-        {
-            withCredentials: true,
-            headers: headers
-        })
-        .then((response) => {
-            if(response.data.projects !== undefined && response.data.projects !== '' && response.data.projects !== null && response.data.projects.length > 0) {
-                this.setState({projects: response.data.projects});
-            }
-        })
-        .catch((error) => {
-            console.log(error);
-            console.log(error.response);
-        });
+        try {
+            axios.post('http://localhost:3300/project/list', 
+            {
+                userId: this.state.auth.userId    
+            }, {headers: this.headers, withCredentials: true})
+            .then((response) => {
+                if(response.data.project !== undefined && response.data.project !== '' && response.data.project !== null && response.data.project.length > 0) {
+                    this.setState({project: response.data.project});
+                }
+            })
+            .catch((error) => {
+                console.log(error);
+                console.log(error.response);
+            });
+        } catch(e) {
+            console.log(e);
+        }
     }
 
     render() {
         const{t} = this.props;
 
-        if(this.state.auth.userId !== '' && this.state.auth.userId !== undefined && this.state.auth.userId !== null && this.state.auth.refreshToken !== '' && this.state.auth.refreshToken !== null) {
+        if(this.jwt !== null && this.state.auth.userId !== null && this.state.auth.refreshToken !== null) {
             
             return(
                 <table class="tab-table">
                     <thead>
                         <tr>
-                            <th>{t('content.projects.tableHeaders.name')}</th>
-                            <th>{t('content.projects.tableHeaders.assignedTeam')}</th>
-                            <th>{t('content.projects.tableHeaders.category')}</th>
-                            <th>{t('content.projects.tableHeaders.dueDate')}</th>
+                            <th>{t('content.project.fieldNames.name')}</th>
+                            <th>{t('content.project.fieldNames.assignedTeam')}</th>
+                            <th>{t('content.project.fieldNames.category')}</th>
+                            <th>{t('content.project.fieldNames.dueDate')}</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {this.state.projects.map((project, index) => (
+                        {this.state.project.map((project, index) => (
                             <tr>
                                 <td>{project.name}</td>
                                 <td>{project.assignedTeam}</td>
@@ -91,7 +87,17 @@ class ProjectList extends React.Component {
                 </table>
             )
         } else {
-            return <Login />
+            return(
+                <Redirect to=
+                    {{
+                        pathname: "/login",
+                        state: {
+                            unauthorized: true,
+                            redirected: true
+                        }
+                    }}
+                />
+            )
         }
     }    
 }

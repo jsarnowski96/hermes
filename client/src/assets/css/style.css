@@ -69,7 +69,11 @@ main section {
     align-items: center;
 }
 
-.card-form label, .card-form input {
+.card-form label {
+    margin-top: 1rem;
+}
+
+.card-form input {
     margin-top: 0.5rem;
 }
 

@@ -1,4 +1,5 @@
 import React from 'react';
+import {Redirect} from 'react-router-dom';
 import {withTranslation} from 'react-i18next';
 import axios from 'axios';
 
@@ -8,17 +9,22 @@ class User extends React.Component {
     constructor(props) {
         super(props);
 
-        var jwt = getJwtDataFromSessionStorage();
+        this.jwt = getJwtDataFromSessionStorage();
 
-        if(jwt !== null) {
+        if(this.jwt !== null) {
             this.state = {
                 auth: {
-                    userId: jwt.userId,
-                    refreshToken: jwt.refreshToken
+                    userId: this.jwt.userId,
+                    refreshToken: this.jwt.refreshToken
                 },
                 fields: {},
                 errors: {}
             }
+
+            this.headers = {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${this.state.auth.refreshToken}`
+            };
         } else {
             this.state = {
                 auth: {
@@ -32,9 +38,21 @@ class User extends React.Component {
     }
     
     render() {
-        return(
-            <h1>User</h1>
-        )
+        if(this.auth !== undefined && this.auth !== null && this.auth !== '' && this.auth.userId !== undefined && this.auth.userId !== null && this.auth.userId !== '' && this.auth.refreshToken !== undefined && this.auth.refreshToken !== null && this.auth.refreshToken !== '') {
+            return <h1>User</h1>
+        } else {
+            return(
+                <Redirect to=
+                    {{
+                        pathname: '/login',
+                        state: {
+                            authenticated: false,
+                            redirected: true
+                        }
+                    }}
+                />
+            ) 
+        }
     }    
 }
 

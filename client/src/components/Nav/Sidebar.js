@@ -15,7 +15,9 @@ library.add(faCheckSquare, faCoffee, faHome, faPaperPlane, faInfoCircle, faUserP
 class Sidebar extends React.Component {
     constructor(props) {
         super(props);
+        
         this.jwt = getJwtDataFromSessionStorage();
+
         this.state ={
             renderLogoutBtn: sessionStorage.getItem('renderLogoutBtn')
         }
@@ -35,8 +37,7 @@ class Sidebar extends React.Component {
             }
         }
 
-        this.setState({ renderLogoutBtn: sessionStorage.getItem('renderLogoutBtn')})
-        this.forceUpdate();
+        //this.setState({ renderLogoutBtn: sessionStorage.getItem('renderLogoutBtn')})
     }
 
     onLanguageChange(event) {
@@ -52,20 +53,13 @@ class Sidebar extends React.Component {
 
     onLogout() {
         if(this.jwt !== null && this.jwt !== undefined && this.jwt !== '') {
-            const headers = {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${this.jwt.refreshToken}`
-            };
-    
-            axios.post('http://localhost:3300/auth/logout', 
-            {},
-            {
-                withCredentials: true,
-                headers: headers
-            })
-
-            sessionStorage.setItem('renderLogoutBtn', false);
-            sessionStorage.removeItem('jwt');
+            try {
+                axios.post('http://localhost:3300/auth/logout');
+                sessionStorage.setItem('renderLogoutBtn', false);
+                sessionStorage.removeItem('jwt');
+            } catch(e) {
+                console.log(e);
+            }
         }        
     }
 

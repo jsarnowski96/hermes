@@ -2,7 +2,6 @@ import React from 'react';
 import {withTranslation} from 'react-i18next';
 import axios from 'axios';
 
-import {getLanguageFromLocalStorage} from '../../middleware/languageLocalStorage';
 import {getJwtDataFromSessionStorage} from '../../middleware/jwtSessionStorage';
 
 import '../../assets/css/dashboard.css';
@@ -10,16 +9,22 @@ import '../../assets/css/dashboard.css';
 class UserList extends React.Component {
     constructor(props) {
         super(props);
-        var jwt = getJwtDataFromSessionStorage();
 
-        if(jwt !== null) {
+        this.jwt = getJwtDataFromSessionStorage();
+
+        if(this.jwt !== null) {
             this.state = {
                 auth: {
-                    userId: jwt.userId,
-                    refreshToken: jwt.refreshToken
+                    userId: this.jwt.userId,
+                    refreshToken: this.jwt.refreshToken
                 },
                 users: []
             }
+
+            this.headers = {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${this.state.auth.refreshToken}`
+            };
         } else {
             this.state = {
                 auth: {
@@ -29,37 +34,26 @@ class UserList extends React.Component {
                 users: []
             }
         }
-
-        this.getUserList = this.getUserList.bind(this);
-
-        getLanguageFromLocalStorage();
-
-        this.getUserList();
     }
 
     getUserList() {
-        const headers = {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${this.state.auth.refreshToken}`
-        };
-
-        axios.post('http://localhost:3300/user/list', 
-        {
-            userId: this.state.auth.userId    
-        },
-        {
-            withCredentials: true,
-            headers: headers
-        })
-        .then((response) => {
-            if(response.data.users !== undefined && response.data.users !== '' && response.data.users !== null && response.data.users.length > 0) {
-                this.setState({users: response.data.users});
-            }
-        })
-        .catch((error) => {
-            console.log(error);
-            console.log(error.response);
-        });
+        try {
+            axios.post('http://localhost:3300/user/list', 
+            {
+                userId: this.state.auth.userId    
+            }, {headers: this.headers, withCredentials: true})
+            .then((response) => {
+                if(response.data.users !== undefined && response.data.users !== '' && response.data.users !== null && response.data.users.length > 0) {
+                    this.setState({users: response.data.users});
+                }
+            })
+            .catch((error) => {
+                console.log(error);
+                console.log(error.response);
+            });
+        } catch(e) {
+            console.log(e);
+        }
     }
 
     render() {
@@ -68,9 +62,9 @@ class UserList extends React.Component {
             <table class="tab-table">
                 <thead>
                     <tr>
-                        <th>{t('content.users.tableHeaders.name')}</th>
-                        <th>{t('content.users.tableHeaders.position')}</th>
-                        <th>{t('content.users.tableHeaders.team')}</th>
+                        <th>{t('content.users.fieldNames.name')}</th>
+                        <th>{t('content.users.fieldNames.position')}</th>
+                        <th>{t('content.users.fieldNames.team')}</th>
                     </tr>
                 </thead>
                 <tbody>

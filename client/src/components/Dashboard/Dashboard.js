@@ -22,15 +22,20 @@ class Dashboard extends React.Component {
     constructor(props) {
         super(props);
 
-        var jwt = getJwtDataFromSessionStorage();
+        this.jwt = getJwtDataFromSessionStorage();
 
-        if(jwt !== null) {
+        if(this.jwt !== null) {
             this.state = {
                 auth: {
-                    userId: jwt.userId,
-                    refreshToken: jwt.refreshToken
+                    userId: this.jwt.userId,
+                    refreshToken: this.jwt.refreshToken
                 }
             }
+
+            this.headers = {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${this.state.auth.refreshToken}`
+            };
         } else {
             this.state = {
                 auth: {
@@ -44,11 +49,11 @@ class Dashboard extends React.Component {
     render() {
         const {t} = this.props;
 
-        if(this.state.auth.userId !== '' && this.state.auth.userId !== undefined && this.state.auth.userId !== null && this.state.auth.refreshToken !== '' && this.state.auth.refreshToken !== undefined && this.state.auth.refreshToken !== null) {
+        if(this.jwt !== null && this.state.auth.userId !== null && this.state.auth.refreshToken !== null) {
             return(
                 <div className="dashboard">
-                    <div className="tab projects">
-                        <p className="tab-title"><FontAwesomeIcon icon="project-diagram" size="xs" />{t('content.projects.title')}</p>
+                    <div className="tab project">
+                        <p className="tab-title"><FontAwesomeIcon icon="project-diagram" size="xs" />{t('content.project.title')}</p>
                         <ProjectList />
                     </div>
                     <div className="tab teams">
@@ -75,7 +80,7 @@ class Dashboard extends React.Component {
                     {{
                         pathname: '/login',
                         state: {
-                            unauthorized: true,
+                            authenticated: false,
                             redirected: true
                         }
                     }}

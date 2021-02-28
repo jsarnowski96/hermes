@@ -36,5 +36,6 @@ module.exports = {
             console.log('Missing Auth Header');
             return res.status(403).json({message: 'MissingAuthHeader'});
         }
+        next();
     }
 }

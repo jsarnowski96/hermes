@@ -33,16 +33,6 @@ const UserSchema = new mongoose.Schema({
         validate: /^[ążśźęćńółĄŻŚŹĘĆŃÓŁa-zA-Z\- ]{1,30}$/,
         required: true
     },
-    company: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Company',
-        required: true
-    },
-    avatar_url: {
-        type: String,
-        trim: true,
-        default: 'localhost:3300/images/avatars/default.png'
-    },
     email: {
         type: String,
         trim: true,
@@ -58,6 +48,21 @@ const UserSchema = new mongoose.Schema({
         validate: /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{3})$/,
         validate: /^([0-9]{9})$/,
         required: true
+    },
+    team: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Team',
+        required: true
+    },
+    company: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Company',
+        required: true
+    },
+    avatar_url: {
+        type: String,
+        trim: true,
+        default: 'localhost:3300/images/avatars/default.png'
     },
     modified_at: {
         type: Date,

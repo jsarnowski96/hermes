@@ -18,18 +18,13 @@ const TaskSchema = new mongoose.Schema({
         required: true,
         default: '602d89ff870e03d188362604'
     },
-    requirements: {
-        type: String,
-        trim: true,
-        required: true
-    },
     status: {
         type: String,
         enum: ['todo', 'in progress', 'in review', 'postponed', 'completed'],
-        default: ['todo'],
+        default: 'todo',
         required: true
     },
-    user: {
+    author: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         required: true
@@ -40,7 +35,19 @@ const TaskSchema = new mongoose.Schema({
         required: true,
         default: null
     },
-    due_date: {
+    project: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Project',
+        required: true,
+        default: null
+    },
+    team: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Team',
+        required: true,
+        default: null
+    },
+    dueDate: {
         type: Date,
         required: true
     },
