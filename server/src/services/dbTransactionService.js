@@ -997,7 +997,7 @@ async function getRepositoryList() {
 
     if(repositories instanceof Error) {
         throw repositories;
-    } else if((repositories instanceof Repository && repositories.length > 0) || (rpeositories instanceof RepositoryTeam && repositories.length > 0) || (repositories instanceof Promise && repositories.length > 0)) {
+    } else if((repositories instanceof Repository && repositories.length > 0) || (repositories instanceof RepositoryTeam && repositories.length > 0) || (repositories instanceof Promise && repositories.length > 0)) {
         return repositories;
     } else {
         throw new Error(repositories);
