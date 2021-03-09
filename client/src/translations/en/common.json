@@ -15,15 +15,9 @@
             "title": "Login",
             "login": "Username or email",
             "password": "Password",
-            "submit": "Login",
-            "cancel": "Cancel",
             "registerTip": "Don't have an account?",
             "registerLink": "Register",
             "errorMessages": {
-                "formValidation": {
-                    "emptyForm": "Provided form is empty",
-                    "requiredFieldIsEmpty": "is required"
-                },
                 "dataValidation": {
                     "usernameOrPasswordIncorrect": "Username or password is incorrect"
                 }
@@ -40,27 +34,12 @@
             "phone": "Phone number",
             "password": "Password",
             "confirm": "Confirm password",
-            "submit": "Register",
-            "cancel": "Cancel",
-            "reset": "Clear",
+            "avatarUrl": "Avatar URL - optional",
             "loginTip": "Already have an account? No problem!",
             "loginLink": "Login here",
             "success": "You have successfully registered!",
             "failure": "Could not register an account",
             "errorMessages": {
-                "formValidation": {
-                    "emptyForm": "Provided form is empty",
-                    "requiredFieldIsEmpty": "is required",
-                    "allowedCharsOnly": "Only these characters are allowed: ",
-                    "digitsOnly": "Only digits are allowed",
-                    "emailNotValid": "Provided email address does not meet the required format",
-                    "loginNotValid": "Provided login does not meet required username or email format",
-                    "passwordsDoNotMatch": "Passwords are not identical",
-                    "phoneIncorrectFormat": "Incorrect phone number format",
-                    "passwordTooShort": "Password has to be at least 6 characters long",
-                    "confirmPasswordIsEmpty": "Confirm your password in order to register an account",
-                    "incorrectPhoneFormat": "Phone format is incorrect"
-                },
                 "dataValidation": {
                     "userAlreadyExists": "There is already an account using that username or email"
                 }
@@ -78,101 +57,106 @@
 
         },
         "project": {
-            "title": "Projects",
-            "fieldNames": {
-                "name": "Project name",
-                "requirements": "Requirements",
+            "title": "Project",
+            "titlePlural": "Projects",
+            "fields": {
+                "name": "Name",
+                "description": "description",
                 "status": "Status",
                 "dueDate": "Due date",
                 "category": "Category",
-                "assignedTeam": "Assigned team",
+                "team": "Team",
+                "overview": "Project overview",
+                "projectManager": "Project Manager",
+                "associatedTeams": "Project teams",
                 "restrictedAccess": "Enable restricted access"
             },
             "actions": {
-                "viewProject": {
+                "selectProject": {
                     "actionTitle": "Project details",
                     "actionResults": {
                         "success": "",
                         "failure": ""
                     },
                     "errorMessages": {
-                        "formValidation": {
-
-                        },
                         "dataValidation": {
-
+                            "ProjectNotFound": "Project not found",
+                            "ReferenceMissing": "Reference missing",
+                            "NoProjectsFound": "No projects found",
+                            "UserIdMissing": "User ID missing",
+                            "UserIdNotValid": "User ID not valid",
+                            "UserNotFound": "User not found",
+                            "TeamIdMissing": "Team ID missing",
+                            "TeamIdNotValid": "Team ID not valid",
+                            "TeamNotFound": "Team not found"
                         }
                     }
                 },
-                "viewProjectList": {
+                "selectProjectList": {
                     "actionResults": {
                         "success": "",
                         "failure": ""
                     },
                     "errorMessages": {
-                        "formValidation": {
-
-                        },
                         "dataValidation": {
-                            
+                            "ReferenceMissing": "Reference missing",
+                            "NoProjectsFound": "No projects found",
+                            "UserIdMissing": "User ID missing",
+                            "UserIdNotValid": "User ID not valid",
+                            "UserNotFound": "User not found",
+                            "TeamIdMissing": "Team ID missing",
+                            "TeamIdNotValid": "Team ID not valid",
+                            "TeamNotFound": "Team not found"
                         }
                     }
                 },
                 "createProject": {
                     "actionTitle": "Create new project",
                     "actionResults": {
-                        "success": "Project has been created successfully",
-                        "failure": "Failed to create a new project"
+                        "success": "Project created successfully",
+                        "failure": "Failed to create new project"
                     },
                     "errorMessages": {
-                        "formValidation": {
-                            "requiredFieldIsEmpty": "is required",
-                            "EmptyFormField": "One or more form fields are empty",
-                            "allowedCharsOnly": "Only these characters are allowed:"
-                        },
                         "dataValidation": {
                             "UserIdEqualsNull": "User ID equals NULL",
                             "UserIdUndefined": "User ID is undefined",
-                            "UserIdMissing": "User ID is missing",
-                            "UserIdNotValid": "User ID is not valid",
-                            "CategoryIdNotValid": "Category ID is not valid",
+                            "UserIdMissing": "User ID missing",
+                            "UserIdNotValid": "User ID not valid",
+                            "CategoryIdNotValid": "Category ID not valid",
                             "CategoryIdEqualsNull": "Category ID equals NULL",
                             "CategoryIdUndefined": "Category ID is undefined",
-                            "CategoryIdMissing": "Category ID is missing",
+                            "CategoryIdMissing": "Category ID missing",
                             "ProjectIdEqualsNull": "Project ID equals NULL",
                             "ProjectIdUndefined": "Project ID is undefined",
-                            "ProjectIdMissing": "Project ID is missing",
-                            "ProjectIdNotValid": "Project ID is not valid",
+                            "ProjectIdMissing": "Project ID missing",
+                            "ProjectIdNotValid": "Project ID not valid",
                             "RoleIdEqualsNull": "Role ID equals NULL",
                             "RoleIdUndefined": "Role ID is undefined",
-                            "RoleIdMissing": "Role ID is missing",
-                            "RoleIdNotValid": "Role ID is not valid",
+                            "RoleIdMissing": "Role ID missing",
+                            "RoleIdNotValid": "Role ID not valid",
                             "ResourceUserRoleIdEqualsNull": "ResourceUserRole ID equals NULL",
                             "ResourceUserRoleIdUndefined": "ResourceUserRole ID is undefined",
-                            "ResourceUserRoleIdMissing": "ResourceUserRole ID is missing",
-                            "ResourceUserRoleIdNotValid": "ResourceUserRole ID is not valid",
+                            "ResourceUserRoleIdMissing": "ResourceUserRole ID missing",
+                            "ResourceUserRoleIdNotValid": "ResourceUserRole ID not valid",
                             "ProjectTeamIdEqualsNull": "ProjectTeam ID equals NULL",
                             "ProjectTeamIdUndefined": "ProjectTeam ID is undefined",
-                            "ProjectTeamIdMissing": "ProjectTeam ID is missing",
-                            "ProjectTeamIdNotValid": "ProjectTeam ID is not valid",
+                            "ProjectTeamIdMissing": "ProjectTeam ID missing",
+                            "ProjectTeamIdNotValid": "ProjectTeam ID not valid",
                             "TeamIdEqualsNull": "Team ID equals NULL",
                             "TeamIdUndefined": "Team ID is undefined",
-                            "TeamIdMissing": "Team ID is missing",
-                            "TeamIdNotValid": "Team ID is not valid",
-                            "TeamDoesNotExist": "Team does not exist"
+                            "TeamIdMissing": "Team ID missing",
+                            "TeamIdNotValid": "Team ID not valid",
+                            "TeamNotFound": "Team does not exist"
                         }
                     }
                 },
-                "editProject": {
+                "updateProject": {
                     "actionTitle": "Edit project",
                     "actionResults": {
-                        "success": "",
-                        "failure": ""
+                        "success": "Project updated successfully",
+                        "failure": "Failed to update project"
                     },
                     "errorMessages": {
-                        "formValidation": {
-
-                        },
                         "dataValidation": {
                             
                         }
@@ -184,9 +168,6 @@
                         "failure": ""
                     },
                     "errorMessages": {
-                        "formValidation": {
-
-                        },
                         "dataValidation": {
                             
                         }
@@ -194,65 +175,65 @@
                 }
             }
         },
-        "teams": {
-            "title": "Teams",
-            "fieldNames": {
-                "name": "Team name",
-                "leader": "Team Leader"
+        "team": {
+            "title": "Team",
+            "titlePlural": "Teams",
+            "fields": {
+                "name": "Name",
+                "category": "Category",
+                "description": "Description",
+                "owner": "Team leader",
+                "members": "Members",
+                "overview": "Team overview",
+                "organization": "Organization",
+                "avatarUrl": "Avatar URL"
             },
             "actions": {
-                "viewTeam": {
+                "selectTeam": {
                     "actionTitle": "Team details",
+                    "associatedTasks": "Associated tasks",
+                    "associatedProjects": "Associated projects",
                     "actionResults": {
                         "success": "",
                         "failure": ""
                     },
                     "errorMessages": {
-                        "formValidation": {
-
-                        },
                         "dataValidation": {
                             
                         }
                     }
                 },
-                "viewTeamList": {
+                "selectTeamList": {
+                    "actionTitle": "Teams list",
                     "actionResults": {
                         "success": "",
                         "failure": ""
                     },
                     "errorMessages": {
-                        "formValidation": {
-
-                        },
                         "dataValidation": {
-                            
+                            "NoTeamsFound": "No teams found"
                         }
                     }
                 },
                 "createTeam": {
+                    "actionTitle": "Create team",
                     "actionResults": {
-                        "success": "",
-                        "failure": ""
+                        "success": "Team created successfully",
+                        "failure": "Failed to create new team"
                     },
                     "errorMessages": {
-                        "formValidation": {
-
-                        },
                         "dataValidation": {
                             
                         }
                     }
                 },
-                "editTeam": {
+                "updateTeam": {
+                    "actionTitle": "Update team",
                     "actionResults": {
-                        "success": "",
-                        "failure": ""
+                        "success": "Team updated successfully",
+                        "failure": "Failed to update team"
                     },
                     "errorMessages": {
-                        "formValidation": {
-
-                        },
                         "dataValidation": {
                             
                         }
@@ -264,9 +245,6 @@
                         "failure": ""
                     },
                     "errorMessages": {
-                        "formValidation": {
-
-                        },
                         "dataValidation": {
                             
                         }
@@ -274,10 +252,79 @@
                 }
             }
         },
-        "tasks": {
-            "title": "Tasks",
-            "fieldNames": {
+        "organization": {
+            "title": "Organization",
+            "titlePlural": "Organizations",
+            "fields": {
                 "name": "Name",
+                "description": "Description",
+                "avatarUrl": "Avatar URL"
+            },
+            "actions": {
+                "selectOrganization": {
+                    "actionResults": {
+                        "success": "",
+                        "failure": ""
+                    },
+                    "errorMessages": {
+                        "dataValidation": {
+                            
+                        }
+                    }
+                },
+                "selectOrganizationList": {
+                    "actionResults": {
+                        "success": "",
+                        "failure": ""
+                    },
+                    "errorMessages": {
+                        "dataValidation": {
+                            "NoOrganizationsFound": "No organizations found"
+                        }
+                    }
+                },
+                "createOrganization": {
+                    "actionTitle": "Create organization",
+                    "actionResults": {
+                        "success": "",
+                        "failure": ""
+                    },
+                    "errorMessages": {
+                        "dataValidation": {
+                            
+                        }
+                    }
+                },
+                "updateOrganization": {
+                    "actionResults": {
+                        "success": "",
+                        "failure": ""
+                    },
+                    "errorMessages": {
+                        "dataValidation": {
+                            
+                        }
+                    }
+                },
+                "deleteOrganization": {
+                    "actionResults": {
+                        "success": "",
+                        "failure": ""
+                    },
+                    "errorMessages": {
+                        "dataValidation": {
+                            
+                        }
+                    }
+                }
+            }
+        },
+        "task": {
+            "title": "Task",
+            "titlePlural": "Tasks",
+            "fields": {
+                "name": "Name",
+                "description": "Description",
                 "status": "Status",
                 "author": "Author",
                 "assignedUser": "Assigned user",
@@ -285,31 +332,25 @@
                 "dueDate": "Due date"
             },
             "actions": {
-                "viewTask": {
+                "selectTask": {
                     "actionResults": {
                         "success": "",
                         "failure": ""
                     },
                     "errorMessages": {
-                        "formValidation": {
-
-                        },
                         "dataValidation": {
                             
                         }
                     }
                 },
-                "viewTaskList": {
+                "selectTaskList": {
                     "actionResults": {
                         "success": "",
                         "failure": ""
                     },
                     "errorMessages": {
-                        "formValidation": {
-
-                        },
                         "dataValidation": {
-                            
+                            "NoTasksFound": "No tasks found"
                         }
                     }
                 },
@@ -319,23 +360,17 @@
                         "failure": ""
                     },
                     "errorMessages": {
-                        "formValidation": {
-
-                        },
                         "dataValidation": {
                             
                         }
                     }
                 },
-                "editTask": {
+                "updateTask": {
                     "actionResults": {
                         "success": "",
                         "failure": ""
                     },
                     "errorMessages": {
-                        "formValidation": {
-
-                        },
                         "dataValidation": {
                             
                         }
@@ -347,9 +382,6 @@
                         "failure": ""
                     },
                     "errorMessages": {
-                        "formValidation": {
-
-                        },
                         "dataValidation": {
                             
                         }
@@ -357,40 +389,35 @@
                 }
             }
         },
-        "categories": {
-            "title": "Categories",
-            "fieldNames": {
+        "category": {
+            "title": "Category",
+            "titlePlural": "Categories",
+            "fields": {
                 "name": "Name",
                 "description": "Description",
                 "categoryType": "Type"
             },
             "actions": {
-                "viewCategory": {
+                "selectCategory": {
                     "actionResults": {
                         "success": "",
                         "failure": ""
                     },
                     "errorMessages": {
-                        "formValidation": {
-
-                        },
                         "dataValidation": {
-                            "CategoryIdNotValid": "Category ID is not valid",
+                            "CategoryIdNotValid": "Category ID not valid",
                             "CategoryIdEqualsNull": "Category ID equals NULL",
                             "CategoryIdUndefined": "Category ID is undefined",
-                            "CategoryIdMissing": "Category ID is missing"
+                            "CategoryIdMissing": "Category ID missing"
                         }
                     }
                 },
-                "viewCategoryList": {
+                "selectCategoryList": {
                     "actionResults": {
                         "success": "",
                         "failure": ""
                     },
                     "errorMessages": {
-                        "formValidation": {
-
-                        },
                         "dataValidation": {
                             
                         }
@@ -402,23 +429,17 @@
                         "failure": ""
                     },
                     "errorMessages": {
-                        "formValidation": {
-
-                        },
                         "dataValidation": {
                             
                         }
                     }
                 },
-                "editCategory": {
+                "updateCategory": {
                     "actionResults": {
                         "success": "",
                         "failure": ""
                     },
                     "errorMessages": {
-                        "formValidation": {
-
-                        },
                         "dataValidation": {
                             
                         }
@@ -430,9 +451,6 @@
                         "failure": ""
                     },
                     "errorMessages": {
-                        "formValidation": {
-
-                        },
                         "dataValidation": {
                             
                         }
@@ -440,35 +458,33 @@
                 }
             }
         },
-        "resourceUserRole": {
+        "resourceAccess": {
             "title": "",
-            "fieldNames": {
+            "titlePlural": "",
+            "fields": {
 
             },
             "actions": {
-                "viewResourceUserRole": {
+                "selectResourceAccess": {
 
                 },
-                "viewResourceUserRoleList": {
+                "selectResourceAccessList": {
 
                 },
-                "createResourceUserRole": {
+                "createResourceAccess": {
                     "actionResults": {
 
                     },
                     "errorMessages": {
-                        "formValidation": {
-
-                        },
                         "dataValidation": {
                             "ResourceUserRoleIdEqualsNull": "ResourceUserRole ID equals NULL",
                             "ResourceUserRoleIdUndefined": "ResourceUserRole ID is undefined",
-                            "ResourceUserRoleIdMissing": "ResourceUserRole ID is missing",
-                            "ResourceUserRoleIdNotValid": "ResourceUserRole ID is not valid"
+                            "ResourceUserRoleIdMissing": "ResourceUserRole ID missing",
+                            "ResourceUserRoleIdNotValid": "ResourceUserRole ID not valid"
                         }
                     }
                 },
-                "editResourceUserRole": {
+                "updateResourceUserRole": {
 
                 },
                 "deleteResourceUserRole": {
@@ -476,45 +492,109 @@
                 }
             }
         },
-        "userActions": {
-            "title": "User actions",
-            "fieldNames": {
+        "userAction": {
+            "title": "User action",
+            "titlePlural": "User actions",
+            "fields": {
                 "name": "Activity name"
             },
             "actions": {
-                "viewUserActions": {
+                "createProject": "Create project",
+                "createTeam": "Create team",
+                "createTask": "Create task",
+                "projectsOverview": "Projects overview",
+                "tasksOverview": "Tasks overview",
+                "teamOverview": "Team overview",
+                "userProfile": "User profile"
+            }
+        },
+        "recent": {
+            "title": "Recent activity",
+            "titlePlural": "Recent activities",
+            "fields": {
+                "name": "Activity name",
+                "type": "Type",
+                "description": "Description"
+            },
+            "actions": {
+                "selectRecent": {
                     "actionResults": {
                         "success": "",
                         "failure": ""
                     },
                     "errorMessages": {
-                        "formValidation": {
-
-                        },
                         "dataValidation": {
-                            
+                            "NoRecentFound": "No recent activity"
                         }
                     }
                 }
             }
         },
-        "recentActivity": {
-            "title": "Recent activity",
-            "fieldNames": {
-                "name": "Activity name",
-                "type": "Type",
-                "content": "Content"
+        "user": {
+            "title": "User",
+            "titlePlural": "Users",
+            "fields": {
+                "email": "Email address",
+                "username": "Username",
+                "firstname": "First name",
+                "lastname": "Last name",
+                "position": "Position",
+                "company": "Company",
+                "phone": "Phone number",
+                "avatarUrl": "Avatar URL - optional"
             },
             "actions": {
-                "viewRecentActivity": {
+                "selectUser": {
                     "actionResults": {
                         "success": "",
                         "failure": ""
                     },
                     "errorMessages": {
-                        "formValidation": {
-
-                        },
+                        "dataValidation": {
+                            "UserIdMissing": "User ID missing"
+                        }
+                    }
+                },
+                "selectUserList": {
+                    "actionResults": {
+                        "success": "",
+                        "failure": ""
+                    },
+                    "errorMessages": {
+                        "dataValidation": {
+                            
+                        }
+                    }
+                },
+                "createUser": {
+                    "actionTitle": "Create user profile",
+                    "actionResults": {
+                        "success": "User profile created successfully",
+                        "failure": "Failed to create new user profile"
+                    },
+                    "errorMessages": {
+                        "dataValidation": {
+                            
+                        }
+                    }
+                },
+                "updateUser": {
+                    "actionResults": {
+                        "success": "User profile updated successfully",
+                        "failure": ""
+                    },
+                    "errorMessages": {
+                        "dataValidation": {
+                            
+                        }
+                    }
+                },
+                "deleteUser": {
+                    "actionResults": {
+                        "success": "",
+                        "failure": ""
+                    },
+                    "errorMessages": {
                         "dataValidation": {
                             
                         }
@@ -524,7 +604,8 @@
         },
         "company": {
             "title": "Company",
-            "fieldNames": {
+            "titlePlural": "Companies",
+            "fields": {
                 "name": "Company name",
                 "description": "Description",
                 "owner": "Owner",
@@ -534,29 +615,23 @@
                 "avatarUrl": "Avatar URL - optional"
             },
             "actions": {
-                "viewCompany": {
+                "selectCompany": {
                     "actionResults": {
                         "success": "",
                         "failure": ""
                     },
                     "errorMessages": {
-                        "formValidation": {
-
-                        },
                         "dataValidation": {
                             
                         }
                     }
                 },
-                "viewCompanyList": {
+                "selectCompanyList": {
                     "actionResults": {
                         "success": "",
                         "failure": ""
                     },
                     "errorMessages": {
-                        "formValidation": {
-
-                        },
                         "dataValidation": {
                             
                         }
@@ -569,23 +644,17 @@
                         "failure": ""
                     },
                     "errorMessages": {
-                        "formValidation": {
-
-                        },
                         "dataValidation": {
                             
                         }
                     }
                 },
-                "editCompany": {
+                "updateCompany": {
                     "actionResults": {
                         "success": "",
                         "failure": ""
                     },
                     "errorMessages": {
-                        "formValidation": {
-
-                        },
                         "dataValidation": {
                             
                         }
@@ -597,9 +666,6 @@
                         "failure": ""
                     },
                     "errorMessages": {
-                        "formValidation": {
-
-                        },
                         "dataValidation": {
                             
                         }
@@ -607,36 +673,31 @@
                 }
             }
         },
-        "roles": {
-            "title": "Roles",
-            "fieldNames": {
+        "role": {
+            "title": "Role",
+            "titlePlural": "Roles",
+            "fields": {
                 "name": "Role name",
                 "description": "Description"
             },
             "actions": {
-                "viewRole": {
+                "selectRole": {
                     "actionResults": {
                         "success": "",
                         "failure": ""
                     },
                     "errorMessages": {
-                        "formValidation": {
-
-                        },
                         "dataValidation": {
                             
                         }
                     }
                 },
-                "viewRoleList": {
+                "selectRoleList": {
                     "actionResults": {
                         "success": "",
                         "failure": ""
                     },
                     "errorMessages": {
-                        "formValidation": {
-
-                        },
                         "dataValidation": {
                             
                         }
@@ -648,26 +709,20 @@
                         "failure": ""
                     },
                     "errorMessages": {
-                        "formValidation": {
-
-                        },
                         "dataValidation": {
                             "RoleIdEqualsNull": "Role ID equals NULL",
                             "RoleIdUndefined": "Role ID is undefined",
-                            "RoleIdMissing": "Role ID is missing",
-                            "RoleIdNotValid": "Role ID is not valid"
+                            "RoleIdMissing": "Role ID missing",
+                            "RoleIdNotValid": "Role ID not valid"
                         }
                     }
                 },
-                "editRole": {
+                "updateRole": {
                     "actionResults": {
                         "success": "",
                         "failure": ""
                     },
                     "errorMessages": {
-                        "formValidation": {
-
-                        },
                         "dataValidation": {
                             
                         }
@@ -679,9 +734,6 @@
                         "failure": ""
                     },
                     "errorMessages": {
-                        "formValidation": {
-
-                        },
                         "dataValidation": {
                             
                         }
@@ -700,18 +752,49 @@
             "cancel": "Cancel",
             "submit": "Submit",
             "return": "Return",
+            "login": "Login",
+            "register": "Register",
+            "edit": "Edit",
             "reset": "Reset",
             "save": "Save",
-            "discard": "Discard"
+            "discard": "Discard",
+            "selectTeam": "Select team",
+            "selectCategory": "Select category",
+            "selectStatus": "Select status",
+            "selectOrganization": "Select organization",
+            "addMember": "Add new members",
+            "addTeam": "Add teams",
+            "setStatus": "Set status"
         }
     },
     "commonErrors": {
+        "noTeamsAvailable": "No teams available",
+        "noMembersAvailable": "No members available",
+        "noStatusesAvailable": "No statuses available",
         "cannotDisplayRequestedResource": "Cannot display requested resource",
         "cannotAccessRequestedResource": "Cannot access requested resource",
         "cannotFindRequestedResource": "Cannot find requested resource",
         "permissionsNotSufficient": "Access to the requested resource require higher permissions",
         "accessDenied": "Access denied",
+        "unauthorized": "Unauthorized",
+        "notFound": "Not Found",
         "IncorrectNumberOfArguments": "Incorrect number of arguments",
-        "UnknownError": "Unknown error"
+        "UnknownError": "Unknown error",
+        "formValidation": {
+            "requiredDate": "must have selected date",
+            "emptyForm": "Provided form is empty",
+            "requiredFieldIsEmpty": "is required",
+            "requiredDropDownSelection": "must have selection",
+            "allowedCharsOnly": "Only these characters are allowed: ",
+            "digitsOnly": "Only digits are allowed",
+            "emailNotValid": "Provided email address does not meet the required format",
+            "loginNotValid": "Provided login does not meet required username or email format",
+            "passwordsDoNotMatch": "Passwords are not identical",
+            "phoneIncorrectFormat": "Incorrect phone number format",
+            "passwordTooShort": "Password has to be at least 6 characters long",
+            "confirmPasswordIsEmpty": "Confirm your password in order to register an account",
+            "incorrectPhoneFormat": "Phone format is incorrect",
+            "InvalidUrlFormat": "Provided URL does not meet correct link requirements"
+        }
     }
 }

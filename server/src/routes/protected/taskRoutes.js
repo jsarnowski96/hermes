@@ -7,7 +7,7 @@ const {
     getTask,
     getTaskList,
     createTask,
-    editTask,
+    updateTask,
     deleteTask
 } = require('../../services/dbTransactionService');
 
@@ -20,19 +20,39 @@ router.get('/details/:id', async (req, res, next) => {
 });
 
 router.post('/list', async (req, res, next) => {
-    return res.status(200);
+    await getTaskList()
+    .then((result) => {
+        if(!result || result === null || result.length === 0) {
+            throw new Error('NoTasksFound');
+        } else {
+            return result;
+        }
+    })
+    .catch((error) => {
+        if(error) {
+            return res.status(500).json({error: error.message});
+        }
+    })
 });
 
-router.get('/edit', async (req, res, next) => {
+router.post('/update', async (req, res, next) => {
 
 });
 
 router.post('/create', async (req, res, next) => {
-    if(await createTask(req.body)) {
-        res.status(200).json({message: 'Task succesfully added to the database'});
-    } else {
-        res.status(400).json({message: 'Could not add task to the database'});
-    }
+    await createTask(req.body)
+    .then((result) => {
+        if(!result || result === null) { 
+            throw new Error('TaskNotCreated');
+        } else {
+            return res.status(200).json({task: result});
+        }
+    })
+    .catch((error) => {
+        if(error) {
+            return res.status(500).json({error: error.message});
+        }
+    })
 });
 
 router.post('/delete', async (req, res, next) => {

@@ -1,8 +1,9 @@
 import React from 'react';
+import {Link, Redirect} from 'react-router-dom';
 import {withTranslation} from 'react-i18next';
 import axios from 'axios';
 
-import {getJwtDataFromSessionStorage} from '../../middleware/jwtSessionStorage';
+import {getJwtDataFromSessionStorage, removeJwtDataFromSessionStorage} from '../../middleware/jwtSessionStorage';
 
 import '../../assets/css/dashboard.css';
 
@@ -18,29 +19,25 @@ class TaskList extends React.Component {
                     userId: this.jwt.userId,
                     refreshToken: this.jwt.refreshToken
                 },
-                tasks: []
+                tasks: [],
+                serverResponse: null
             }
 
             this.headers = {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${this.state.auth.refreshToken}`
             };
-        } else {
-            this.state = {
-                auth: {
-                    userId: null,
-                    refreshToken: null
-                },
-                tasks: []
-            }
         }
+
+        this.getTaskList();
     }
 
     getTaskList() {
         try {
             axios.post('http://localhost:3300/task/list', 
             {
-                userId: this.state.auth.userId    
+                ref: 'user',
+                objId: this.state.auth.userId    
             }, {headers: this.headers, withCredentials: true})
             .then((response) => {
                 if(response.data.tasks !== undefined && response.data.tasks !== '' && response.data.tasks !== null && response.data.tasks.length > 0) {
@@ -48,8 +45,13 @@ class TaskList extends React.Component {
                 }
             })
             .catch((error) => {
-                console.log(error);
-                console.log(error.response);
+                if(error.response.data.error === 'JwtTokenExpired') {
+                    removeJwtDataFromSessionStorage()
+                }
+                
+                this.setState({
+                    serverResponse: error.response.data.error
+                })
             });
         } catch(e) {
             console.log(e);
@@ -58,26 +60,53 @@ class TaskList extends React.Component {
 
     render() {
         const {t} = this.props;
-        return(
-            <table class="tab-table">
-                <thead>
-                    <tr>
-                        <th>{t('content.tasks.fieldNames.name')}</th>
-                        <th>{t('content.tasks.fieldNames.category')}</th>
-                        <th>{t('content.tasks.fieldNames.dueDate')}</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {this.state.tasks.map((task, index) => (
+
+        if(this.jwt !== null && this.state.auth.userId !== null && this.state.auth.refreshToken !== null) {
+            return(
+                <table className="tab-table">
+                    <thead>
                         <tr>
-                            <td>{task.name}</td>
-                            <td>{task.category}</td>
-                            <td>{task.dueDate}</td>
+                            <th>{t('content.task.fields.name')}</th>
+                            <th>{t('content.task.fields.assignedUser')}</th>
+                            <th>{t('content.task.fields.status')}</th>
                         </tr>
-                    ))}
-                </tbody>
-            </table>
-        )
+                    </thead>
+                    <tbody>
+                        {this.state.teams > 0 ? (
+                            this.state.tasks.map((task, index) => (
+                                <tr>
+                                    <td>{task.name}</td>
+                                    <td>{task.status}</td>
+                                    <td>{task.assigned_user.username}</td>
+                                </tr>
+                                ))
+                        ) : (
+                            this.state.serverResponse === null ? (
+                                <tr>
+                                    <td colspan="6" align="center">-</td>
+                                </tr>
+                            ) : (
+                                <tr>
+                                    <td colspan="6" align="center">- {t('content.task.actions.selectTaskList.errorMessages.dataValidation.' + this.state.serverResponse)} -</td>
+                                </tr>
+                            )
+                        )}
+                    </tbody>
+                </table>
+            )
+        } else {
+            return(
+                <Redirect to=
+                    {{
+                        pathname: "/login",
+                        state: {
+                            unauthorized: true,
+                            redirected: true
+                        }
+                    }}
+                />
+            )
+        }
     }    
 }
 

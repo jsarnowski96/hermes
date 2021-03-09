@@ -13,12 +13,6 @@ const RoleSchema = new mongoose.Schema({
         trim: true,
         required: true
     },
-    permission: {
-        type: mongoose.Schema.Types.ObjectId,
-        required: true,
-        default: '602d82fb870e03d1883625fc',
-        ref: 'Permission'
-    },
     modified_at: {
         type: Date,
         required: true,
@@ -28,6 +22,12 @@ const RoleSchema = new mongoose.Schema({
         type: Date,
         required: true,
         default: Date.now
+    },
+    permission: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+        default: '60410b6d09e427156be2067b',
+        ref: 'Permission'
     }
 });
 

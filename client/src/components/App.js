@@ -10,16 +10,18 @@ import Register from './Nav/Register';
 import Home from './Nav/Home';
 
 import Dashboard from './Dashboard/Dashboard';
-import RecentActivity from './Dashboard/RecentActivity';
-import UserActions from './Dashboard/UserActions';
+import Recent from './Dashboard/Recent';
+import UserAction from './Dashboard/UserAction';
 
 import Project from './Project/Project';
-import Task from './Task/TaskList';
+import Task from './Task/Task';
 import Comment from './Comment/Comment';
 import Company from './Company/Company';
 import Team from './Team/Team';
 import Repository from './Repository/Repository';
 import Role from './Role/Role';
+import User from './User/User';
+import Organization from './Organization/Organization';
 
 import ProjectList from './Project/ProjectList';
 import TeamList from './Team/TeamList';
@@ -29,6 +31,7 @@ import UserList from './User/UserList';
 import RepositoryList from './Repository/RepositoryList';
 import TaskList from './Task/TaskList';
 import RoleList from './Role/RoleList';
+import OrganizationList from './Organization/OrganizationList';
 
 import CreateProject from './Project/CreateProject';
 import CreateTask from './Task/CreateTask';
@@ -37,14 +40,7 @@ import CreateCompany from './Company/CreateCompany';
 import CreateTeam from './Team/CreateTeam';
 import CreateRepository from './Repository/CreateRepository';
 import CreateRole from './Role/CreateRole';
-
-import EditProject from './Project/EditProject';
-import EditTask from './Task/EditTask';
-import EditComment from './Comment/EditComment';
-import EditCompany from './Company/EditCompany';
-import EditTeam from './Team/EditTeam';
-import EditRepository from './Repository/EditRepository';
-import EditRole from './Role/EditRole';
+import CreateOrganization from './Organization/CreateOrganization';
 
 import NotFound from './NotFound';
 
@@ -77,32 +73,29 @@ class App extends React.Component {
                         <Route path="/about" component={About} />
                         <Route path="/contact" component={Contact} />
                         <Route path="/dashboard" component={Dashboard} />
-                        <Route path="/recent" component={RecentActivity} />
-                        <Route path="/userActions" component={UserActions} />
-                        <Route exact path="/project" component={Project} />
-                        <Route path="/project/list" component={ProjectList} />
-                        <Route path="/project/create" component={CreateProject} />
-                        <Route path="/project/edit" component={EditProject} />
-                        <Route exact path="/team" component={Team} />
-                        <Route path="/team/list" component={TeamList} />
-                        <Route path="/team/create" component={CreateTeam} />
-                        <Route path="/team/edit" component={EditTeam} />
+                        <Route exact path="/recent" component={Recent} />
+                        <Route exact path="/organization/details" component={Organization} />
+                        <Route exact path="/organization/list" component={OrganizationList} />
+                        <Route exact path="/organization/create" component={CreateOrganization} />
+                        <Route exact path="/project/details" component={Project} />
+                        <Route exact path="/project/list" component={ProjectList} />
+                        <Route exact path="/project/create" component={CreateProject} />
+                        <Route exact path="/team/details" component={Team} />
+                        <Route exact path="/team/list" component={TeamList} />
+                        <Route exact path="/team/create" component={CreateTeam} />
                         <Route exact path="/repository" component={Repository} />
-                        <Route path="/repository/list" component={RepositoryList} />
-                        <Route path="/repository/create" component={CreateRepository} />
-                        <Route path="/repository/edit" component={EditRepository} />
+                        <Route exact path="/repository/list" component={RepositoryList} />
+                        <Route exact path="/repository/create" component={CreateRepository} />
                         <Route exact path="/comment" component={Comment} />
-                        <Route path="/comment/list" component={CommentList} />
-                        <Route path="/comment/create" component={CreateComment} />
-                        <Route path="/comment/edit" component={EditComment} />
+                        <Route exact path="/comment/list" component={CommentList} />
+                        <Route exact path="/comment/create" component={CreateComment} />
                         <Route exact path="/role" component={Role} />
-                        <Route path="/role/list" component={RoleList} />
-                        <Route path="/role/create" component={CreateRole} />
-                        <Route path="/role/edit" component={EditRole} />
+                        <Route exact path="/role/list" component={RoleList} />
+                        <Route exact path="/role/create" component={CreateRole} />
                         <Route exact path="/company" component={Company} />
-                        <Route path="/company/list" component={CompanyList} />
-                        <Route path="/company/create" component={CreateCompany} />
-                        <Route path="/company/edit" component={EditCompany} />
+                        <Route exact path="/company/list" component={CompanyList} />
+                        <Route exact path="/company/create" component={CreateCompany} />
+                        <Route exact path="/user/profile" component={User} />
                         <Route component={NotFound} />
                     </Switch>
                 </main>

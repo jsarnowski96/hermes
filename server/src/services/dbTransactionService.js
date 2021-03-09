@@ -7,89 +7,298 @@ const Organization = require('../models/Organization');
 const Role = require('../models/Role');
 const Permission = require('../models/Permission');
 const Repository = require('../models/Repository');
-const RepositoryTeam = require('../models/RepositoryTeam');
 const User = require('../models/User');
 const Category = require('../models/Category');
-const ProjectTeam = require('../models/ProjectTeam');
-const ResourceUserRole = require('../models/ResourceUserRole');
+const ResourceAccess = require('../models/ResourceAccess');
+const Recent = require('../models/Recent');
 
 const mongoose = require('mongoose');
+const {registerUser} = require('./registerService');
 
 /* === BASIC MODULE STRUCTURE ===
-getX(documentId) - return document from collection by ID
-getXList(userId) - return the array of documents from collection fulfilling the given search criteria - it utilizes mongo's cross-reference collections
-createX(userId, dataSet) - create new document in the target collection based on the received form data
-editX(documentId) - edit document based on provided ID - the exact check for user's ownership of the document is performed directly in route async function
-deleteX(documentId) - delete document with the specified ID - the exact check for user's ownership of the document is performed directly in route async function
+getX() - return document from collection based on the given ObjectId
+getXList() - return the array of documents from collection fulfilling the given search criteria - it utilizes mongo's cross-reference collections
+createX() - create new document in the target collection based on the received form data
+updateX() - update document based on provided ObjectId and form data
+deleteX() - delete document with the specified ID
+
+note regarding user's permissions: check of the ownership or access to the specified resource is performed at several stages throughout the service.
+General idea is that backend verifies whether user's data/id is stored in proper role/permission collection in order to get the requested resource or attempt to modify it in any way.
 ===============================
+
+=== ADDITIONAL FUNCTION NAMING CONVENTION ===
+eg. ProjectTeam, RepositoryTeam - cross-reference collections storing pairs of ObjectId keys pointing at related collections
 */
 
 // ==================== MODULE EXPORTS ==================== //
 module.exports = {
-    getProject,
-    getProjectList,
-    createProject,
-    editProject,
-    deleteProject,
-    getTask,
-    getTaskList,
-    createTask,
-    editTask,
-    deleteTask,
-    getTeam,
-    getTeamList,
-    createTeam,
-    editTeam,
-    deleteTeam,
-    getComment,
-    getCommentList,
-    createComment,
-    editComment,
-    deleteComment,
-    getCompany,
-    getCompanyList,
-    createCompany,
-    editCompany,
-    deleteCompany,
-    getRepository,
-    getRepositoryList,
-    createRepository,
-    editRepository,
-    deleteRepository,
-    getOrganization,
-    getOrganizationList,
-    createOrganization,
-    editOrganization,
-    deleteOrganization,
-    getPermission,
-    getPermissionList,
-    createPermission,
-    editPermission,
-    deletePermission,
-    getRole,
-    getRoleList,
-    createRole,
-    editRole,
-    deleteRole,
-    getCategory,
-    getCategoryList,
-    createCategory,
-    editCategory,
-    deleteCategory,
-    getResourceUserRole,
-    getResourceUserRoleList,
-    createResourceUserRole,
-    editResourceUserRole,
-    deleteResourceUserRole,
-    createProjectTeam,
+    getUser, getUserList, createUser, updateUser, deleteUser,
+    getProject, getProjectList, createProject, updateProject, deleteProject,
+    getTask, getTaskList, createTask, updateTask, deleteTask,
+    addMember, getTeam, getTeamList, createTeam, updateTeam, deleteTeam,
+    getComment, getCommentList, createComment, updateComment, deleteComment,
+    getCompany, getCompanyList, createCompany, updateCompany, deleteCompany,
+    getRepository, getRepositoryList, createRepository, updateRepository, deleteRepository,
+    getOrganization, getOrganizationList, createOrganization, updateOrganization, deleteOrganization,
+    getPermission, getPermissionList, createPermission, updatePermission, deletePermission,
+    getRole, getRoleList, createRole, updateRole, deleteRole,
+    getCategory, getCategoryList, createCategory, updateCategory, deleteCategory,
+    getResourceAccess, getResourceAccessList, createResourceAccess, updateResourceAccess, deleteResourceAccess,
+    getRecent, createRecent
+}
+
+// ==================== USER CRUD SECTION ==================== //
+
+async function getUser(userId) {
+    if(!userId) {
+        throw new Error('UserIdMissing');
+    }
+
+    if(!mongoose.Types.ObjectId.isValid(userId)) {
+        throw new Error('UserIdNotValid');
+    }
+
+    return await User.findById(userId).populate('company')
+    .then((result) => {
+        if(!result || result === null) {
+            throw new Error('UserNotFound');
+        } else {
+            return result;
+        }
+    })
+    .catch((error) => {
+        if(error) {
+            console.log(error);
+            throw error;
+        }
+    })
+}
+
+async function getUserList() {
+    let teamId;
+
+    if(arguments.length === 2) {
+        ref = arguments[0];
+        objId = arguments[1];
+
+        if(!ref) {
+            throw new Error('ReferenceMissing');
+        }
+
+        if(!objId) {
+            if(ref === 'user') {
+                throw new Error('UserIdMissing');
+            } else if(ref === 'team') {
+                throw new Error('TeamIdMissing');
+            } else if(ref === 'company') {
+                throw new Error('CompanyIdMissing');
+            }
+        }
+
+        if(ref === 'user') {
+            if(!mongoose.Types.ObjectId.isValid(objId)) {
+                throw new Error('UserIdNotValid');
+            }
+
+            if(!(await User.findById(objId))) {
+                throw new Error('UserNotFound');
+            }
+
+            return await Team.findOne({$or: [{'owner': objId}, {teams: {$in: [teamId]}}]}).populate('owner members category organization')
+            .then((result) => {
+                if(!result || result === null) {
+                    throw new Error('TeamNotFound');
+                } else {
+                    return result;
+                }
+            })
+            .catch((error) => {
+                if(error) {
+                    console.log(error);
+                    throw error;
+                }
+            })
+            
+        } else if(ref === 'team') {
+            if(!mongoose.Types.ObjectId.isValid(objId)) {
+                throw new Error('TeamIdNotValid');
+            }
+
+            if(!(await Team.findById(objId))) {
+                throw new Error('TeamNotFound');
+            }
+
+            return await Team.findById(objId).populate('owner members category organization')
+            .then((result) => {
+                if(!result || result === null) {
+                    throw new Error('TeamNotFound');
+                } else {
+                    return result;
+                }
+            })
+            .catch((error) => {
+                if(error) {
+                    console.log(error);
+                    throw error;
+                }
+            })
+        } else if(ref === 'company') {
+            if(!mongoose.Types.ObjectId.isValid(objId)) {
+                throw new Error('TeamIdNotValid');
+            }
+
+            if(!(await Team.findById(objId))) {
+                throw new Error('TeamNotFound');
+            }
+
+            return await User.findOne({company: objId})
+            .then((result) => {
+                if(!result || result === null) {
+                    throw new Error('NoUsersFound');
+                } else {
+                    return result;
+                }
+            })
+            .catch((error) => {
+                if(error) {
+                    console.log(error);
+                    throw error;
+                }
+            })          
+        }
+    } else if(arguments.length === 0) {
+        return await User.find({}).populate('company')
+        .then((result) => {
+            if(!result || result === null) {
+                throw new Error('NoProjectsFound');
+            } else {
+                return result;
+            }
+        })
+        .catch((error) => {
+            if(error) {
+                console.log(error);
+                throw error;
+            }
+        });
+    } else {
+        throw new Error('IncorrectNumberOfArguments');
+    }
+}
+
+async function createUser(userObj) {
+    return await registerUser(userObj)
+    .then((result) => {
+        if(!result || result === null) {
+            throw new Error('UserNotRegistered');
+        }
+    })
+    .catch((error) => {
+        if(error) {
+            console.log(error);
+            throw error;
+        }
+    })
+}
+
+async function updateUser(userId, docId, userObj) {
+    let companyId, user;
+
+    if(!userId) {
+        throw new Error('UserIdMissing');
+    }
+
+    if(!mongoose.Types.ObjectId.isValid(userId)) {
+        throw new Error('UserIdNotValid');
+    }
+
+    companyId = await Company.findOne({name: userObj.company}, '_id')
+    .then((result) => {
+        if(!result || result === null) {
+            throw new Error('CompanyNotFound');
+        } else {
+            return result._id;
+        }
+    })
+    .catch((error) => {
+        if(error) {
+            console.log(error.message);
+            throw error;
+        }
+    })
+
+    user = await User.findById(docId)
+    .then((result) => {
+        if(!result || result === null) {
+            throw new Error('UserNotFound');
+        } else {
+            return result;
+        }
+    })
+    .catch((error) => {
+        if(error) {
+            console.log(error);
+            throw error;
+        }
+    })
+
+    if(user instanceof Error) {
+        console.log('USER OBJECT: ' + user);
+        throw user;
+    }
+
+    if(userId !== user._id) {
+        throw new Error('Unauthorized');
+    }
+
+    user.isNew = false;
+
+    for(var entry in userObj) {
+        if(user[entry] !== userObj[entry]) {
+            if(entry === 'company') {
+                user.company = companyId;
+            } else {
+                user[entry] = userObj[entry];
+            }
+        }
+    }
+
+    user.modified_at = Date.now();
+
+    return await user.save()
+    .then((result) => {
+        if(!result || result === null) {
+            throw new Error('UserNotUpdated');
+        } else {
+            return result;
+        }
+    })
+    .catch((error) => {
+        if(error) {
+            console.log(error.message);
+            throw error;
+        }
+    })
+}
+
+async function deleteUser(userId) {
+    await User.findByIdAndRemove(userId);
 }
 
 // ==================== PROJECT CRUD SECTION ==================== //
 
-async function getProject(projectId) {
-    let project;
+async function getProject(userId, projectId) {
+    let teamId;
 
-    if(!projectId || projectId === '') {
+    if(!userId) {
+        throw new Error('UserIdMissing');
+    }
+
+    if(!mongoose.Types.ObjectId.isValid(userId)) {
+        throw new Error('UserIdNotValid');
+    }
+
+    if(!projectId) {
         throw new Error('ProjectIdMissing');
     }
 
@@ -97,7 +306,22 @@ async function getProject(projectId) {
         throw new Error('ProjectIdNotValid');   
     }
 
-    project = await Project.findById({projectId})
+    teamId = await Team.findOne({$or: [{'owner': objId}, {'members': objId}]}, '_id')
+    .then((result) => {
+        if(!result || result === null) {
+            throw new Error('TeamNotFound');
+        } else {
+            return result._id;
+        }
+    })
+    .catch((error) => {
+        if(error) {
+            console.log(error);
+            throw error;
+        }
+    })
+
+    return await Project.findOne({_id: projectId, $or: [{'owner': userId}, {'teams': teamId}]}).populate('owner teams category organization')
         .then((result) => {
             if(!result || result === null) {
                 throw new Error('ProjectNotFound');
@@ -106,32 +330,23 @@ async function getProject(projectId) {
             }
         })
         .catch((error) => {
-            console.log(error);
-            throw error;
+            if(error) {
+                console.log(error);
+                throw error;
+            }
         });
-
-    if(project instanceof Error) {
-        throw project;
-    } else if(project instanceof Project) {
-        return project;
-     }else {
-        throw new Error(project);
-    }
 }
 
 async function getProjectList() {
-    let projects = [];
-    let ref, objId;
-
     if(arguments.length === 2) {
         ref = arguments[0];
         objId = arguments[1];
 
-        if(!ref || ref === '') {
+        if(!ref) {
             throw new Error('ReferenceMissing');
         }
 
-        if(!objId || objId === '') {
+        if(!objId) {
             if(ref === 'user') {
                 throw new Error('UserIdMissing');
             } else if(ref === 'team') {
@@ -143,98 +358,77 @@ async function getProjectList() {
             if(!mongoose.Types.ObjectId.isValid(objId)) {
                 throw new Error('UserIdNotValid');
             }
+
+            if(!(await User.findById(objId))) {
+                throw new Error('UserNotFound');
+            }
+
+            let teamId = await Team.findOne({$or: [{'owner': objId}, {'members': objId}]}, '_id')
+            .then((result) => {
+                if(!result || result === null) {
+                    throw new Error('TeamNotFound');
+                } else {
+                    return result._id;
+                }
+            })
+            .catch((error) => {
+                if(error) {
+                    console.log(error);
+                    throw error;
+                }
+            })
+
+            if(teamId instanceof Error) {
+                throw teamId;
+            }
+
+            if(!mongoose.Types.ObjectId.isValid(teamId)) {
+                throw new Error('TeamIdNotValid');
+            }
+
+            return await Project.find({$or: [{'owner': objId}, {'teams': teamId}]}).populate('owner teams category organization')
+            .then((result) => {
+                if(!result || result === null) {
+                    throw new Error('NoProjectsFound');
+                } else {
+                    return result;
+                }
+            })
+            .catch((error) => {
+                if(error) {
+                    console.log(error);
+                    throw error;
+                }
+            })
         } else if(ref === 'team') {
             if(!mongoose.Types.ObjectId.isValid(objId)) {
                 throw new Error('TeamIdNotValid');
             }
-        }
 
-        if(ref === 'user') {
-            if(!(await User.findById({objId}))) {
-                throw new Error('UserNotFound');
-            }
-
-            projects = await Promise.all([
-                Project.find({owner: objId}),
-                ResourceUserRole.find({user: objId, collection_name: 'project', role: 'developer'})
-            ])
-            .then((result) => {
-                if(!result || result === null) {
-                    throw new Error('NoRecordsFound');
-                } else {
-                    return result;
-                }
-            })
-            .catch((error) => {
-                console.log(error);
-                throw error;
-            })
-        } else if(ref === 'team') {
-            if(!(await Team.findById({objId}))) {
+            if(!(await Team.findById(objId))) {
                 throw new Error('TeamNotFound');
             }
 
-            projects = await ProjectTeam.find({team: objId}).populate('project')
+            return await Project.find({teams: {$in: [teamId]}}).populate('owner teams category organization')
             .then((result) => {
                 if(!result || result === null) {
-                    throw new Error('ProjectNotFound');
+                    throw new Error('NoProjectsFound');
                 } else {
                     return result;
                 }
             })
             .catch((error) => {
-                console.log(error);
-                throw error;
+                if(error) {
+                    console.log(error);
+                    throw error;
+                }
             });
         }
     } else if(arguments.length === 0) {
-        projects = await Project.find({})
+        return await Project.find({}).populate('owner teams category organization')
         .then((result) => {
             if(!result || result === null) {
-                throw new Error('ProjectNotFound');
-            } else {
-                return result;
-            }
-        })
-        .catch((error) => {
-            console.log(error);
-            throw error;
-        });
-    } else {
-        throw new Error('IncorrectNumberOfArguments');
-    }
-
-    if(projects instanceof Error) {
-        throw projects;
-    } else if((projects instanceof Project && projects.length > 0) || (projects instanceof Promise && projects.length > 0) || (projects instanceof ProjectTeam && projects.length > 0)) {
-        return projects;
-    } else {
-        throw new Error(projects);
-    }
-}
-
-async function createProject(projectObj) {
-    const {name, category, status, requirements, restrictedAccess, dueDate, userId} = projectObj;
-    let categoryId, projectRes, resourceUserRoleRes, projectTeamRes, roleId, teamId;
-
-    if(!name || !category || !requirements || !status || !dueDate) {
-        throw new Error('EmptyFormField');
-    }
-
-    if(userId === null) {
-        throw new Error('UserIdEqualsNull')
-    } else if(userId === undefined) {
-        throw new Error('UserIdUndefined');
-    } else if(userId === '') {
-        throw new Error('UserIdMissing');
-    } else if(!mongoose.Types.ObjectId.isValid(userId)) {
-        throw new Error('UserIdNotValid');
-    }
-
-    categoryId = await Category.findOne({name: category}).select('_id')
-        .then((result) => {
-            if(!result || result === null) {
-                throw new Error('CategoryNotFound');
+                throw new Error('NoProjectsFound');
             } else {
                 return result;
             }
@@ -245,7 +439,69 @@ async function createProject(projectObj) {
                 throw error;
             }
         });
+    } else {
+        throw new Error('IncorrectNumberOfArguments');
+    }
+}
+
+async function createProject(userId, projectObj) {
+    const {name, category, status, team, description, restrictedAccess, dueDate} = projectObj;
+    let categoryId, resourceAccessRes, projectRes, projectId, roleId, teamId, organizationId;
+
+    if(!name || !category || !description || !status || !dueDate) {
+        throw new Error('EmptyFormField');
+    }
+
+    if(!userId) {
+        throw new Error('UserIdMissing');
+    }
+
+    if(!mongoose.Types.ObjectId.isValid(userId)) {
+        throw new Error('UserIdNotValid');
+    }
+
+    if(!(await User.findById(userId))) {
+        throw new Error('UserNotFound');
+    }
+
+    teamId = await Team.findOne({name: team}, '_id')
+        .then((result) => {
+            if(!result || result === null) {
+                throw new Error('TeamNotFound');
+            } else {
+                return result._id;
+            }
+        })
+        .catch((error) => {
+            if(error) {
+                console.log(error);
+                throw error;
+            }
+        });
     
+    if(teamId instanceof Error) {
+        throw teamId;
+    }
+
+    if(!mongoose.Types.ObjectId.isValid(teamId)) {
+        throw new Error('TeamIdNotValid');
+    }
+
+    categoryId = await Category.findOne({name: category}, '_id')
+    .then((result) => {
+        if(!result || result === null) {
+            throw new Error('CategoryNotFound');
+        } else {
+            return result._id;
+        }
+    })
+    .catch((error) => {
+        if(error) {
+            console.log(error);
+            throw error;
+        }
+    });
+
     if(categoryId instanceof Error) {
         throw categoryId;
     }
@@ -254,16 +510,42 @@ async function createProject(projectObj) {
         throw new Error('CategoryIdNotValid');
     }
 
+    organizationId = await Organization.findOne({'teams': teamId}, '_id')
+    .then((result) => {
+        if(!result || result === null) {
+            throw new Error('OrganizationNotFound');
+        } else {
+            return result._id;
+        }
+    })
+    .catch((error) => {
+        if(error) {
+            console.log(error);
+            throw error;
+        }
+    });
+
+    if(organizationId instanceof Error) {
+        throw organizationId;
+    }
+
+    if(!mongoose.Types.ObjectId.isValid(organizationId)) {
+        throw new Error('OrganizationIdNotValid');
+    }
+
     const project = new Project({
         _id: new mongoose.Types.ObjectId(),
         name: name,
-        requirements: requirements,
+        description: description,
         status: status,
         category: categoryId,
-        restricted_access: restrictedAccess,
+        restrictedAccess: restrictedAccess,
+        organization: organizationId,
         owner: userId,
         dueDate: dueDate
     });
+
+    project.teams.push(teamId);
 
     projectRes = await project.save()
         .then((result) => {
@@ -284,145 +566,273 @@ async function createProject(projectObj) {
     if(projectRes instanceof Error) {
         throw projectRes;
     }
+
+    projectId = await Project.findById(project._id, '_id')
+    .then((result) => {
+        if(!result || result === null) {
+            throw new Error('ProjectNotFound');
+        } else {
+            return result._id;
+        }
+    })
+    .catch((error) => {
+        if(error) {
+            console.log(error);
+            throw error;
+        }
+    })
     
-    if(!mongoose.Types.ObjectId.isValid(projectRes._id)) {
+    if(projectId instanceof Error) {
+        throw projectId;
+    }
+
+    if(!mongoose.Types.ObjectId.isValid(projectId)) {
         throw new Error('ProjectIdNotValid');
     }
 
-    if(!(await Project.findById({_id: projectRes._id}))) {
+    // roleId = await Role.findOne({name: 'owner'}, '_id')
+    //     .then((result) => {
+    //        if(!result || result === null) {
+    //            throw new Error('RoleNotFound');
+    //        } else {
+    //            return result._id;
+    //        }
+    //     })
+    //     .catch((error) => {
+    //         if(error) {
+    //             console.log(error);
+    //             throw error;
+    //         }
+    //     })
+
+    // if(roleId instanceof Error) {
+    //     throw roleId;
+    // }
+
+    // if(!mongoose.Types.ObjectId.isValid(roleId)) {
+    //     throw new Error('RoleIdNotValid');
+    // }
+
+    // const resourceAccess = new ResourceAccess({
+    //     _id: new mongoose.Types.ObjectId(),
+    //     user: userId,
+    //     collection_name: 'project',
+    //     document: projectId,
+    //     role: roleId
+    // });
+
+    // resourceAccessRes = await resourceAccess.save()
+    //     .then((result) => {
+    //         if(!result || result === null) {
+    //             throw new Error('ResourceAccessNotSaved');
+    //         } else {
+    //             return result;
+    //         }
+    //     })
+    //     .catch((error) => {
+    //         if(error) {
+    //             console.log(error);
+    //             throw error;
+    //         }
+    //     });
+
+    // if(resourceAccessRes instanceof Error) {
+    //     throw resourceAccessRes;
+    // }
+
+    // if(!mongoose.Types.ObjectId.isValid(resourceAccessRes._id)) {
+    //     throw new Error('ResourceAccessIdNotValid');
+    // }
+
+    // if(!(await ResourceAccess.findById({_id: resourceAccess._id}))) {
+    //     throw new Error('ResourceAccessNotFound');
+    // }
+
+    // await createRecent('User created project', userId, 'project', project._id)
+    // .then((result) => {
+    //     if(!result || result === null) {
+    //         throw new Error('RecentNotCreated');
+    //     } else {
+    //         return result;
+    //     }
+    // })
+    // .catch((error) => {
+    //     if(error) {
+    //         console.log(error);
+    //         throw error;
+    //     }
+    // })
+
+    return projectRes;    
+}
+
+async function updateProject(userId, projectId, projectObj) {
+    console.log(projectObj);
+    let organizationId, teamId, taskId, categoryId, ownerId, project;
+
+    if(!userId) {
+        throw new Error('UserIdMissing');
+    }
+
+    if(!mongoose.Types.ObjectId.isValid(userId)) {
+        throw new Error('UserIdNotValid');
+    }
+
+    if(!(await User.findById(userId))) {
+        throw new Error('UserNotFound');
+    }
+
+    if(!projectId) {
+        throw new Error('ProjectIdMissing');
+    }
+
+    if(!mongoose.Types.ObjectId.isValid(projectId)) {
+        throw new Error('ProjectIdNotValid');
+    }
+
+    project = await Project.findById(projectId)
+    .then((result) => {
+        if(!result || result === null) {
+            throw new Error('ProjectNotFound');
+        } else {
+            return result;
+        }
+    })
+    .catch((error) => {
+        if(error) {
+            console.log(error);
+            throw error;
+        }
+    })
+
+    if(project instanceof Error) {
+        console.log('PROJECT OBJECT: ' + project);
+        throw project;
+    }
+
+    project.isNew = false;
+
+    organizationId = await Organization.findOne({name: projectObj.organization}, '_id')
+    .then((result) => {
+        if(!result || result === null) {
+            throw new Error('OrganizationNotFound');
+        } else {
+            return result._id;
+        }
+    })
+    .catch((error) => {
+        if(error) {
+            console.log(error.message);
+            throw error;
+        }
+    })
+
+    ownerId = await User.findOne({username: projectObj.owner}, '_id')
+    .then((result) => {
+        if(!result || result === null) {
+            throw new Error('UserNotFound');
+        } else {
+            return result._id;
+        }
+    })
+    .catch((error) => {
+        if(error) {
+            console.log(error.message);
+            throw error;
+        }
+    })
+
+    categoryId = await Category.findOne({name: projectObj.category}, '_id')
+    .then((result) => {
+        if(!result || result === null) {
+            throw new Error('CategoryNotFound');
+        } else {
+            return result._id;
+        }
+    })
+    .catch((error) => {
+        if(error) {
+            console.log(error.message);
+            throw error;
+        }
+    })
+
+    for(var entry in projectObj) {
+        if(project[entry] !== projectObj[entry]) {
+            if(entry === 'organization') {
+                project.organization = organizationId;
+            } else if(entry === 'category') {
+                project.category = categoryId;
+            } else if(entry === 'owner') {
+                project.owner = ownerId;
+            } else {
+                project[entry] = projectObj[entry];
+            }
+        }
+    }
+
+    project.modified_at = Date.now();
+
+    return await project.save()
+    .then((result) => {
+        if(!result || result === null) {
+            throw new Error('ProjectNotUpdated');
+        } else {
+            return result;
+        }
+    })
+    .catch((error) => {
+        if(error) {
+            console.log(error.message);
+            throw error;
+        }
+    })
+}
+
+async function deleteProject(userId, projectId) {
+    if(!userId || userId === '') {
+        throw new Error('UserIdMissing');
+    }
+
+    if(!projectId || projectId === '') {
+        throw new Error('ProjectIdMissing');
+    }
+
+    if(!mongoose.Types.ObjectId.isValid(userId)) {
+        throw new Error('UserIdNotValid');
+    }
+
+    if(!mongoose.Types.ObjectId.isValid(projectId)) {
+        throw new Error('ProjectIdNotValid');
+    }
+
+    if(!(await User.findById({userId}))) {
+        throw new Error('UserNotFound');
+    }
+
+    if(!(await Project.findById({projectId}))) {
         throw new Error('ProjectNotFound');
     }
 
-    roleId = await Role.findOne({name: 'owner'}).select('_id')
-        .then((result) => {
-           if(!result || result === null) {
-               throw new Error('RoleNotFound');
-           } else {
-               return result;
-           }
-        })
-        .catch((error) => {
-            if(error) {
-                console.log(error);
-                throw error;
-            }
-        })
-
-    if(roleId instanceof Error) {
-        throw roleId;
-    }
-
-    if(!mongoose.Types.ObjectId.isValid(roleId)) {
-        throw new Error('RoleIdNotValid');
-    }
-
-    const resourceUserRole = new ResourceUserRole({
-        user: userId,
-        collection_name: 'project',
-        document: projectId,
-        role: roleId
-    });
-
-    resourceUserRoleRes = await resourceUserRole.save()
-        .then((result) => {
-            if(!result || result === null) {
-                throw new Error('ResourceUserRoleNotSaved');
-            } else {
-                return result;
-            }
-        })
-        .catch((error) => {
-            if(error) {
-                console.log(error);
-                throw error;
-            }
-        });
-
-    if(resourceUserRoleRes instanceof Error) {
-        throw resourceUserRoleRes;
-    }
-
-    if(!mongoose.Types.ObjectId.isValid(resourceUserRoleRes._id)) {
-        throw new Error('ResourceUserRoleIdNotValid');
-    }
-
-    teamId = await User.findById({userId}).select('team')
-        .then((result) => {
-            if(!result || result === null) {
-                throw new Error('TeamNotFound');
-            } else {
-                return result;
-            }
-        })
-        .catch((error) => {
-            if(error) {
-                console.log(error);
-                throw error;
-            }
-        })
-
-    if(teamId instanceof Error) {
-        throw teamId;
-    }
-    
-    if(!mongoose.Types.ObjectId.isValid(teamId)) {
-        throw new Error('TeamIdNotValid');
-    } 
-    
-    if(!(await Team.findById({teamId}))) {
-        throw new Error('TeamDoesNotExist');
-    }
-
-    const projectTeam = new ProjectTeam({
-        team: teamId,
-        project: projectId
-    });
-
-    projectTeamRes = await projectTeam.save()
-        .then((result) => {
-            if(!result || result === null) {
-                throw new Error('ProjectTeamNotSaved');
-            } else {
-                return result;
-            }
-        })
-        .catch((error) => {
-            if(error) {
-                console.log(error);
-                throw error;
-            }
-        })
-    
-    if(projectTeamRes instanceof Error) {
-        throw projectTeamRes;
-    }
-
-    if(!mongoose.Types.ObjectId.isValid(projectTeamRes._id)) {
-        throw new Error('ProjectTeamIdNotValid');
-    }
-
-    if(projectRes instanceof Error) {
-        throw projectRes;
-    } else if(projectRes instanceof Project) {
-        return projectRes;
-    } else {
-        throw new Error(projectRes);
-    }
-}
-
-async function editProject(projectObj) {
-
-}
-
-async function deleteProject(id) {
-
+    return await Project.findOneAndDelete({_id: projectId, owner: userId})
+    .then((result) => {
+        if(!result || result === null) {
+            throw new Error('ProjectNotDeleted');
+        } else {
+            return result;
+        }
+    })
+    .catch((error) => {
+        if(error) {
+            console.log(error);
+            throw error;
+        }
+    })
 }
 
 // ==================== TASK CRUD SECTION ==================== //
 
 async function getTask(taskId) {
-    let task;
-
     if(!taskId || taskId === null) {
         throw new Error('TaskIdMissing');
     }
@@ -431,7 +841,7 @@ async function getTask(taskId) {
         throw new Error('TaskIdNotValid');
     }
 
-    task = await Task.findById({taskId})
+    return await Task.findById({taskId})
         .then((result) => {
             if(!result || result === null) {
                 throw new Error('TaskNotFound');
@@ -440,32 +850,23 @@ async function getTask(taskId) {
             }
         })
         .catch((error) => {
-            console.log(error);
-            throw error;
+            if(error) {
+                console.log(error);
+                throw error;
+            }
         });
-
-    if(task instanceof Error) {
-        throw task;
-    } else if(task instanceof Task) {
-        return task;
-    } else {
-        throw new Error(task);
-    }
 }
 
 async function getTaskList() {
-    let tasks = [];
-    let ref, objId;
-
     if(arguments.length === 2) {
         ref = arguments[0];
         objId = arguments[1];
 
-        if(!ref || ref === '') {
+        if(!ref) {
             throw new Error('ReferenceMissing');
         }
 
-        if(!objId || objId === '') {
+        if(!objId) {
             if(ref === 'user') {
                 throw new Error('UserIdMissing');
             } else if(ref === 'team') {
@@ -492,37 +893,793 @@ async function getTaskList() {
         }
 
         if(ref === 'user') {
-            tasks = await Task.find({team: teamId})
+            return await Task.find({team: teamId})
             .then((result) => {
                 if(!result || result === null) {
-                    throw new Error('TaskNotFound');
+                    throw new Error('NoTasksFound');
                 } else {
                     return result;
                 }
             })
             .catch((error) => {
-                console.log(error);
-                throw error;
+                if(error) {
+                    console.log(error);
+                    throw error;
+                }
             })
         } else if(ref === 'team') {
-            tasks = await Task.find({team: teamId})
+            return await Task.find({team: teamId})
             .then((result) => {
                 if(!result || result === null) {
-                    throw new Error('TaskNotFound');
+                    throw new Error('NoTasksFound');
                 } else {
                     return result;
                 }
             })
             .catch((error) => {
-                console.log(error);
-                throw error;
+                if(error) {
+                    console.log(error);
+                    throw error;
+                }
             })
         }
     } else if(arguments.length === 0) {
-        tasks = await Task.find({})
+        return await Task.find({})
         .then((result) => {
             if(!result || result === null) {
+                throw new Error('NoTasksFound');
+            } else {
+                return result;
+            }
+        })
+        .catch((error) => {
+            if(error) {
+                console.log(error);
+                throw error;
+            }
+        })
+    } else {
+        throw new Error('IncorrectNumberOfArguments');
+    }
+}
+
+async function createTask(userId, taskObj) {
+    const {name, description, category, status, project, team, dueDate} = taskObj;
+    let categoryId, teamId, projectId, taskRes;
+
+    if(!userId || userId === '') {
+        throw new Error('UserIdMissing');
+    }
+
+    if(!name || !description || !category || !status || !project || !team || !dueDate) {
+        throw new Error('EmptyFormField');
+    }
+    
+    categoryId = await Category.findOne({name: category}, '_id')
+    .then((result) => {
+        if(!result || result === null) {
+            throw new Error('CategoryNotFound');
+        } else {
+            return result;
+        }
+    })
+    .catch((error) => {
+        if(error) {
+            console.log(error);
+            throw error;
+        }
+    })
+
+    if(categoryId instanceof Error) {
+        throw categoryId;
+    }
+
+    if(!mongoose.Types.ObjectId.isValid(categoryId)) {
+        throw new Error('CategoryIdNotValid');
+    }
+
+    teamId = await Team.findOne({name: team}, '_id')
+    .then((result) => {
+        if(!result || result === null) {
+            throw new Error('TeamNotFound');
+        } else {
+            return result;
+        }
+    })
+    .catch((error) => {
+        if(error) {
+            console.log(error);
+            throw error;
+        }
+    })
+
+    if(teamId instanceof Error) {
+        throw teamId;
+    }
+
+    if(!mongoose.Types.ObjectId.isValid(teamId)) {
+        throw new Error('TeamIdNotValid');
+    }
+
+    projectId = await Project.findOne({name: project}, '_id')
+    .then((result) => {
+        if(!result || result === null) {
+            throw new Error('ProjectNotFound');
+        } else {
+            return result;
+        }
+    })
+    .catch((error) => {
+        if(error) {
+            console.log(error);
+            throw error;
+        }
+    })
+
+    if(projectId instanceof Error) {
+        throw projectId;
+    }
+
+    if(!mongoose.Types.ObjectId.isValid(projectId)) {
+        throw new Error('ProjectIdNotValid');
+    }
+
+    const task = new Task({
+        _id: new mongoose.Types.ObjectId(),
+        name: name,
+        description: description,
+        category: categoryId,
+        status: status,
+        author: userId,
+        project: projectId,
+        team: teamId,
+        dueDate: dueDate
+    })
+
+    taskRes = await task.save()
+    .then((result) => {
+        if(!result || result === null) {
+            throw new Error('TaskNotSaved');
+        } else {
+            return result;
+        }
+    })
+    .catch((error) => {
+        if(error) {
+            console.log(error);
+            throw error;
+        }
+    })
+
+    if(taskRes instanceof Error) {
+        throw taskRes;
+    } else {
+        return taskRes;
+    }
+}
+
+async function updateTask(userId, taskId, taskObj) {
+    if(!userId) {
+        throw new Error('UserIdMissing');
+    }
+
+    if(!taskId) {
+        throw new Error('TaskIdMissing');
+    }
+
+    if(!mongoose.Types.ObjectId.isValid(userId)) {
+        throw new Error('UserIdNotValid');
+    }
+
+    if(!mongoose.Types.ObjectId.isValid(taskId)) {
+        throw new Error('TaskIdNotValid');
+    }
+
+    if(!(await User.findById(userId))) {
+        throw new Error('UserNotFound');
+    }
+
+    return await Task.findByIdAndUpdate({_id: taskId, author: userId}, taskObj)
+    .then((result) => {
+        if(!result || result === null) {
+            throw new Error('TaskNotUpdated');
+        } else {
+            return result;
+        }
+    })
+    .catch((error) => {
+        if(error) {
+            console.log(error);
+            throw error;
+        }
+    });
+}
+
+async function deleteTask(userId, taskId) {
+    if(!userId) {
+        throw new Error('UserIdMissing');
+    }
+
+    if(!taskId) {
+        throw new Error('TaskIdMissing');
+    }
+
+    if(!mongoose.Types.ObjectId.isValid(userId)) {
+        throw new Error('UserIdNotValid');
+    }
+
+    if(!mongoose.Types.ObjectId.isValid(taskId)) {
+        throw new Error('TaskIdNotValid');
+    }
+
+    if(!(await User.findById(userId))) {
+        throw new Error('UserNotFound');
+    }
+
+    return await Task.findOneAndDelete({_id: taskId, author: userId})
+    .then((result) => {
+        if(!result || result === null) {
+            throw new Error('TaskNotDeleted');
+        } else {
+            return result;
+        }
+    })
+    .catch((error) => {
+        if(error) {
+            console.log(error);
+            throw error;
+        }
+    })
+}
+
+// ==================== TEAM CRUD SECTION ==================== //
+
+async function addMember(memberObj) {
+    const {userId, teamName} = memberObj;
+    let team, username, email;
+    if(!userId) {
+        throw new Error('UserIdMissing');
+    }
+
+    if(!mongoose.Types.ObjectId.isValid(userId)) {
+        throw new Error('UserIdNotValid');
+    }
+
+    if(!(await User.findById(userId))) {
+        throw new Error('UserNotFound');
+    }
+
+    const user = await getUser(userId);
+    if(user instanceof Error) {
+        throw user;
+    }
+
+    username = user.username; email = user.email;
+
+    team = await Team.findOne({name: teamName})
+    .then((result) => {
+        if(!result || result === null) {
+            throw new Error('TeamNotFound');
+        } else {
+            return result;
+        }
+    })
+    .catch((error) => {
+        if(error) {
+            console.log(error);
+            throw error;
+        }
+    })
+
+    if(team instanceof Error) {
+        throw team;
+    }
+
+    team.members.push({userId, username, email});
+    team.modified_at = Date.now();
+    return await team.save()
+    .then((result) => {
+        if(!result || result === null) {
+            throw new Error('UserNotAdded');
+        } else {
+            return result;
+        }
+    })
+    .catch((error) => {
+        if(error) {
+            console.log(error);
+            throw error;
+        }
+    })
+}
+
+async function getTeam(ref, objId) {
+    if(!ref) {
+        throw new Error('ReferenceMissing');
+    }
+
+    if(ref === 'user') {
+        if(!objId) {
+            throw new Error('UserIdMissing');
+        }
+    } else if(ref === 'team') {
+        if(!objId) {
+            throw new Error('TeamIdMissing');
+        }
+    }
+
+    if(!mongoose.Types.ObjectId.isValid(objId)) {
+        if(ref === 'user') {
+            throw new Error('UserIdNotValid');  
+        } else if(ref === 'team') {
+            throw new Error('TeamIdNotValid');  
+        }
+    }
+
+    if(ref === 'user') {
+        return await Team.findOne({$or:[ {'owner': objId}, {'members': objId}]}).populate('owner members category organization')
+        .then((result) => {
+            if(!result || result === null) {
+                throw new Error('TeamNotFound');
+            } else {
+                return result;
+            }
+        })
+        .catch((error) => {
+            if(error) {
+                console.log(error);
+                throw error;
+            }
+        });
+    } else if(ref === 'team') {
+        return await Team.findById(objId).populate('owner members category organization')
+        .then((result) => {
+            if(!result || result === null) {
+                throw new Error('TeamNotFound');
+            } else {
+                return result;
+            }
+        })
+        .catch((error) => {
+            if(error) {
+                console.log(error);
+                throw error;
+            }
+        });
+    }
+}
+
+async function getTeamList() {
+    return await Team.find({}).populate('owner members category organization')
+        .then((result) => {
+            if(!result || result === null) {
+                throw new Error('TeamNotFound');
+            } else {
+                return result;
+            }
+        })
+        .catch((error) => {
+            if(error) {
+                console.log(error);
+                throw error;
+            }
+        });
+}
+
+async function createTeam(userId, teamObj) {
+    const {name, description, category, avatar_url, organization} = teamObj;
+    let categoryId, teamRes;
+
+    if(!name || !description || !category || !organization) {
+        throw new Error('EmptyFormField');
+    }
+
+    if(!userId) {
+        throw new Error('UserIdMissing');
+    }
+
+    if(!mongoose.Types.ObjectId.isValid(userId)) {
+        throw new Error('UserIdNotValid');
+    }
+
+    if(!(await User.findById(userId))) {
+        throw new Error('UserNotFound');
+    }
+
+    categoryId = await Category.findOne({name: category, category_type: 'team'}, '_id')
+    .then((result) => {
+        if(!result || result === null) {
+            throw new Error('CategoryNotFound');
+        } else {
+            return result._id;
+        }
+    })
+    .catch((error) => {
+        if(error) {
+            console.log(error);
+            throw error;
+        }
+    })
+
+    if(categoryId instanceof Error) {
+        throw categoryId;
+    }
+
+    if(!mongoose.Types.ObjectId.isValid(categoryId)) {
+        throw new Error('CategoryIdNotValid');
+    }
+
+    let org = await Organization.findOne({name: organization})
+    .then((result) => {
+        if(!result || result === null) {
+            throw new Error('OrganizationNotFound');
+        } else {
+            return result;
+        }
+    })
+    .catch((error) => {
+        if(error) {
+            console.log(error);
+            throw error;
+        }
+    })
+
+    if(org instanceof Error) {
+        throw org;
+    }
+
+    if(!mongoose.Types.ObjectId.isValid(org._id)) {
+        throw new Error('OrganizationIdNotValid');
+    }
+
+    let team;
+
+    if(!avatar_url) {
+        team = new Team({
+            _id: new mongoose.Types.ObjectId(),
+            name: name,
+            description: description,
+            category: categoryId,
+            owner: userId,
+            organization: org._id
+        })
+    } else {
+        team = new Team({
+            _id: new mongoose.Types.ObjectId(),
+            name: name,
+            description: description,
+            category: categoryId,
+            owner: userId,
+            avatar_url: avatar_url,
+            organization: org._id
+        })
+    }
+
+    team.members.push(userId);
+
+    teamRes = await team.save()
+    .then((result) => {
+        if(!result || result === null) {
+            throw new Error('TeamNotSaved');
+        } else {
+            return result;
+        }
+    })
+    .catch((error) => {
+        if(error) {
+            console.log(error);
+            throw error;
+        }
+    })
+
+    if(teamRes instanceof Error) {
+        throw teamRes;
+    }
+
+    org.teams.push(team._id);
+
+    return await org.save()
+    .then((result) => {
+        if(!result || result === null) {
+            throw new Error('OrganizationNotUpdated');
+        } else {
+            return teamRes;
+        }
+    })
+    .catch((error) => {
+        if(error) {
+            console.log(error);
+            throw error;
+        }
+    })
+}
+
+async function updateTeam(userId, teamId, teamObj) {
+    let team, categoryId, ownerId;
+    if(!userId) {
+        throw new Error('UserIdMissing');
+    }
+
+    if(!teamId) {
+        throw new Error('TeamIdMissing');
+    }
+
+    if(!mongoose.Types.ObjectId.isValid(userId)) {
+        throw new Error('UserIdNotValid');
+    }
+
+    if(!mongoose.Types.ObjectId.isValid(teamId)) {
+        throw new Error('TeamIdNotValid');
+    }
+
+    if(!(await User.findById(userId))) {
+        throw new Error('UserNotFound');
+    }
+
+    team = await Team.findById(teamId)
+    .then((result) => {
+        if(!result || result === null) {
+            throw new Error('TeamNotFound');
+        } else {
+            return result;
+        }
+    })
+    .catch((error) => {
+        if(error) {
+            throw error;
+        }
+    })
+
+    if(team instanceof Error) {
+        console.log('TEAM OBJECT: ' + team);
+        throw team;
+    }
+
+    team.isNew = false;
+
+    organizationId = await Organization.findOne({name: teamObj.organization}, '_id')
+    .then((result) => {
+        if(!result || result === null) {
+            throw new Error('OrganizationNotFound');
+        } else {
+            return result._id;
+        }
+    })
+    .catch((error) => {
+        if(error) {
+            throw error;
+        }
+    })
+
+    if(organizationId instanceof Error) {
+        console.log('ORGANIZATION ID: ' + organizationId);
+        throw organizationId;
+    }
+
+    ownerId = await User.findById(teamObj.owner, '_id')
+    .then((result) => {
+        if(!result || result === null) {
+            throw new Error('UserNotFound');
+        } else {
+            return result._id;
+        }
+    })
+    .catch((error) => {
+        if(error) {
+            throw error;
+        }
+    })
+
+    if(ownerId instanceof Error) {
+        console.log('OWNER ID: ' + ownerId);
+        throw ownerId;
+    }
+
+    categoryId = await Category.findOne({name: teamObj.category}, '_id')
+    .then((result) => {
+        if(!result || result === null) {
+            throw new Error('CategoryNotFound');
+        } else {
+            return result._id;
+        }
+    })
+    .catch((error) => {
+        if(error) {
+            throw error;
+        }
+    })
+
+    if(categoryId instanceof Error) {
+        console.log('CATEGORY ID: ' + categoryId);
+        throw categoryId;
+    }
+
+    for(var entry in teamObj) {
+        if(team[entry] !== teamObj[entry]) {
+            if(entry === 'organization') {
+                team.organization = organizationId;
+            } else if(entry === 'category') {
+                team.category = categoryId;
+            } else if(entry === 'owner') {
+                team.owner = ownerId;
+            } else {
+                team[entry] = teamObj[entry];
+            }
+        }
+    }
+
+    team.modified_at = Date.now();
+
+    return await team.save()
+    .then((result) => {
+        if(!result || result === null) {
+            throw new Error('TeamNotUpdated');
+        } else {
+            return result;
+        }
+    })
+    .catch((error) => {
+        if(error) {
+            console.log(error);
+            throw error;
+        }
+    })
+}
+
+async function deleteTeam(userId, teamId) {
+    if(!userId) {
+        throw new Error('UserIdMissing');
+    }
+
+    if(!teamId) {
+        throw new Error('TeamIdMissing');
+    }
+
+    if(!mongoose.Types.ObjectId.isValid(userId)) {
+        throw new Error('UserIdNotValid');
+    }
+
+    if(!mongoose.Types.ObjectId.isValid(teamId)) {
+        throw new Error('TeamIdNotValid');
+    }
+
+    if(!(await User.findById(userId))) {
+        throw new Error('UserNotFound');
+    }
+
+    return await Team.findOneAndDelete({_id: teamId, owner: userId})
+    .then((result) => {
+        if(!result || result === null) {
+            throw new Error('TeamNotDeleted');
+        } else {
+            return result;
+        }
+    })
+    .catch((error) => {
+        if(error) {
+            console.log(error);
+            throw error;
+        }
+    })
+}
+
+// ==================== COMMENT CRUD SECTION ==================== //
+
+async function getComment(commentId) {
+    if(!commentId) {
+        throw new Error('CommentIdMissing');
+    }
+
+    if(!mongoose.Types.ObjectId.isValid(commentId)) {
+        throw new Error('CommentIdNotValid');
+    }
+
+    return await Comment.findById(commentId)
+        .then((result) => {
+            if(!result || result === null) {
+                throw new Error('CommentNotFound');
+            } else {
+                return result;
+            }
+        })
+        .catch((error) => {
+            if(error) {
+                console.log(error);
+                throw error;
+            }
+        });
+}
+
+async function getCommentList() {
+    let objId, ref;
+
+    if(arguments.length === 2) {
+        objId = arguments[0];
+        ref = arguments[1];
+
+        if(!objId) {
+            if(ref === 'task') {
+                throw new Error('TaskIdMissing');
+            } else if(ref === 'project') {
+                throw new Error('ProjectIdMissing');
+            } else if(ref === 'comment') {
+                throw new Error('CommentIdMissing');
+            }
+        }
+
+        if(!mongoose.Types.ObjectId.isValid((objId))) {
+            if(ref === 'task') {
+                throw new Error('TaskIdNotValid');
+            } else if(ref === 'project') {
+                throw new Error('ProjectIdNotValid');
+            } else if(ref === 'comment') {
+                throw new Error('CommentIdNotValid');
+            }
+        }
+
+        if(ref === 'task') {
+            if(!(await Task.findById(objId))) {
                 throw new Error('TaskNotFound');
+            }
+
+            return await Comment.find({collection_name: 'task', document: objId})
+            .then((result) => {
+                if(!result || result === null) {
+                    throw new Error('CommentNotFound');
+                } else {
+                    return result;
+                }
+            })
+            .catch((error) => {
+                if(error) {
+                    console.log(error);
+                    throw error;
+                }
+            })
+        } else if(ref === 'project') {
+            if(!(await Project.findById(objId))) {
+                throw new Error('ProjectNotFound');
+            }
+
+            return await Comment.find({collection_name: 'project', document: objId})
+            .then((result) => {
+                if(!result || result === null) {
+                    throw new Error('CommentNotFound');
+                } else {
+                    return result;
+                }
+            })
+            .catch((error) => {
+                if(error) {
+                    console.log(error);
+                    throw error;
+                }
+            })
+        } else if(ref === 'comment') {
+            if(!(await Comment.findById(objId))) {
+                throw new Error('CommentNotFound');
+            }
+
+            return await Comment.find({collection_name: 'comment', document: objId})
+            .then((result) => {
+                if(!result || result === null) {
+                    throw new Error('CommentNotFound');
+                } else {
+                    return result;
+                }
+            })
+            .catch((error) => {
+                if(error) {
+                    console.log(error);
+                    throw error;
+                }
+            })
+        }
+    } else if(arguments.length === 0) {
+        return await Comment.find({})
+        .then((result) => {
+            if(!result || result === null) {
+                throw new Error('NoCommentFound');
             } else {
                 return result;
             }
@@ -534,210 +1691,166 @@ async function getTaskList() {
     } else {
         throw new Error('IncorrectNumberOfArguments');
     }
-
-    if(tasks instanceof Error) {
-        throw tasks;
-    } else if(tasks instanceof Task) {
-        return tasks;
-    } else {
-        throw new Error(tasks);
-    }
 }
 
-async function createTask() {
+async function createComment(userId, commentObj) {
+    const {body, collection_name, document} = commentObj;
+    let commentRes;
 
-}
-
-async function editTask() {
-
-}
-
-async function deleteTask() {
-
-}
-
-// ==================== TEAM CRUD SECTION ==================== //
-
-async function getTeam(teamId) {
-    let team;
-
-    if(!teamId || teamId === '') {
-        throw new Error('TeamIdMissing');
+    if(!userId) {
+        throw new Error('UserIdMissing');
     }
 
-    if(!mongoose.Types.ObjectId.isValid(teamId)) {
-        throw new Error('TeamIdNotValid');   
+    if(!body || !collection_name) {
+        throw new Error('EmptyFormField');
     }
 
-    team = await Team.findById({teamId})
-        .then((result) => {
-            if(!result || result === null) {
-                throw new Error('TeamNotFound');
-            } else {
-                return result;
-            }
-        })
-        .catch((error) => {
+    if(!document && collection_name === 'task') {
+        throw new Error('TaskIdMissing');
+    } else if(!document && collection_name === 'comment') {
+        throw new Error('CommentIdMissing');
+    } else if(!document && collection_name === 'project') {
+        throw new Error('ProjectIdMissing')
+    }
+
+    if(!mongoose.Types.ObjectId.isValid(userId)) {
+        throw new Error('UserIdNotValid');
+    }
+
+    if(!(await User.findById(userId))) {
+        throw new Error('UserNotFound');
+    }
+
+    if(!mongoose.Types.ObjectId.isValid(document)) {
+        if(collection_name === 'task') {
+            throw new Error('TaskIdNotValid');
+        } else if(collection_name === 'comment') {
+            throw new Error('CommentIdNotValid');
+        } else if(collection_name === 'project') {
+            throw new Error('ProjectIdNotValid')
+        }
+    }
+
+    if(collection_name === 'task') {
+        
+    } else if(collection_name === 'comment') {
+        throw new Error('CommentIdNotValid');
+    } else if(collection_name === 'project') {
+        throw new Error('ProjectIdNotValid')
+    }
+
+    const comment = new Comment({
+        _id: new mongoose.Types.ObjectId(),
+        body: body,
+        user: userId,
+        collection_name: collection_name,
+        document: document
+    })
+
+    commentRes = await comment.save()
+    .then((result) => {
+        if(!result || result === null) {
+            throw new Error('CommentNotSaved');
+        } else {
+            return result;
+        }
+    })
+    .catch((error) => {
+        if(error) {
             console.log(error);
             throw error;
-        });
+        }
+    })
 
-    if(team instanceof Error || team === null) {
-        throw team;
-    } else if(team instanceof Team) {
-        return team;
+    if(commentRes instanceof Error) {
+        throw commentRes;
     } else {
-        throw new Error(team);
+        return commentRes;
     }
 }
 
-async function getTeamList() {
-    let teams = [];
-
-    teams = await Team.find({})
-        .then((result) => {
-            if(!result || result === null) {
-                throw new Error('TeamNotFound');
-            } else {
-                return result;
-            }
-        })
-        .catch((error) => {
-            console.log(error);
-            throw error;
-        })
-
-    if(teams instanceof Error) {
-        throw teams;
-    } else if(teams instanceof Task) {
-        return teams;
-    } else {
-        throw new Error(teams);
+async function updateComment(userId, commentId, commentObj) {
+    if(!userId || userId === '') {
+        throw new Error('UserIdMissing');
     }
-}
-
-async function createTeam() {
-    
-}
-
-async function editTeam() {
-
-}
-
-async function deleteTeam() {
-    
-}
-
-// ==================== COMMENT CRUD SECTION ==================== //
-
-async function getComment(commentId) {
-    let comment;
 
     if(!commentId || commentId === '') {
         throw new Error('CommentIdMissing');
+    }
+
+    if(!mongoose.Types.ObjectId.isValid(userId)) {
+        throw new Error('UserIdNotValid')
     }
 
     if(!mongoose.Types.ObjectId.isValid(commentId)) {
         throw new Error('CommentIdNotValid');
     }
 
-    comment = await Comment.findById({commentId})
-        .then((result) => {
-            if(!result || result === null) {
-                throw new Error('CommentNotFound');
-            } else {
-                return result;
-            }
-        })
-        .catch((error) => {
-            console.log(error);
-            throw error;
-        });
-
-    if(comment instanceof Error) {
-        throw comment;
-    } else if(comment instanceof Comment) {
-        return comment;
-    } else {
-        throw new Error(comment);
-    }
-}
-
-async function getCommentList() {
-    let comments = [];
-    let taskId;
-
-    if(arguments.length === 1) {
-        taskId = arguments[0];
-
-        if(!taskId || taskId === '') {
-            throw new Error('TaskIdMissing');
-        }
-
-        if(!mongoose.Types.ObjectId.isValid((taskId))) {
-            throw new Error('TaskIdNotValid');
-        }
-
-        if(!(await Task.findById({taskId}))) {
-            throw new Error('TaskNotFound');
-        }
-
-        comments = await Comment.find({})
-        .then((result) => {
-            if(!result || result === null) {
-                throw new Error('CommentNotFound');
-            } else {
-                return result;
-            }
-        })
-        .catch((error) => {
-            console.log(error);
-            throw error;
-        })
-    } else if(arguments.length === 0) {
-        comments = await Comment.find({})
-        .then((result) => {
-            if(!result || result === null) {
-                throw new Error('CommentNotFound');
-            } else {
-                return result;
-            }
-        })
-        .catch((error) => {
-            console.log(error);
-            throw error;
-        })
-    } else {
-
+    if(!(await User.findById({userId}))) {
+        throw new Error('UserNotFound');
     }
 
-    if(comments instanceof Error) {
-        throw comments;
-    } else if(comments instanceof Task) {
-        return comments;
-    } else {
-        throw new Error(comment);
+    if(!(await Comment.findById({commentId}))) {
+        throw new Error('CommentNotFound');
     }
+
+    return await Comment.findOneAndUpdate({_id: commentId, author: userId}, commentObj, { new: true})
+    .then((result) => {
+        if(!result || result === null) {
+            throw new Error('CommentNotUpdated');
+        } else {
+            return result;
+        }
+    })
+    .catch((error) => {
+        if(error) {
+            console.log(error);
+            throw error;
+        }
+    })
 }
 
-async function createComment() {
-    
-}
+async function deleteComment(userId, commentId) {
+    if(!userId) {
+        throw new Error('UserIdMissing');
+    }
 
-async function editComment() {
+    if(!commentId) {
+        throw new Error('CommentIdMissing');
+    }
 
-}
+    if(!mongoose.Types.ObjectId.isValid(userId)) {
+        throw new Error('UserIdNotValid');
+    }
 
-async function deleteComment() {
+    if(!mongoose.Types.ObjectId.isValid(commentId)) {
+        throw new Error('CommentIdNotValid');
+    }
 
+    if(!(await User.findById({userId}))) {
+        throw new Error('UserNotFound');
+    }
+
+    return await Comment.findOneAndDelete({_id: commentId, author: userId})
+    .then((result) => {
+        if(!result || result === null) {
+            throw new Error('CommentNotDeleted');
+        } else {
+            return result;
+        }
+    })
+    .catch((error) => {
+        if(error) {
+            console.log(error);
+            throw error;
+        }
+    })
 }
 
 // ==================== COMPANY CRUD SECTION ==================== //
 
 async function getCompany(companyId) {
-    let company;
-
-    if(!companyId || companyId === '') {
+    if(!companyId) {
         throw new Error('CompanyIdMissing');
     }
 
@@ -745,7 +1858,7 @@ async function getCompany(companyId) {
         throw new Error('CompanyIdNotValid');
     }
 
-    company = await Company.findById({companyId})
+    return await Company.findById({companyId})
         .then((result) => {
             if(!result || result === null) {
                 throw new Error('CompanyNotFound');
@@ -757,20 +1870,10 @@ async function getCompany(companyId) {
             console.log(error);
             throw error;
         });
-
-    if(company instanceof Error) {
-        throw company;
-    } else if(company instanceof Company) {
-        return company;
-    } else {
-        throw new Error(company);
-    }
 }
 
 async function getCompanyList() {
-    let companies = [];
-
-    companies = await Company.find({})
+    return await Company.find({}).populate({path: 'owner', model: 'User'})
         .then((result) => {
             if(!result || result === null) {
                 throw new Error('CompanyNotFound');
@@ -782,44 +1885,63 @@ async function getCompanyList() {
             console.log(error);
             throw error;
         })
-
-    if(companies instanceof Error) {
-        throw companies;
-    } else if(companies instanceof Task) {
-        return companies;
-    } else {
-        throw new Error(companies);
-    }
 }
 
-async function createCompany(companyObj) {
-    let companyRes;
-    const {name, description, email, phone, website, owner} = companyObj;
-    if(!name || !description || !email || !phone || !website) {
-        throw 'EmptyFormField';
-    }
+async function createCompany(userId, companyObj) {
+    const {name, description, email, phone, avatar_url, website} = companyObj;
+    let user, companyRes;
 
-    if(!owner || owner === '') {
+    if(!userId) {
         throw new Error('UserIdMissing');
     }
+
+    if(!name || !description || !email || !phone || !website) {
+        throw new Error('EmptyFormField');
+    }
     
-    if(!mongoose.Types.ObjectId.isValid(owner)) {
+    if(!mongoose.Types.ObjectId.isValid(userId)) {
         throw new Error('UserIdNotValid');   
     }
 
-    if(!(await User.findById(owner))) {
-        throw new Error('UserNotFound');       
-    }
+    user = await User.findById(userId)
+    .then((result) => {
+        if(!result || result === null) {
+            throw new Error('UserNotFound');
+        } else {
+            return result;
+        }
+    })
+    .catch((error) => {
+        if(error) {
+            console.log(error);
+            throw error;
+        }
+    })
 
-    const company = new Company({
-        _id: new mongoose.Types.ObjectId(),
-        name: name,
-        description: description,
-        email: email,
-        phone: phone,
-        website: website,
-        owner: owner
-    });
+    let company;
+
+    if(!avatar_url) {
+        company = new Company({
+            _id: new mongoose.Types.ObjectId(),
+            name: name,
+            description: description,
+            email: email,
+            phone: phone,
+            website: website,
+            owner: userId
+        });
+    } else {
+        company = new Company({
+            _id: new mongoose.Types.ObjectId(),
+            name: name,
+            description: description,
+            email: email,
+            phone: phone,
+            avatar_url: avatar_url,
+            website: website,
+            owner: userId
+        });
+    }
 
     companyRes = await company.save()
     .then((result) => {
@@ -837,31 +1959,97 @@ async function createCompany(companyObj) {
 
     if(companyRes instanceof Error) {
         throw companyRes;
-    } else if(!mongoose.Types.ObjectId.isValid(companyRes._id)) {
-        throw new Error('CompanyIdNotValid');
-    } else if(!(await Company.findById({_id: companyRes._id}))) {
-        throw new Error('CompanyNotFound');
-    } else if(companyRes instanceof Company) {
-        return companyRes;
+    }
+
+    if(user.company === null) {
+        user.company = company._id;
+        return await user.save()
+        .then((result) => {
+            if(!result || result === null) {
+                throw new Error('UserNotUpdated');
+            } else {
+                return companyRes;
+            }
+        })
+        .catch((error) => {
+            if(error) {
+                console.log(error);
+                throw error;
+            }
+        })
     } else {
-        throw new Error(companyRes);
+        return companyRes;
     }
 }
 
-async function editCompany() {
+async function updateCompany(userId, companyId, companyObj) {
+    if(!userId) {
+        throw new Error('UserIdMissing');
+    }
 
+    if(!companyId) {
+        throw new Error('CompanyIdMissing');
+    }
+
+    if(!mongoose.Types.ObjectId.isValid(userId)) {
+        throw new Error('UserIdNotValid');
+    }
+
+    if(!mongoose.Types.ObjectId.isValid(companyId)) {
+        throw new Error('CompanyIdNotValid');
+    }
+
+    if(!(await User.findById(userId))) {
+        throw new Error('UserNotFound');
+    }
+
+    return await Company.findOneAndUpdate({_id: companyId, owner: userId}, companyObj, {new: true})
+    .then((result) => {
+        if(!result || result === null) {
+            throw new Error('CompanyNotUpdated');
+        } else {
+            return result;
+        }
+    })
 }
 
-async function deleteCompany() {
+async function deleteCompany(userId, companyId) {
+    if(!userId) {
+        throw new Error('UserIdMissing');
+    }
 
+    if(!companyId) {
+        throw new Error('CompanyIdMissing');
+    }
+
+    if(!mongoose.Types.ObjectId.isValid(userId)) {
+        throw new Error('UserIdNotValid');
+    }
+
+    if(!mongoose.Types.ObjectId.isValid(companyId)) {
+        throw new Error('CompanyIdNotValid');
+    }
+
+    return await Company.findOneAndDelete({_id: companyId, owner: userId})
+    .then((result) => {
+        if(!result || result === null) {
+            throw new Error('CompanyNotDeleted');
+        } else {
+            return result;
+        }
+    })
+    .catch((error) => {
+        if(error) {
+            console.log(error);
+            throw error;
+        }
+    })
 }
 
 // ==================== REPOSITORY CRUD SECTION ==================== //
 
 async function getRepository(repositoryId) {
-    let repository;
-
-    if(!repositoryId || repositoryId === '') {
+    if(!repositoryId) {
         throw new Error('RepositoryIdMissing');
     }
 
@@ -869,39 +2057,34 @@ async function getRepository(repositoryId) {
         throw new Error('RepositoryIdNotValid');
     }
 
-    repository = await Repository.findById({repositoryId})
+    return await (await Repository.findById(repositoryId)).populated({path: 'owner', model: 'User'})
         .then((result) => {
-            if(result) {
+            if(!result || result === null) {
+                throw new Error('RepositoryNotFound');
+            } else {
                 return result;
             }
         })
         .catch((error) => {
-            console.log(error);
-            throw error;
+            if(error) {
+                console.log(error);
+                throw error;
+            }
         });
-
-    if(repository instanceof Error) {
-        throw repository;
-    } else if(repository instanceof Repository) {
-        return repository;
-    } else {
-        throw new Error(repository);
-    }
 }
 
 async function getRepositoryList() {
-    let repositories = [];
     let ref, objId;
 
     if(arguments.length === 2) {
         ref = arguments[0];
         objId = arguments[1];
 
-        if(!ref || ref === '') {
+        if(!ref) {
             throw new Error('ReferenceMissing');
         }
 
-        if(!objId || objId === '') {
+        if(!objId) {
             if(ref === 'user') {
                 throw new Error('UserIdMissing');
             } else if(ref === 'team') {
@@ -920,52 +2103,18 @@ async function getRepositoryList() {
         }
 
         if(ref === 'user') {
-            if(!(await User.findById({objId}))) {
+            if(!(await User.findById(objId))) {
                 throw new Error('UserNotFound');
             }
 
-            let teamId = await User.findById({objId}).select('team')
-            .then((result) => {
-                if(!result || result === null) {
-                    throw new Error('TeamNotFound');
-                } else {
-                    return result;
-                }
-            })
-            .catch((error) => {
-                console.log(error);
-                throw error;
-            });
+            // TODO:
 
-            if(teamId instanceof Error) {
-                throw teamId;
-            }
-
-            if(!mongoose.Types.ObjectId.isValid(teamId)) {
-                throw new Error('TeamIdNotValid');
-            }
-
-            repositories = await Promise.all([
-                Repository.find({owner: objId}),
-                RepositoryTeam.find({team: teamId})
-            ])
-            .then((result) => {
-                if(!result || result === null) {
-                    throw new Error('NoRecordsFound');
-                } else {
-                    return result;
-                }
-            })
-            .catch((error) => {
-                console.log(error);
-                throw error;
-            })
         } else if(ref === 'team') {
-            if(!(await Team.findById({objId}))) {
+            if(!(await Team.findById(objId))) {
                 throw new Error('TeamNotFound');
             }
 
-            repositories = await RepositoryTeam.find({team: objId}).populate('repository')
+            return await Repository.find({teams: objId}).populate({path: 'teams', model: 'Team'})
             .then((result) => {
                 if(!result || result === null) {
                     throw new Error('RepositoryNotFound');
@@ -974,12 +2123,14 @@ async function getRepositoryList() {
                 }
             })
             .catch((error) => {
-                console.log(error);
-                throw error;
+                if(error) {
+                    console.log(error);
+                    throw error;
+                }
             });
         }
     } else if(arguments.length === 0) {
-        repositories = await Repository.find({})
+        return await Repository.find({})
         .then((result) => {
             if(!result || result === null) {
                 throw new Error('RepositoryNotFound');
@@ -994,34 +2145,120 @@ async function getRepositoryList() {
     } else {
         throw new Error('IncorrectNumberOfArguments');
     }
+}
 
-    if(repositories instanceof Error) {
-        throw repositories;
-    } else if((repositories instanceof Repository && repositories.length > 0) || (repositories instanceof RepositoryTeam && repositories.length > 0) || (repositories instanceof Promise && repositories.length > 0)) {
-        return repositories;
-    } else {
-        throw new Error(repositories);
+async function createRepository(userId, repositoryObj) {
+    const {name, description, repository_url} = repositoryObj;
+    let repositoryRes;
+
+    if(!userId) {
+        throw new Error('UserIdMissing');
     }
+
+    if(!name || !description || !repository_url) {
+        throw new Error('EmptyFormField');
+    }
+
+    if(!mongoose.Types.ObjectId.isValid(userId)) {
+        throw new Error('UserIdNotValid');
+    }
+
+    if(!(await User.findById(userId))) {
+        throw new Error('UserNotFound');
+    }
+
+    const repository = new Repository({
+        _id: new mongoose.Types.ObjectId(),
+        name: name,
+        description: description,
+        owner: userId,
+        repository_url: repository_url
+    });
+
+    return await repository.save()
+    .then((result) => {
+        if(!result || result === null) {
+            throw new Error('RepositoryNotSaved');
+        } else {
+            return result;
+        }
+    })
+    .catch((error) => {
+        if(error) {
+            console.log(error);
+            throw error;
+        }
+    })
 }
 
-async function createRepository() {
+async function updateRepository(userId, repositoryId, repositoryObj) {
+    if(!userId) {
+        throw new Error('UserIdMissing');
+    }
 
+    if(!repositoryId) {
+        throw new Error('RepositoryIdMissing');
+    }
+
+    if(!mongoose.Types.ObjectId.isValid(userId)) {
+        throw new Error('UserIdNotValid');
+    }
+
+    if(!mongoose.Types.ObjectId.isValid(repositoryId)) {
+        throw new Error('RepositoryIdNotValid');
+    }
+
+    if(!(await User.findById(userId))) {
+        throw new Error('UserNotFound');
+    }
+
+    return await Repository.findOneAndUpdate({_id: repositoryId, owner: userId}, repositoryObj, {new: true})
+    .then((result) => {
+        if(!result || result === null) {
+            throw new Error('RepositoryNotUpdated');
+        } else {
+            return result;
+        }
+    })
 }
 
-async function editRepository() {
+async function deleteRepository(userId, repositoryId) {
+    if(!userId) {
+        throw new Error('UserIdMissing');
+    }
 
-}
+    if(!repositoryId) {
+        throw new Error('RepositoryIdMissing');
+    }
 
-async function deleteRepository() {
+    if(!mongoose.Types.ObjectId.isValid(userId)) {
+        throw new Error('UserIdNotValid');
+    }
 
+    if(!mongoose.Types.ObjectId.isValid(repositoryId)) {
+        throw new Error('RepositoryIdNotValid');
+    }
+
+    return await Repository.findOneAndDelete({_id: repositoryId, owner: userId})
+    .then((result) => {
+        if(!result || result === null) {
+            throw new Error('RepositoryNotDeleted');
+        } else {
+            return result;
+        }
+    })
+    .catch((error) => {
+        if(error) {
+            console.log(error);
+            throw error;
+        }
+    })
 }
 
 // ==================== ORGANIZATION CRUD SECTION ==================== //
 
 async function getOrganization(organizationId) {
-    let organization;
-
-    if(!organizationId || organizationId === '') {
+    if(!organizationId) {
         throw new Error('OrganizationIdMissing')
     }
 
@@ -1029,7 +2266,7 @@ async function getOrganization(organizationId) {
         throw new Error('OrganizationIdNotValid');
     }
 
-    organization = await Organization.findById({organizationId})
+    return await Organization.findById(organizationId)
         .then((result) => {
             if(!result || result === null) {
                 throw new Error('OrganizationNotFound');
@@ -1041,26 +2278,21 @@ async function getOrganization(organizationId) {
             console.log(error);
             throw error;
         });
-
-    if(organization instanceof Error) {
-        throw organization;
-    } else if(organization instanceof Organization) {
-        return organization;
-    } else {
-        throw new Error(organization);
-    }
 }
 
 async function getOrganizationList() {
-    let organizations = [];
-    let company, cName;
-
     if(arguments.length === 1) {
-        cName = arguments[0];
-        company = await Company.findOne({name: cName})
+        company = arguments[0];
+        if(!company) {
+            throw new Error('EmptyFormField');
+        }
+
+        companyId = await Company.findOne({name: company}, '_id')
         .then((result) => {
             if(!result || result === null) {
                 throw new Error('CompanyNotFound');
+            } else {
+                return result._id;
             }
         })
         .catch((error) => {
@@ -1068,10 +2300,15 @@ async function getOrganizationList() {
             throw error;
         })
 
-        if(company instanceof Error) {
-            throw company;
-        } else if(company instanceof Company) {
-            organizations = Organization.find({company: company._id})
+        if(companyId instanceof Error) {
+            throw companyId;
+        }
+
+        if(!mongoose.Types.ObjectId.isValid(companyId)) {
+            throw new Error('CompanyIdNotValid');
+        }
+
+        return await Organization.find({company: companyId})
             .then((result) => {
                 if(!result || result === null) {
                     throw new Error('OrganizationNotFound');
@@ -1080,16 +2317,13 @@ async function getOrganizationList() {
                 }
             })
             .catch((error) => {
-                console.log(error);
-                throw error;
-            })
-        } else {
-            throw new Error(company);
-        }
-
-
+                if(error) {
+                    console.log(error);
+                    throw error;
+                }
+            });
     } else if(arguments.length === 0) {
-        organizations = await Organization.find({})
+        return await Organization.find({})
         .then((result) => {
             if(!result || result === null) {
                 throw new Error('OrganizationNotFound');
@@ -1098,40 +2332,215 @@ async function getOrganizationList() {
             }
         })
         .catch((error) => {
-            console.log(error);
-            throw error;
+            if(error) {
+                console.log(error);
+                throw error;
+            }
         })
     } else {
         throw new Error('IncorrectNumberOfArguments');
     }
+}
 
-    if(organizations instanceof Error) {
-        throw organizations;
-    } else if(organizations instanceof Organization) {
-        return organizations;
-    } else {
-        throw new Error(organizations);
+async function createOrganization(userId, organizationObj) {
+    const {name, description, avatar_url, company} = organizationObj;
+    let companyObj, teamId, organization;
+
+    if(!userId) {
+        throw new Error('UserIdMissing');
     }
-}
 
-async function createOrganization() {
+    if(!name || !description || !company) {
+        throw new Error('EmptyFormField');
+    }
+
+    if(!mongoose.Types.ObjectId.isValid(userId)) {
+        throw new Error('UserIdNotValid');
+    }
+
+    teamId = await Team.findOne({$or:[ {'owner': userId}, {'members': userId} ]}, '_id')
+    .then((result) => {
+        if(!result || result === null) {
+            return null;
+        } else {
+            return result._id;
+        }
+    })
+    .catch((error) => {
+        if(error) {
+            console.log(error);
+            throw error;
+        }
+    })
+
+    if(teamId instanceof Error) {
+        throw teamId;
+    }
+
+    companyObj = await Company.findOne({name: company, owner: userId}, '_id organizations')
+    .then((result) => {
+        if(!result || result === null) {
+            throw new Error('CompanyNotFound');
+        } else {
+            return result;
+        }
+    })
+    .catch((error) => {
+        console.log(error);
+        throw error;
+    })
+
+    if(companyObj instanceof Error) {
+        throw companyObj;
+    } 
     
+    if(!mongoose.Types.ObjectId(companyObj._id)) {
+        throw new Error('CompanyIdNotValid');
+    }
+
+    if(!avatar_url) {
+        organization = new Organization({
+            _id: new mongoose.Types.ObjectId(),
+            name: name,
+            description: description,
+            owner: userId,
+            company: companyObj._id
+        })
+    } else {
+        organization = new Organization({
+            _id: new mongoose.Types.ObjectId(),
+            name: name,
+            description: description,
+            avatar_url: avatar_url,
+            owner: userId,
+            company: companyObj._id
+        })
+    }
+
+    if(teamId !== null) {
+        organization.teams.push(teamId);
+    }
+
+    let orgRes = await organization.save()
+    .then((result) => {
+        if(!result || result === null) {
+            throw new Error('OrganizationNotSaved');
+        } else {
+            console.log(result);
+            return result;
+        }
+    })
+    .catch((error) => {
+        console.log(error);
+        throw error;
+    })
+
+    if(orgRes instanceof Error) {
+        throw orgRes;
+    }
+        
+    companyObj.organizations.push(organization._id);
+
+    let companyRes = await companyObj.save()
+    .then((result) => {
+        if(!result || result === null) {
+            throw new Error('CompanyNotUpdated');
+        } else {
+            return result;
+        }
+    })
+    .catch((error) => {
+        if(error) {
+            console.log(error);
+                throw error;
+        }
+    })
+
+    if(companyRes instanceof Error) {
+        throw companyRes;
+    }
+
+    return orgRes;
 }
 
-async function editOrganization() {
+async function updateOrganization(userId, organizationId, organizationObj) {
+    if(!userId) {
+        throw new Error('UserIdMissing');
+    }
 
+    if(!organizationId) {
+        throw new Error('OrganizationIdMissing');
+    }
+
+    if(!mongoose.Types.ObjectId.isValid(userId)) {
+        throw new Error('UserIdNotValid');
+    }
+
+    if(!mongoose.Types.ObjectId.isValid(organizationId)) {
+        throw new Error('OrganizationIdNotValid');
+    }
+
+    if(!(await User.findById(userId))) {
+        throw new Error('UserNotFound');
+    }
+
+    return await Organization.findByIdAndUpdate({_id: organizationId, owner: userId}, organizationObj, {new: true})
+    .then((result) => {
+        if(!result || result === null) {
+            throw new Error('OrganizationNotUpdated');
+        } else {
+            return result;
+        }
+    })
+    .catch((error) => {
+        if(error) {
+            console.log(error);
+            throw error;
+        }
+    })
 }
 
-async function deleteOrganization() {
+async function deleteOrganization(userId, organizationId) {
+    if(!userId) {
+        throw new Error('UserIdMissing');
+    }
 
+    if(!organizationId) {
+        throw new Error('OrganizationIdMissing');
+    }
+
+    if(!mongoose.Types.ObjectId.isValid(userId)) {
+        throw new Error('UserIdNotValid');
+    }
+
+    if(!mongoose.Types.ObjectId.isValid(organizationId)) {
+        throw new Error('OrganizationIdNotValid');
+    }
+
+    if(!(await User.findById(userId))) {
+        throw new Error('UserNotFound');
+    }
+
+    return await Organization.findOneAndDelete({_id: organizationId, owner: userId})
+    .then((result) => {
+        if(!result || result === null) {
+            throw new Error('OrganizationNotDeleted');
+        } else {
+            return result;
+        }
+    })
+    .catch((error) => {
+        if(error) {
+            console.log(error);
+            throw error;
+        }
+    })
 }
 
 // ==================== PERMISSION CRUD SECTION ==================== //
 
 async function getPermission(permissionId) {
-    let permission;
-
-    if(!permissionId || permissionId === '') {
+    if(!permissionId) {
         throw new Error('PermissionIdMissing');
     }
 
@@ -1139,7 +2548,7 @@ async function getPermission(permissionId) {
         throw new Error( 'PermissionIdNotValid');   
     }
 
-    permission = await Permission.findById({id})
+    return await Permission.findById(permissionId)
         .then((result) => {
             if(!result || result === null) {
                 throw new Error('PermissionNotFound');
@@ -1148,22 +2557,15 @@ async function getPermission(permissionId) {
             }
         })
         .catch((error) => {
-            console.log(error);
-            throw error;
+            if(error) {
+                console.log(error);
+                throw error;
+            }
         });
-
-    if(permission instanceof Error) {
-        throw permission;
-    } else if(permission instanceof Permission) {
-        return permission;
-    } else {
-        throw new Error(permission);
-    }
 }
 
 async function getPermissionList() {
-    let permissions = [];
-    permissions = await Permission.find({})
+    return await Permission.find({})
     .then((result) => {
         if(!result || result === null) {
             throw new Error('PermissionNotFound');
@@ -1175,24 +2577,16 @@ async function getPermissionList() {
         console.log(error);
         throw error;
     })
-
-    if(permissions instanceof Error) {
-        throw permissions;
-    } else if(permissions instanceof Permission) {
-        return permissions;
-    } else {
-        throw new Error(permissions);
-    }
 }
 
 async function createPermission(permissionObj) {
-    let permissionRes;
     const {name, description, _create, _read, _update, _delete, is_owner, can_invite} = permissionObj;
     if(!name || !description || _create === undefined || _read === undefined || _update === undefined || _delete === undefined || is_owner === undefined || can_invite === undefined) {
         throw 'EmptyFormField';
     }
 
     const permission = new Permission({
+        _id: new mongoose.Types.ObjectId(),
         name: name,
         descrition: description,
         _create: _create,
@@ -1203,7 +2597,7 @@ async function createPermission(permissionObj) {
         can_invite: can_invite
     })
 
-    permissionRes = await permission.save()
+    return await permission.save()
     .then((result) => {
         if(!result || result === null) {
             throw new Error('PermissionNotSaved');
@@ -1212,42 +2606,94 @@ async function createPermission(permissionObj) {
             return result;
         }
     })
+}
 
-    if(permissionRes instanceof Error) {
-        throw permissionRes;
-    } else if(!mongoose.Types.ObjectId.isValid(permissionRes._id)) {
-        throw new Error('PermissionIdNotValid');
-    } else if(!(await Permission.findById({_id: permissionRes._id}))) {
-        throw new Error('PermissionNotFound');
-    } else if(permissionRes instanceof Permission) {
-        return permissionRes;
-    } else {
-        throw new Error(permissionRes);
+async function updatePermission(permissionId, permissionObj) {
+    if(!permissionId) {
+        throw new Error('PermissionIdMissing');
     }
 
+    if(!mongoose.Types.ObjectId.isValid(permissionId)) {
+        throw new Error('PermissionIdNotValid');
+    }
+
+    return await Permission.findOneAndUpdate({_id: permissionId}, permissionObj, {new: true})
+    .then((result) => {
+        if(!result || result === null) {
+            throw new Error('PermissionNotUpdated');
+        } else {
+            return result;
+        }
+    })
+    .catch((error) => {
+        if(error) {
+            console.log(error);
+            throw error;
+        }
+    })
 }
 
-async function editPermission() {
+async function deletePermission(permissionId) {
+    let role;
+    if(!permissionId) {
+        throw new Error('PermissionIdMissing');
+    }
 
-}
+    if(!mongoose.Types.ObjectId.isValid(permissionId)) {
+        throw new Error('PermissionIdNotValid');
+    }
 
-async function deletePermission() {
+    role = await Role.findOneAndDelete({permission: permissionId})
+    .then((result) => {
+        if(!result || result === null) {
+            throw new Error('RoleNotDeleted');
+        } else {
+            return result;
+        }
+    })
+    .catch((error) => {
+        if(!error) {
+            console.log(error);
+            throw error;
+        }
+    })
 
+    if(role instanceof Error) {
+        throw role;
+    }
+
+    return await Permission.findOneAndDelete({_id: permissionId})
+    .then((result) => {
+        if(!result || result === null) {
+            throw new Error('PermissionNotDeleted');
+        } else {
+            return result;
+        }
+    })
+    .catch((error) => {
+        if(!error) {
+            console.log(error);
+            throw error;
+        }
+    })
 }
 
 // ==================== ROLE CRUD SECTION ==================== //
 
-async function getRole(id) {
-    let role;
-
-    if(!id) {
-        throw 'RoleIdMissing'
+async function getRole(roleId) {
+    if(!roleId) {
+        throw new Error('RoleIdMissing');
     }
 
-    if(mongoose.Types.ObjectId.isValid(id)) {
-        role = await Role.findById({id})
+    if(!mongoose.Types.ObjectId.isValid(roleId)) {
+        throw new Error('RoleIdNotValid');
+    }
+
+    return await Role.findById(roleId)
         .then((result) => {
-            if(result) {
+            if(!result || result === null) {
+                throw new Error('RoleNotFound');
+            } else {
                 return result;
             }
         })
@@ -1255,23 +2701,46 @@ async function getRole(id) {
             console.log(error);
             throw error;
         });
-
-        if(role !== null) {
-            return role;
-        } else {
-            throw 'RoleDoesNotExist'
-        }
-    } else {
-        throw 'RoleIdNotValid'
-    }
 }
 
 async function getRoleList() {
+    if(arguments.length === 1) {
+        let name = arguments[0];
+        if(!name) {
+            throw new Error('TypeMissing');
+        }
 
+        return await Role.find({name})
+        .then((result) => {
+            if(!result || result === null) {
+                throw new Error('RoleNotFound');
+            } else {
+                return result;
+            }
+        })
+        .catch((error) => {
+            console.log(error);
+            throw error;
+        })
+    } else if(arguments.length === 0) {
+        return await Role.find({})
+        .then((result) => {
+            if(!result || result === null) {
+                throw new Error('RoleNotFound');
+            } else {
+                return result;
+            }
+        })
+        .catch((error) => {
+            console.log(error);
+            throw error;
+        })
+    }
 }
 
-async function createRole(roleObj, permissionId) {
+async function createRole(permissionId, roleObj) {
     const {name, description} = roleObj;
+
     if(!name || !description) {
         throw 'EmptyFormField';
     }
@@ -1280,50 +2749,121 @@ async function createRole(roleObj, permissionId) {
         throw 'PermissionIdMissing';
     }
 
-    if(mongoose.Types.ObjectId.isValid(permissionId)) {
-        if(await Permission.findById({permissionId})) {
-            const role = new Role({
-                name: name,
-                description: description,
-                permission: permissionId
-            })
-        
-            return role.save(function(error, result) {
-                if(error) throw error;
-                if(result) return result;
-            });
-        } else {
-            throw 'PermissionDoesNotExist'
-        }
-    } else {
-        throw 'PermissionIdNotValid'
+    if(!mongoose.Types.ObjectId.isValid(permissionId)) {
+        throw new Error('PermissionIdNotValid');
     }
+    
+    if(!(await Permission.findById(permissionId))) {
+        throw new Error('PermissionNotFound');
+    }
+
+    const role = new Role({
+        _id: new mongoose.Types.ObjectId(),
+        name: name,
+        description: description,
+        permission: permissionId
+    })
+
+
+    return await role.save()
+    .then((result) => {
+        if(!result || result === null) {
+            throw new Error('RoleNotSaved');
+        } else {
+            return result;
+        }
+    })
+    .catch((error) => {
+        if(error) {
+            console.log(error);
+            throw error;
+        }
+    })
 }
 
-async function editRole() {
+async function updateRole(roleId, roleObj) {
+    if(!roleId) {
+        throw 'RoleIdMissing';
+    }
 
+    if(!mongoose.Types.ObjectId.isValid(roleId)) {
+        throw new Error('RoleIdNotValid');
+    }
+    
+    return await Role.findOneAndUpdate({_id: roleId}, roleObj, {new: true})
+    .then((result) => {
+        if(!result || result === null) {
+            throw new Error('RoleNotUpdated');
+        } else {
+            return result;
+        }
+    })
+    .catch((error) => {
+        if(error) {
+            console.log(error);
+            throw error;
+        }
+    })
 }
 
-async function deleteRole() {
+async function deleteRole(roleId) {
+    if(!roleId) {
+        throw new Error('RoleIdMissing');
+    }
 
+    if(!mongoose.Types.ObjectId.isValid(roleId)) {
+        throw new Error('RoleIdNotValid');
+    }
+
+    return await Role.findOneAndDelete({_id: roleId})
+    .then((result) => {
+        if(!result || result === null) {
+            throw new Error('RoleNotDeleted');
+        } else {
+            return result;
+        }
+    })
+    .catch((error) => {
+        if(error) {
+            console.log(error);
+            throw error;
+        }
+    })
 }
 
 // ==================== CATEGORY CRUD SECTION ==================== //
 
-async function getCategory(id) {
+async function getCategory(categoryId) {
+    if(!categoryId) {
+        throw new Error('CategoryIdMissing');
+    }
 
+    if(!mongoose.Types.ObjectId.isValid(categoryId)) {
+        throw new Error('CategoryIdNotValid');
+    }
+
+    return await Category.findById(categoryId)
+    .then((result) => {
+        if(!result || result === null) {
+            throw new Error('CategoryNotFound');
+        } else {
+            return result;
+        }
+    })
+    .catch((error) => {
+        console.log(error);
+        throw error;
+    })
 }
 
 async function getCategoryList() {
-    let categories = [];
-    let category_type;
     if(arguments.length === 1) {
         category_type = arguments[0];
-        if(!category_type || category_type === '') {
-            throw new Error('MissingCategoryType');
+        if(!category_type) {
+            throw new Error('CategoryTypeMissing');
         }
 
-        categories = await Category.find({category_type: category_type}, '_id name description')
+        return await Category.find({category_type: category_type})
         .then((result) => {
             if(!result || result === null) {
                 throw new Error('NoCategoryFound');
@@ -1338,7 +2878,7 @@ async function getCategoryList() {
             }
         })
     } else if(arguments.length === 0) {
-        categories = await Category.find({}, '_id name description')
+        return await Category.find({})
         .then((result) => {
             if(!result || result === null) {
                 throw new Error('NoCategoryFound');
@@ -1355,39 +2895,33 @@ async function getCategoryList() {
     } else {
         throw new Error('IncorrectNumberOfArguments');
     }
-
-    if(categories instanceof Error) {
-        throw categories;
-    } else if(categories.length > 0) {
-        return categories;
-    }
 }
 
 async function createCategory() {
-    let name, description, category_type, categoryRes;
     if(arguments.length === 1) {
-        name = arguments[0].name;
+        _name = arguments[0].name;
         description = arguments[0].description;
         category_type = arguments[0].category_type;
     } else if(arguments.length === 3) {
-        name = arguments[0];
+        _name = arguments[0];
         description = arguments[1];
         category_type = arguments[2];
     } else {
         throw new Error('IncorrectNumberOfArguments');
     }
 
-    if(!name || !description || !category_type) {
+    if(!_name || !description || !category_type) {
         throw new Error('EmptyFormField');
     }
 
     const category = new Category({
-        name: name,
+        _id: new mongoose.Types.ObjectId(),
+        name: _name,
         description: description,
         category_type: category_type
     })
 
-    categoryRes = await category.save()
+    return await category.save()
     .then((result) => {
         if(!result || result === null) {
             throw new Error('CategoryNotSaved');
@@ -1399,61 +2933,103 @@ async function createCategory() {
         console.log(error);
         throw error;
     })
+}
 
-    if(categoryRes instanceof Error) {
-        throw categoryRes;
-    } else if(categoryRes instanceof Category) {
-        return categoryRes;
-    } else {
-        throw new Error(categoryRes);
+async function updateCategory(categoryId, categoryObj) {
+    if(!categoryId) {
+        throw new Error('CategoryIdMissing');
     }
+
+    if(!mongoose.Types.ObjectId.isValid(categoryId)) {
+        throw new Error('CategoryIdNotValid');
+    }
+
+    return await Category.findByIdAndUpdate({_id: categoryId}, categoryObj, {new: true})
+    .then((result) => {
+        if(!result || result === null) {
+            throw new Error('CategoryNotUpdated');
+        } else {
+            return result;
+        }
+    })
+    .catch((error) => {
+        if(error) {
+            console.log(error);
+            throw error;
+        }
+    })
 }
 
-async function editCategory() {
+async function deleteCategory(categoryId) {
+    if(!categoryId) {
+        throw new Error('CategoryIdMissing');
+    }
 
-}
+    if(!mongoose.Types.ObjectId.isValid(categoryId)) {
+        throw new Error('CategoryIdNotValid');
+    }
 
-async function deleteCategory() {
-
+    return await Category.findOneAndDelete({_id: categoryId})
+    .then((result) => {
+        if(!result || result === null) {
+            throw new Error('CategoryNotDeleted');
+        } else {
+            return result;
+        }
+    })
+    .catch((error) => {
+        if(error) {
+            console.log(error);
+            throw error;
+        }
+    })
 }
 
 // ==================== RESOURCE USER ROLE CRUD SECTION ==================== //
 
-async function getResourceUserRole(id) {
-    let resourceUserRole;
-
-    if(!id) {
-        throw 'ResourceUserRoleIdMissing'
+async function getResourceAccess(resourceAccessId) {
+    if(!resourceAccessId) {
+        throw new Error('ResourceAccessIdMissing');
     }
 
-    if(mongoose.Types.ObjectId.isValid(id)) {
-        resourceUserRole = await ResourceUserRole.findById({id})
+    if(!mongoose.Types.ObjectId.isValid(resourceAccessId)) {
+        throw new Error('ResourceAccessIdNotValid');
+    }
+
+    return await ResourceAccess.findById(resourceAccessId)
         .then((result) => {
-            if(result) {
+            if(!result || result === null) {
+                throw new Error('ResourceAccessNotFound');
+            } else {
                 return result;
             }
         })
         .catch((error) => {
-            console.log(error);
-            throw error;
+            if(error) {
+                console.log(error);
+                throw error;
+            }
         });
+}
 
-        if(resourceUserRole !== null) {
-            return resourceUserRole;
+async function getResourceAccessList() {
+    return await ResourceAccess.find({})
+    .then((result) => {
+        if(!result || result === null) {
+            throw new Error('ResourceAccessNotFound');
         } else {
-            throw 'ResourceUserRoleDoesNotExist'
+            return result;
         }
-    } else {
-        throw 'ResourceUserRoleIdNotValid'
-    }
+    })
+    .catch((error) => {
+        console.log(error);
+        throw error;
+    })
 }
 
-async function getResourceUserRoleList() {
-
-}
-
-async function createResourceUserRole() {
-    let collection_name, role, resourceId, resourceRes, userId;
+async function createResourceAccess() {
+    let resource, roleId;
+    
     if(arguments.length === 3) {
         resourceId = arguments[0];
         userId = arguments[1];
@@ -1468,13 +3044,11 @@ async function createResourceUserRole() {
         throw new Error('IncorrectNumberOfArguments');
     }
 
-    let resource, roleId;
-
-    if(!collection_name || collection_name === '' || !role || role === '') {
+    if(!collection_name || !role) {
         throw new Error('EmptyFormField');
     }
 
-    if(!userId || userId === '') {
+    if(!userId) {
         throw new Error('UserIdMissing');
     }
 
@@ -1482,17 +3056,19 @@ async function createResourceUserRole() {
         throw new Error('ResourceIdMissing');
     }
 
-    roleId = await Role.findOne({name: role}).select('_id')
+    roleId = await Role.findOne({name: role}, '_id')
     .then((result) => {
         if(!result || result === null) {
             throw new Error('RoleNotFound');
         } else {
-            return result;
+            return result._id;
         }
     })
     .catch((error) => {
-        console.log(error);
-        throw error;
+        if(error) {
+            console.log(error);
+            throw error;
+        }
     })
 
     if(roleId instanceof Error) {
@@ -1507,7 +3083,7 @@ async function createResourceUserRole() {
         throw new Error('UserIdNotValid');
     }
 
-    if(!(await User.findById({userId}))) {
+    if(!(await User.findById(userId))) {
         throw new Error('UserNotFound');   
     }
 
@@ -1517,7 +3093,7 @@ async function createResourceUserRole() {
 
     // 'Team', 'Project', 'Comment', 'Task', 'Organization', 'Company', 'Category'
     switch(collection) {
-        case 'Team': resource = await Team.findById({resourceId})
+        case 'Team': resource = await Team.findById(resourceId)
             .then((result) => {
                 if(!result || result === null) {
                     throw new Error('TeamNotFound');
@@ -1526,11 +3102,13 @@ async function createResourceUserRole() {
                 }
             })
             .catch((error) => {
-                console.log(error);
-                throw error;
+                if(error) {
+                    console.log(error);
+                    throw error;
+                }
             });
             break;
-        case 'Project': resource = await Project.findById({resourceId})
+        case 'Project': resource = await Project.findById(resourceId)
             .then((result) => {
                 if(!result || result === null) {
                     throw new Error('ProjectNotFound');
@@ -1539,11 +3117,13 @@ async function createResourceUserRole() {
                 }
             })
             .catch((error) => {
-                console.log(error);
-                throw error;
+                if(error) {
+                    console.log(error);
+                    throw error;
+                }
             });
             break;
-        case 'Comment': resource = await Comment.findById({resourceId})
+        case 'Comment': resource = await Comment.findById(resourceId)
             .then((result) => {
                 if(!result || result === null) {
                     throw new Error('CommentNotFound');
@@ -1552,11 +3132,13 @@ async function createResourceUserRole() {
                 }
             })
             .catch((error) => {
-                console.log(error);
-                throw error;
+                if(error) {
+                    console.log(error);
+                    throw error;
+                }
             });
             break;
-        case 'Organization': resource = await Organization.findById({resourceId})
+        case 'Organization': resource = await Organization.findById(resourceId)
             .then((result) => {
                 if(!result || result === null) {
                     throw new Error('OrganizationNotFound');
@@ -1565,11 +3147,13 @@ async function createResourceUserRole() {
                 }
             })
             .catch((error) => {
-                console.log(error);
-                throw error;
+                if(error) {
+                    console.log(error);
+                    throw error;
+                }
             });
             break;
-        case 'Company': resource = await Company.findById({resourceId})
+        case 'Company': resource = await Company.findById(resourceId)
             .then((result) => {
                 if(!result || result === null) {
                     throw new Error('CompanyNotFound');
@@ -1578,11 +3162,13 @@ async function createResourceUserRole() {
                 }
             })
             .catch((error) => {
-                console.log(error);
-                throw error;
+                if(error) {
+                    console.log(error);
+                    throw error;
+                }
             });
             break;
-        case 'Category': resource = await Category.findById({resourceId})
+        case 'Category': resource = await Category.findById(resourceId)
             .then((result) => {
                 if(!result || result === null) {
                     throw new Error('CategoryNotFound');
@@ -1591,192 +3177,141 @@ async function createResourceUserRole() {
                 }
             })
             .catch((error) => {
-                console.log(error);
-                throw error;
+                if(error) {
+                    console.log(error);
+                    throw error;
+                }
             });
             break;
         default: throw new Error('IncorrectResourceName');
     }
 
-    if((resource instanceof Team || resource instanceof Project || resource instanceof Comment || resource instanceof Organization || resource instanceof Company || resource instanceof Category) && resource !== null) {
-        let resourceUserRole = new ResourceUserRole({
-            user: userId,
-            collection_name: collection_name,
-            document: resourceId,
-            role: roleId
-        });
-
-        resourceRes = await resourceUserRole.save()
-        .then((result) => {
-            if(!result || result === null) {
-                throw new Error('ResourceUserRoleNotSaved');
-            } else {
-                return result;
-            }
-        })
-    } else {
-        throw new Error('ResourceDoesNotExist');
+    if(resource instanceof Error) {
+        throw resource;
     }
 
-    if(resourceRes instanceof Error) {
-        throw resourceRes;
-    } else if(resourceRes instanceof ResourceUserRole) {
-        return resourceRes;
-    } else {
-        throw new Error(resourceRes);
-    }
-}
+    let resourceAccess = new ResourceAccess({
+        _id: new mongoose.Types.ObjectId(),
+        user: userId,
+        collection_name: collection_name,
+        document: resourceId,
+        role: roleId
+    });
 
-async function editResourceUserRole() {
-
-}
-
-async function deleteResourceUserRole() {
-
-}
-
-// ==================== CROSS-REFERENCE COLLECTIONS CRUD SECTION ==================== //
-
-// ==================== PROJECT TEAM CRUD SECTION ==================== //
-
-async function getProjectTeam(projectTeamId) {
-    let projectTeam;
-    if(!projectTeamId || projectTeamId === '') {
-        throw new Error('ProjectTeamIdMissing');
-    }
-
-    if(!mongoose.Types.ObjectId.isValid(projectTeamId)) {
-        throw new Error('ProjectTeamIdNotValid');
-    }
-
-    projectTeam = await ProjectTeam.findById({projectTeamId})
+    return await resourceAccess.save()
     .then((result) => {
         if(!result || result === null) {
-            throw new Error('ProjectTeamNotFound');
+            throw new Error('ResourceAccessNotSaved');
+        } else {
+            return result;
+        }
+    })
+}
+
+async function updateResourceAccess(resourceAccessId, resourceAccessObj) {
+    if(!resourceAccessId) {
+        throw new Error('ResourceAccessIdMissing');
+    }
+
+    if(!mongoose.Types.ObjectId.isValid(resourceAccessId)) {
+        throw new Error('ResourceAccessIdNotValid');
+    }
+
+    return await ResourceAccess.findOneAndUpdate({_id: resourceAccessId}, resourceAccessObj, {new: true})
+    .then((result) => {
+        if(!result || result === null) {
+            throw new Error('ResourceAccessNotUpdated');
         } else {
             return result;
         }
     })
     .catch((error) => {
-        console.log(error);
-        throw error;
+        if(error) {
+            console.log(error);
+            throw error;
+        }
     })
-
-    if(projectTeam instanceof Error) {
-        throw projectTeam;
-    } else if(projectTeam instanceof ProjectTeam) {
-        return projectTeam;
-    } else {
-        throw new Error(projectTeam);
-    }
 }
 
-async function getProjectTeamList() {
-    let projectTeams = [];
+async function deleteResourceAccess(resourceAccessId) {
+    if(!resourceAccessId) {
+        throw new Error('ResourceAccessIdMissing');
+    }
 
-    projectTeams = await ProjectTeam.find({})
+    if(!mongoose.Types.ObjectId.isValid(resourceAccessId)) {
+        throw new Error('ResourceAccessIdNotValid');
+    }
+
+    return await ResourceAccess.findOneAndDelete({_id: resourceAccessId})
     .then((result) => {
         if(!result || result === null) {
-            throw new Error('ProjectTeamNotFound');
+            throw new Error('ResourceAccessNotDeleted');
         } else {
             return result;
         }
     })
     .catch((error) => {
-        console.log(error);
-        throw error;
+        if(error) {
+            console.log(error);
+            throw error;
+        }
     })
-
-    if(projectTeams instanceof Error) {
-        throw projectTeams;
-    } else if(projectTeams instanceof ProjectTeam) {
-        return projectTeams;
-    } else {
-        throw new Error(projectTeams);
-    }
 }
 
-async  function createProjectTeam() {
-
-}
-
-async function editProjectTeam() {
-
-}
-
-async function deleteProjectTeam() {
-
-}
-
-// ==================== REPOSITORY TEAM CRUD SECTION ==================== //
-
-async function getRepositoryTeam(repositoryTeamId) {
-    let repositoryTeam;
-    if(!repositoryTeamId || repositoryTeamId === '') {
-        throw new Error('RepositoryTeamIdMissing');
+async function getRecent(userId) {
+    if(!userId) {
+        throw new Error('UserIdMissing');
     }
 
-    if(!mongoose.Types.ObjectId.isValid(repositoryTeamId)) {
-        throw new Error('RepositoryTeamIdNotValid');
+    if(!mongoose.Types.ObjectId.isValid(userId)) {
+        throw new Error('UserIdNotValid');
     }
 
-    repositoryTeam = await ProjectTeam.findById({repositoryTeamId})
+    if(!(await User.findById(userId))) {
+        throw new Error('UserNotFound');
+    }
+
+    return await Recent.find({})
     .then((result) => {
-        if(!result || result === null) {
-            throw new Error('RepositoryTeamNotFound');
+        if(!result || result === null || result.length === 0) {
+            throw new Error('NoRecentFound');
         } else {
             return result;
         }
     })
     .catch((error) => {
-        console.log(error);
-        throw error;
+        if(error) {
+            console.log(error);
+            throw error;
+        }
     })
-
-    if(repositoryTeam instanceof Error) {
-        throw repositoryTeam;
-    } else if(repositoryTeam instanceof RepositoryTeam) {
-        return repositoryTeam;
-    } else {
-        throw new Error(repositoryTeam);
-    }
 }
 
-async function getRepositoryTeamList() {
-    let repositoryTeams;
+async function createRecent(description, userId, collection, document) {
+    if(!description || !userId || !collection || !document) {
+        throw new Error('EmptyRecent');
+    }
 
-    repositoryTeams = await ProjectTeam.findById({})
+    let recent = new Recent({
+        _id: new mongoose.Types.ObjectId(),
+        description: description,
+        user: userId,
+        collection_name: collection,
+        document: document
+    })
+
+    return await recent.save()
     .then((result) => {
         if(!result || result === null) {
-            throw new Error('RepositoryTeamNotFound');
+            throw new Error('RecentNotCreated');
         } else {
             return result;
         }
     })
     .catch((error) => {
-        console.log(error);
-        throw error;
+        if(error) {
+            console.log(error);
+            throw error;
+        }
     })
-
-    if(repositoryTeams instanceof Error) {
-        throw repositoryTeams;
-    } else if(repositoryTeams instanceof RepositoryTeam) {
-        return repositoryTeams;
-    } else {
-        throw new Error(repositoryTeams);
-    }
 }
-
-async  function createRepositoryTeam() {
-
-}
-
-async function editRepositoryTeam() {
-
-}
-
-async function deleteRepositoryTeam() {
-
-}
-
-// TODO: modify error throwing structure & add additional 'XEqualsNull' errors to the pool

@@ -66,7 +66,7 @@ class CreateRole extends React.Component {
             axios.post('http://localhost:3300/role/create', {
                 name: fields['name'],
                 category: fields['category'],
-                requirements: fields['requirements'],
+                description: fields['description'],
                 userId: this.state.auth.userId,
                 dueDate: fields['dueDate']
             }, {headers: this.headers, withCredentials: true})
@@ -117,9 +117,9 @@ class CreateRole extends React.Component {
                             <option value="R&D">R&D</option>
                         </select>
                         <span className="error-msg-span">{this.state.errors["category"]}</span>
-                        <label htmlFor="requirements">Requirements</label>
-                        <textarea onChange={this.onChange.bind(this, 'requirements')} value={this.state.fields['requirements']} type="requirements" className="" name="requirements" />
-                        <span className="error-msg-span">{this.state.errors["requirements"]}</span>
+                        <label htmlFor="description">description</label>
+                        <textarea onChange={this.onChange.bind(this, 'description')} value={this.state.fields['description']} type="description" className="" name="description" />
+                        <span className="error-msg-span">{this.state.errors["description"]}</span>
                         <label htmlFor="dueDate">Due date</label>
                         <input onChange={this.onChange.bind(this, 'dueDate')} value={this.state.fields['dueDate']} type="date" className="" name="dueDate"
                             min="2021-02-01" max="2022-12-31" />

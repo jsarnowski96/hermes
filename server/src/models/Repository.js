@@ -13,11 +13,10 @@ const RepositorySchema = new mongoose.Schema({
         required: true,
         default: null
     },
-    owner: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        required: true,
-        default: null
+    repository_url: {
+        type: String,
+        trim: true,
+        required: true
     },
     modified_at: {
         type: Date,
@@ -28,7 +27,14 @@ const RepositorySchema = new mongoose.Schema({
         type: Date,
         required: true,
         default: Date.now
-    }
+    },
+    owner: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true,
+        default: null
+    },
+    teams: [{type: mongoose.Schema.Types.ObjectId, ref: 'Team'}]
 });
 
 const Repository = mongoose.model('Repository', RepositorySchema);

@@ -2,11 +2,9 @@ const express = require('express');
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-const errorHandler = require('./middleware/errorHandler');
 const passport = require('passport');
 require('./config/passport');
-
-var atlasConnection = require('./services/atlasConnection');
+require('./services/atlasConnection');
 
 // importing auth middleware
 const { ensureAuthenticated } = require('./middleware/jwtAuthentication');
@@ -24,7 +22,7 @@ app.use(cors({
 app.options('*', cors());
 
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.urlencoded({extended: true}));
 
 //app.use(errorHandler);
 
@@ -41,6 +39,8 @@ const teamRouter = require('./routes/protected/teamRoutes');
 const repositoryRouter = require('./routes/protected/repositoryRoutes');
 const companyRouter = require('./routes/protected/companyRoutes');
 const userRouter = require('./routes/protected/userRoutes');
+const recentRouter = require('./routes/protected/recentRoutes');
+const organizatonRouter = require('./routes/protected/organizationRoutes');
 const categoryRouter = require('./routes/protected/categoryRoutes');
   
 app.use(passport.initialize());
@@ -52,8 +52,10 @@ app.use('/project', ensureAuthenticated, projectRouter);
 app.use('/task', ensureAuthenticated, taskRouter);
 app.use('/team', ensureAuthenticated, teamRouter);
 app.use('/repository', ensureAuthenticated, repositoryRouter);
+app.use('/organization', ensureAuthenticated, organizatonRouter);
 app.use('/company', ensureAuthenticated, companyRouter);
 app.use('/user', ensureAuthenticated, userRouter);
+app.use('/recent', ensureAuthenticated, recentRouter);
 app.use('/category', ensureAuthenticated, categoryRouter);
 
 module.exports = app;

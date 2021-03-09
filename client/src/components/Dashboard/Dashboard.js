@@ -8,8 +8,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import ProjectList from '../Project/ProjectList';
 import TeamList from '../Team/TeamList';
 import TaskList from '../Task/TaskList';
-import UserActions from './UserActions';
-import RecentActivity from './RecentActivity';
+import UserAction from './UserAction';
+import Recent from './Recent';
 
 import {getJwtDataFromSessionStorage} from '../../middleware/jwtSessionStorage';
 
@@ -53,24 +53,24 @@ class Dashboard extends React.Component {
             return(
                 <div className="dashboard">
                     <div className="tab project">
-                        <p className="tab-title"><FontAwesomeIcon icon="project-diagram" size="xs" />{t('content.project.title')}</p>
-                        <ProjectList />
+                        <p className="tab-title"><FontAwesomeIcon icon="project-diagram" size="xs" />{t('content.project.titlePlural')}</p>
+                        <ProjectList ref='user' objId={this.state.auth.userId} />
                     </div>
                     <div className="tab teams">
-                        <p className="tab-title"><FontAwesomeIcon icon="users" size="xs" />{t('content.teams.title')}</p>
+                        <p className="tab-title"><FontAwesomeIcon icon="users" size="xs" />{t('content.team.titlePlural')}</p>
                         <TeamList />
                     </div>
                     <div className="tab tasks">
-                        <p className="tab-title"><FontAwesomeIcon icon="tasks" size="xs" />{t('content.tasks.title')}</p>
+                        <p className="tab-title"><FontAwesomeIcon icon="tasks" size="xs" />{t('content.task.titlePlural')}</p>
                         <TaskList />
                     </div>
                     <div className="tab recent">
-                        <p className="tab-title"><FontAwesomeIcon icon="history" size="xs" />{t('content.recentActivity.title')}</p>
-                        <RecentActivity />
+                        <p className="tab-title"><FontAwesomeIcon icon="history" size="xs" />{t('content.recent.title')}</p>
+                        <Recent />
                     </div>
-                    <div className="tab userActions">
-                        <p className="tab-title"><FontAwesomeIcon icon="cogs" size="xs" />{t('content.userActions.title')}</p>
-                        <UserActions />
+                    <div className="tab userAction">
+                        <p className="tab-title"><FontAwesomeIcon icon="cogs" size="xs" />{t('content.userAction.titlePlural')}</p>
+                        <UserAction />
                     </div>
                 </div>
             )

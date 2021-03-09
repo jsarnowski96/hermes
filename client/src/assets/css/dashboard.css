@@ -29,7 +29,7 @@
     margin: 1rem auto 1rem auto;
     font-size: 0.9em;
     font-family: sans-serif;
-    min-width: 50vw;
+    min-width: 10vw;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
 }
 
@@ -91,7 +91,7 @@
         row-gap: 1rem;
     }
 
-    .project, .teams, .tasks, .recent, .userActions {
+    .project, .teams, .tasks, .recent, .UserAction {
         grid-column: 1;
     }
 
@@ -128,7 +128,7 @@
         grid-row: 2;
     }
 
-    .userActions {
+    .userAction {
         grid-column: 3;
         grid-row: 2;
     }

@@ -8,17 +8,7 @@ const ProjectSchema = new mongoose.Schema({
         trim: true,
         required: true
     },
-    category: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Category",
-        required: true
-    },
-    owner: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        required: true
-    },
-    requirements: {
+    description: {
         type: String,
         validate: /^.{1,500}$/,
         trim: true,
@@ -35,19 +25,7 @@ const ProjectSchema = new mongoose.Schema({
         type: Date,
         required: true
     },
-    default_role: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Role',
-        default: function() {
-            if(this.restricted_access === true && this.restricted_access !== null) {
-                return null
-            } else {
-                return '602d82fb870e03d1883625fc'
-            }
-        },
-        required: true,
-    },
-    restricted_access: {
+    restrictedAccess: {
         type: Boolean,
         default: false,
         required: true
@@ -61,7 +39,36 @@ const ProjectSchema = new mongoose.Schema({
         type: Date,
         required: true,
         default: Date.now
-    }
+    },
+    default_role: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Role',
+        default: function() {
+            if(this.restricted_access === true && this.restricted_access !== null) {
+                return '60410c0409e427156be2067d'
+            } else {
+                return '602d8556870e03d1883625ff'
+            }
+        },
+        required: true
+    },
+    category: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Category',
+        required: true
+    },
+    owner: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
+    },
+    organization: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Organization',
+        required: true
+    },
+    teams: [{type: mongoose.Schema.Types.ObjectId, ref: 'Team'}],
+    tasks: [{type: mongoose.Schema.Types.ObjectId, ref: 'Task'}]
 });
 
 const Project = mongoose.model('Project', ProjectSchema);

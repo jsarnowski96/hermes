@@ -7,7 +7,7 @@ const {
     getOrganization,
     getOrganizationList,
     createOrganization,
-    editOrganization,
+    updateOrganization,
     deleteOrganization,
     createResourceUserRole
 } = require('../../services/dbTransactionService');
@@ -21,19 +21,39 @@ router.get('/details/:id', async (req, res, next) => {
 });
 
 router.post('/list', async (req, res, next) => {
-    return res.status(200);
+    await getOrganizationList(req.body.company)
+    .then((result) => {
+        if(!result || result === null || result.length === 0) {
+            throw new Error('NoOrganizationsFound');
+        } else {
+            return res.status(200).json({organizations: result});
+        }
+    })
+    .catch((error) => {
+        if(error) {
+            return res.status(500).json({error: error.message});
+        }
+    })
 });
 
-router.get('/edit', async (req, res, next) => {
+router.post('/update', async (req, res, next) => {
 
 });
 
 router.post('/create', async (req, res, next) => {
-    if(await createOrganization(req.body)) {
-        res.status(200).json({message: 'Organization succesfully added to the database'});
-    } else {
-        res.status(400).json({message: 'Could not add organization to the database'});
-    }
+    await createOrganization(req.body.userId, req.body.organizationObj) 
+    .then((result) => {
+        if(!result || result === null) {
+            throw new Error('OrganizationNotCreated');
+        } else {
+            return res.status(200).json({organization: result});
+        }
+    })
+    .catch((error) => {
+        if(error) {
+            return res.status(500).json({error: error.message});
+        }
+    })
 });
 
 router.post('/delete', async (req, res, next) => {

@@ -7,7 +7,7 @@ const {
     getCategory,
     getCategoryList,
     createCategory,
-    editCategory,
+    updateCategory,
     deleteCategory,
     createResourceUserRole
 } = require('../../services/dbTransactionService');
@@ -22,9 +22,9 @@ router.get('/details/:id', async (req, res, next) => {
 
 router.post('/list', async (req, res, next) => {
     //return res.status(200).json({message: 'CATEGORIES - SUCCESS'});
-    await getCategoryList(req.body.category_type)
+    return await getCategoryList(req.body.category_type)
         .then((result) => {
-            if(result && result !== null && result.length > 0) {
+            if(result && result !== null) {
                 return res.status(200).json({categories: result});
             } else {
                 return res.status(204).json({categories: null});
@@ -32,12 +32,12 @@ router.post('/list', async (req, res, next) => {
         })
         .catch((error) => {
             if(error) {
-                if(error === 'NoCategoryFound') {
-                    return res.status(404).json({error: error});
-                } else if(error === 'MissingCategoryType') {
-                    return res.status(406).json({error: error});
+                if(error.message === 'CategoryNotFound') {
+                    return res.status(406).json({error: error.message});
+                } else if(error.message === 'IncorrectNumberOfArguments') {
+                    return res.status(406).json({error: error.message});
                 } else {
-                    return res.status(500).json({error: error});
+                    return res.status(500).json({error: error.message});
                 }
             } else {
                 return res.status(500).json({error: 'UnknownError'});
@@ -45,7 +45,7 @@ router.post('/list', async (req, res, next) => {
         })
 });
 
-router.get('/edit', async (req, res, next) => {
+router.post('/update', async (req, res, next) => {
 
 });
 

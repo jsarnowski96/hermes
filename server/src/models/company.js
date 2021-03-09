@@ -34,18 +34,13 @@ const CompanySchema = new mongoose.Schema({
     website: {
         type: String,
         trim: true,
-        validate: /^\((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?$/,
+        validate: /[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&\/\/=]*)?/gi,
         unique: true
     },
     avatar_url: {
         type: String,
         trim: true,
         default: 'localhost:3300/images/avatars/company-default.png'
-    },
-    owner: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        required: true
     },
     modified_at: {
         type: Date,
@@ -56,7 +51,13 @@ const CompanySchema = new mongoose.Schema({
         type: Date,
         required: true,
         default: Date.now
-    }
+    },
+    owner: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
+    },
+    organizations: [{type: mongoose.Schema.Types.ObjectId, ref: 'Organization'}]
 });
 
 const Company = mongoose.model('Company', CompanySchema);

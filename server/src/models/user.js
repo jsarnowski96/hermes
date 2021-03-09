@@ -49,16 +49,6 @@ const UserSchema = new mongoose.Schema({
         validate: /^([0-9]{9})$/,
         required: true
     },
-    team: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Team',
-        required: true
-    },
-    company: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Company',
-        required: true
-    },
     avatar_url: {
         type: String,
         trim: true,
@@ -73,6 +63,10 @@ const UserSchema = new mongoose.Schema({
         type: Date,
         required: true,
         default: Date.now
+    },
+    company: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Company'
     }
 }, {
     virtuals: true,

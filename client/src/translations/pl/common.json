@@ -15,15 +15,9 @@
             "title": "Logowanie",
             "login": "Nazwa użytkownika lub email",
             "password": "Hasło",
-            "submit": "Zaloguj",
-            "cancel": "Anuluj",
             "registerTip": "Nie masz jeszcze konta?",
             "registerLink": "Zarejestruj się",
             "errorMessages": {
-                "formValidation": {
-                    "emptyForm": "Przesłany formularz jest pusty",
-                    "requiredFieldIsEmpty": "jest wymagane"
-                },
                 "dataValidation": {
                     "usernameOrPasswordIncorrect": "Niepoprawny login lub hasło"
                 }
@@ -38,29 +32,14 @@
             "position": "Stanowisko",
             "company": "Firma",
             "phone": "Numer telefonu",
+            "avatarUrl": "URL awatara - opcjonalny",
             "password": "Hasło",
             "confirm": "Potwierdź hasło",
-            "submit": "Zarejestruj",
-            "cancel": "Anuluj",
-            "reset": "Wyczyść",
             "loginTip": "Masz już konto? Żaden problem!",
             "loginLink": "Zaloguj się",
             "success": "Pomyślnie się zarejestrowałeś!",
             "failure": "Wystąpił błąd podczas rejestracji konta",
             "errorMessages": {
-                "formValidation": {
-                    "emptyForm": "Przesłany formularz jest pusty",
-                    "requiredFieldIsEmpty": "jest wymagane",
-                    "allowedCharsOnly": "Dozwolone są wyłącznie następujące znaki: ",
-                    "digitsOnly": "Dozwolone sa wyłącznie cyfry",
-                    "emailNotValid": "Podany adres email nie spełnia wymagań dotyczących formatu",
-                    "loginNotValid": "Podany login nie spełnia wymagań dotyczących nazwy użytkownika lub adresu email",
-                    "passwordsDoNotMatch": "Podane hasła nie są identyczne",
-                    "phoneIncorrectFormat": "Niepoprawny format numeru telefonu",
-                    "passwordTooShort": "Hasło musi mieć przynajmniej 6 znaków długości",
-                    "confirmPasswordIsEmpty": "Potwierdź hasło, aby zarejestrować konto",
-                    "incorrectPhoneNumberFormat": "Numer telefonu musi posiadać jeden z następujących formatów: "
-                },
                 "dataValidation": {
                     "userAlreadyExists": "Istnieje już użytkownik o podanym loginie lub adresie email"
                 }
@@ -78,42 +57,55 @@
             
         },
         "project": {
-            "title": "Projekty",
-            "fieldNames": {
-                "name": "Nazwa projektu",
-                "requirements": "Wymagania",
+            "title": "Projekt",
+            "titlePlural": "Projekty",
+            "fields": {
+                "name": "Nazwa",
+                "description": "Wymagania",
                 "status": "Status",
                 "dueDate": "Termin realizacji",
                 "category": "Kategoria",
-                "assignedTeam": "Zespół",
+                "overview": "Podgląd projektu",
+                "team": "Zespół",
+                "projectManager": "Menedżer projektu",
+                "associatedTeams": "Zespoły projektowe",
                 "restrictedAccess": "Włącz ograniczenie dostępu"
             },
             "actions": {
-                "viewProject": {
+                "selectProject": {
                     "actionResults": {
                         "success": "",
                         "failure": ""
                     },
                     "errorMessages": {
-                        "formValidation": {
-
-                        },
                         "dataValidation": {
-
+                            "ProjectNotFound": "Nie znaleziono projektu",
+                            "ReferenceMissing": "Brakująca referencja",
+                            "NoProjectsFound": "Nie znaleziono projektów",
+                            "UserIdMissing": "Brakujące ID użytkownika",
+                            "UserIdNotValid": "ID użytkownika jest nieprawidłowe",
+                            "UserNotFound": "Nie znaleziono użytkownika",
+                            "TeamIdMissing": "Brakujące ID zespołu",
+                            "TeamIdNotValid": "ID zespołu jest nieprawidłowe",
+                            "TeamNotFound": "Brak danych zespołu"
                         }
                     }
                 },
-                "viewProjectList": {
+                "selectProjectList": {
                     "actionResults": {
                         "success": "",
                         "failure": ""
                     },
                     "errorMessages": {
-                        "formValidation": {
-
-                        },
                         "dataValidation": {
-                            
+                            "ReferenceMissing": "Brakująca referencja",
+                            "NoProjectsFound": "Nie znaleziono projektów",
+                            "UserIdMissing": "Brakujące ID użytkownika",
+                            "UserIdNotValid": "ID użytkownika jest nieprawidłowe",
+                            "UserNotFound": "Nie znaleziono użytkownika",
+                            "TeamIdMissing": "Brakujące ID zespołu",
+                            "TeamIdNotValid": "ID zespołu jest nieprawidłowe",
+                            "TeamNotFound": "Brak danych zespołu"
                         }
                     }
                 },
@@ -124,11 +116,6 @@
                         "failure": "Wystąpił błąd podczas tworzenia projektu"
                     },
                     "errorMessages": {
-                        "formValidation": {
-                            "requiredFieldIsEmpty": "jest wymagane",
-                            "allowedCharsOnly": "Dozwolone są wyłącznie następujące znaki: ",
-                            "EmptyFormField": "One or more form fields are empty"
-                        },
                         "dataValidation": {
                             "UserIdEqualsNull": "ID użytkownika jest równy NULL",
                             "UserIdUndefined": "ID użytkownika jest niezdefiniowane",
@@ -158,20 +145,17 @@
                             "TeamIdUndefined": "ID zespołu jest niezdefiniowany",
                             "TeamIdMissing": "Brakujący ID zespołu",
                             "TeamIdNotValid": "ID zespołu jest nieprawidłowy",
-                            "TeamDoesNotExist": "Zespół nie istnieje",
+                            "TeamNotFound": "Zespół nie istnieje",
                             "UnknownError": "Nieznany błąd"
                         }
                     }
                 },
-                "editProject": {
+                "updateProject": {
                     "actionResults": {
-                        "success": "",
-                        "failure": ""
+                        "success": "Projekt został pomyślnie zaktualizowany",
+                        "failure": "Wystąpił błąd podczas aktualizacji projektu"
                     },
                     "errorMessages": {
-                        "formValidation": {
-
-                        },
                         "dataValidation": {
                             
                         }
@@ -179,68 +163,69 @@
                 }
             }
         },
-        "teams": {
-            "title": "Zespoły",
-            "fieldNames": {
+        "team": {
+            "title": "Zespół",
+            "titlePlural": "Zespoły",
+            "fields": {
                 "name": "Nazwa zespołu",
-                "leader": "Kierownik zespołu"
+                "category": "Kategoria",
+                "description": "Opis",
+                "owner": "Kierownik zespołu",
+                "members": "Członkowie",
+                "overview": "Podgląd zespołu",
+                "organization": "Organizacja",
+                "avatarUrl": "URL awatara"
             },
             "actions": {
-                "viewTeam": {
+                "selectTeam": {
+                    "actionTitle": "Szczegóły zespołu",
+                    "associatedTasks": "Powiązane zadania",
+                    "associatedProjects": "Powiązane projekty",
                     "actionResults": {
                         "success": "",
                         "failure": ""
                     },
                     "errorMessages": {
-                        "formValidation": {
-                            
-                        },
                         "dataValidation": {
                             "TeamIdEqualsNull": "ID zespołu jest równy NULL",
                             "TeamIdUndefined": "ID zespołu jest niezdefiniowany",
                             "TeamIdMissing": "Brakujący ID zespołu",
                             "TeamIdNotValid": "ID zespołu jest nieprawidłowy",
-                            "TeamDoesNotExist": "Zespół nie istnieje"
+                            "TeamNotFound": "Zespół nie istnieje"
                         }
                     }
                 },
-                "viewTeamList": {
+                "selectTeamList": {
+                    "actionTitle": "Lista zespołów",
                     "actionResults": {
                         "success": "",
                         "failure": ""
                     },
                     "errorMessages": {
-                        "formValidation": {
-
-                        },
                         "dataValidation": {
-                            "NoTeamFound": "No team found"
+                            "NoTeamsFound": "Nie znaleziono zespołów"
                         }
                     }
                 },
                 "createTeam": {
+                    "actionTitle": "Tworzenie zespołu",
                     "actionResults": {
-                        "success": "",
-                        "failure": ""
+                        "success": "Zespół został pomyślnie utworzony",
+                        "failure": "Wystąpił błąd podczas tworzenia zespołu"
                     },
                     "errorMessages": {
-                        "formValidation": {
-
-                        },
                         "dataValidation": {
                             
                         }
                     }
                 },
-                "editTeam": {
+                "updateTeam": {
+                    "actionTitle": "Aktualizacja zespołu",
                     "actionResults": {
-                        "success": "",
-                        "failure": ""
+                        "success": "Zespół został pomyślnie zaktualizowany",
+                        "failure": "Wystąpił błąd podczas aktualizowania zespołu"
                     },
                     "errorMessages": {
-                        "formValidation": {
-
-                        },
                         "dataValidation": {
                             
                         }
@@ -252,9 +237,6 @@
                         "failure": ""
                     },
                     "errorMessages": {
-                        "formValidation": {
-
-                        },
                         "dataValidation": {
                             
                         }
@@ -262,42 +244,105 @@
                 }
             }
         },
-        "tasks": {
-            "title": "Zadania",
-            "fieldNames": {
+        "organization": {
+            "title": "Organizacja",
+            "titlePlural": "Organizacje",
+            "fields": {
                 "name": "Nazwa",
-                "status": "Status",
-                "author": "Autor",
-                "assignedUser": "Przydzielony użytkownik",
-                "category": "Kategoria",
-                "dueDate": "Termin realizacji"
+                "description": "Opis",
+                "avatarUrl": "Link do awatara"
             },
             "actions": {
-                "viewTask": {
+                "selectOrganization": {
                     "actionResults": {
                         "success": "",
                         "failure": ""
                     },
                     "errorMessages": {
-                        "formValidation": {
-
-                        },
                         "dataValidation": {
                             
                         }
                     }
                 },
-                "viewTaskList": {
+                "selectOrganizationList": {
                     "actionResults": {
                         "success": "",
                         "failure": ""
                     },
                     "errorMessages": {
-                        "formValidation": {
-
-                        },
+                        "dataValidation": {
+                            "NoOrganizationsFound": "Nie znaleziono organizacji"
+                        }
+                    }
+                },
+                "createOrganization": {
+                    "actionTitle": "Tworzenie organizacji",
+                    "actionResults": {
+                        "success": "",
+                        "failure": ""
+                    },
+                    "errorMessages": {
                         "dataValidation": {
                             
+                        }
+                    }
+                },
+                "updateOrganization": {
+                    "actionResults": {
+                        "success": "",
+                        "failure": ""
+                    },
+                    "errorMessages": {
+                        "dataValidation": {
+                            
+                        }
+                    }
+                },
+                "deleteOrganization": {
+                    "actionResults": {
+                        "success": "",
+                        "failure": ""
+                    },
+                    "errorMessages": {
+                        "dataValidation": {
+                            
+                        }
+                    }
+                }
+            }
+        },
+        "task": {
+            "title": "Zadanie",
+            "titlePlural": "Zadania",
+            "fields": {
+                "name": "Nazwa",
+                "status": "Status",
+                "author": "Autor",
+                "description": "Opis",
+                "assignedUser": "Przydzielony użytkownik",
+                "category": "Kategoria",
+                "dueDate": "Termin realizacji"
+            },
+            "actions": {
+                "selectTask": {
+                    "actionResults": {
+                        "success": "",
+                        "failure": ""
+                    },
+                    "errorMessages": {
+                        "dataValidation": {
+                            
+                        }
+                    }
+                },
+                "selectTaskList": {
+                    "actionResults": {
+                        "success": "",
+                        "failure": ""
+                    },
+                    "errorMessages": {
+                        "dataValidation": {
+                            "NoTasksFound": "Nie znaleziono zadań"
                         }
                     }
                 },
@@ -308,23 +353,17 @@
                         "failure": ""
                     },
                     "errorMessages": {
-                        "formValidation": {
-
-                        },
                         "dataValidation": {
                             
                         }
                     }
                 },
-                "editTask": {
+                "updateTask": {
                     "actionResults": {
                         "success": "",
                         "failure": ""
                     },
                     "errorMessages": {
-                        "formValidation": {
-
-                        },
                         "dataValidation": {
                             
                         }
@@ -336,9 +375,6 @@
                         "failure": ""
                     },
                     "errorMessages": {
-                        "formValidation": {
-
-                        },
                         "dataValidation": {
                             
                         }
@@ -346,23 +382,21 @@
                 }
             }
         },
-        "categories": {
-            "title": "Kategorie",
-            "fieldNames": {
+        "category": {
+            "title": "Kategoria",
+            "titlePlural": "Kategorie",
+            "fields": {
                 "name": "Nazwa",
                 "description": "Opis",
                 "categoryType": "Typ"
             },
             "actions": {
-                "viewCategory": {
+                "selectCategory": {
                     "actionResults": {
                         "success": "",
                         "failure": ""
                     },
                     "errorMessages": {
-                        "formValidation": {
-
-                        },
                         "dataValidation": {
                             "CategoryIdNotValid": "ID kategorii jest nieprawidłowy",
                             "CategoryIdEqualsNull": "ID kategorii jest równy NULL",
@@ -371,15 +405,12 @@
                         }
                     }
                 },
-                "viewCategoryList": {
+                "selectCategoryList": {
                     "actionResults": {
                         "success": "",
                         "failure": ""
                     },
                     "errorMessages": {
-                        "formValidation": {
-
-                        },
                         "dataValidation": {
                             "MissingCategoryType": "Brakujący typ kategorii",
                             "NoCategoryFound": "Nie znaleziono kategorii"
@@ -392,23 +423,17 @@
                         "failure": ""
                     },
                     "errorMessages": {
-                        "formValidation": {
-
-                        },
                         "dataValidation": {
                             
                         }
                     }
                 },
-                "editCategory": {
+                "updateCategory": {
                     "actionResults": {
                         "success": "",
                         "failure": ""
                     },
                     "errorMessages": {
-                        "formValidation": {
-
-                        },
                         "dataValidation": {
                             
                         }
@@ -420,9 +445,6 @@
                         "failure": ""
                     },
                     "errorMessages": {
-                        "formValidation": {
-
-                        },
                         "dataValidation": {
                             
                         }
@@ -432,17 +454,18 @@
         },
         "resourceUserRole": {
             "title": "",
-            "fieldNames": {
+            "titlePlural": "",
+            "fields": {
 
             },
             "actions": {
-                "viewResourceUserRole": {
+                "selectResourceUserRole": {
 
                 },
-                "viewResourceUserRoleList": {
+                "selectResourceUserRoleList": {
 
                 },
-                "editResourceUserRole": {
+                "updateResourceUserRole": {
 
                 },
                 "deleteResourceUserRole": {
@@ -450,21 +473,109 @@
                 }
             }
         },
-        "userActions": {
-            "title": "Akcje użytkownika",
-            "fieldNames": {
+        "userAction": {
+            "title": "Akcja użytkownika",
+            "titlePlural": "Akcje użytkownika",
+            "fields": {
                 "name": "Nazwa akcji"
             },
             "actions": {
-                "viewUserActions": {
+                "createProject": "Stwórz projekt",
+                "createTeam": "Stwórz zespół",
+                "createTask": "Stwórz zadanie",
+                "projectsOverview": "Przegląd projektów",
+                "tasksOverview": "Przegląd zadań",
+                "teamOverview": "Przegląd zespołu",
+                "userProfile": "Profil użytkownika"
+            }
+        },
+        "recent": {
+            "title": "Ostatnia aktywność",
+            "titlePlural": "Ostatnie aktywności",
+            "fields": {
+                "name": "Nazwa aktywności",
+                "type": "Typ",
+                "description": "Treść"
+            },
+            "actions": {
+                "selectRecent": {
                     "actionResults": {
                         "success": "",
                         "failure": ""
                     },
                     "errorMessages": {
-                        "formValidation": {
-
-                        },
+                        "dataValidation": {
+                            "NoRecentFound": "Brak aktywności"
+                        } 
+                    }
+                }
+            }
+        },
+        "user": {
+            "title": "Użytkownik",
+            "titlePlural": "Użytkownicy",
+            "fields": {
+                "email": "Adres email",
+                "username": "Nazwa użytkownika",
+                "firstname": "Imię",
+                "lastname": "Nazwisko",
+                "position": "Stanowisko",
+                "company": "Firma",
+                "phone": "Numer telefonu",
+                "avatarUrl": "URL awatara"
+            },
+            "actions": {
+                "selectUser": {
+                    "actionResults": {
+                        "success": "",
+                        "failure": ""
+                    },
+                    "errorMessages": {
+                        "dataValidation": {
+                            "UserIdMissing": "Brakujące ID użytkownika"
+                        }
+                    }
+                },
+                "selectUserList": {
+                    "actionResults": {
+                        "success": "",
+                        "failure": ""
+                    },
+                    "errorMessages": {
+                        "dataValidation": {
+                            
+                        }
+                    }
+                },
+                "createUser": {
+                    "actionTitle": "Tworzenie profilu użytkownika",
+                    "actionResults": {
+                        "success": "Użytkownik został pomyślnie utworzony",
+                        "failure": "Wystąpił błąd podczas tworzenia użytkownika"
+                    },
+                    "errorMessages": {
+                        "dataValidation": {
+                            
+                        }
+                    }
+                },
+                "updateUser": {
+                    "actionResults": {
+                        "success": "Profil użytkownika został pomyślnie zaktualizowany",
+                        "failure": "Wystąpił błąd podczas aktualizacji profilu użytkownika"
+                    },
+                    "errorMessages": {
+                        "dataValidation": {
+                            
+                        }
+                    }
+                },
+                "deleteUser": {
+                    "actionResults": {
+                        "success": "",
+                        "failure": ""
+                    },
+                    "errorMessages": {
                         "dataValidation": {
                             
                         }
@@ -472,33 +583,10 @@
                 }
             }
         },
-        "recentActivity": {
-            "title": "Ostatnia aktywność",
-            "fieldNames": {
-                "name": "Nazwa aktywności",
-                "type": "Typ",
-                "content": "Treść"
-            },
-            "actions": {
-                "viewRecentActivity": {
-                    "actionResults": {
-                        "success": "",
-                        "failure": ""
-                    },
-                    "errorMessages": {
-                        "formValidation": {
-
-                        },
-                        "dataValidation": {
-                            
-                        } 
-                    }
-                }
-            }
-        },
         "company": {
             "title": "Firma",
-            "fieldNames": {
+            "titlePlural": "Firmy",
+            "fields": {
                 "name": "Nazwa firmy",
                 "description": "Opis",
                 "owner": "Właściciel",
@@ -508,29 +596,23 @@
                 "avatarUrl": "URL awatara - opcjonalny"
             },
             "actions": {
-                "viewCompany": {
+                "selectCompany": {
                     "actionResults": {
                         "success": "",
                         "failure": ""
                     },
                     "errorMessages": {
-                        "formValidation": {
-
-                        },
                         "dataValidation": {
                             
                         }
                     }
                 },
-                "viewCompanyList": {
+                "selectCompanyList": {
                     "actionResults": {
                         "success": "",
                         "failure": ""
                     },
                     "errorMessages": {
-                        "formValidation": {
-
-                        },
                         "dataValidation": {
                             
                         }
@@ -542,23 +624,17 @@
                         "failure": ""
                     },
                     "errorMessages": {
-                        "formValidation": {
-
-                        },
                         "dataValidation": {
                             
                         }
                     }
                 },
-                "editCompany": {
+                "updateCompany": {
                     "actionResults": {
                         "success": "",
                         "failure": ""
                     },
                     "errorMessages": {
-                        "formValidation": {
-
-                        },
                         "dataValidation": {
                             
                         }
@@ -570,9 +646,6 @@
                         "failure": ""
                     },
                     "errorMessages": {
-                        "formValidation": {
-
-                        },
                         "dataValidation": {
                             
                         }
@@ -580,36 +653,31 @@
                 }
             }
         },
-        "roles": {
-            "title": "Role",
-            "fieldNames": {
+        "role": {
+            "title": "Rola",
+            "titlePlural": "Role",
+            "fields": {
                 "name": "Nazwa roli",
                 "description": "Opis"
             },
             "actions": {
-                "viewRole": {
+                "selectRole": {
                     "actionResults": {
                         "success": "",
                         "failure": ""
                     },
                     "errorMessages": {
-                        "formValidation": {
-
-                        },
                         "dataValidation": {
                             
                         }
                     }
                 },
-                "viewRoleList": {
+                "selectRoleList": {
                     "actionResults": {
                         "success": "",
                         "failure": ""
                     },
                     "errorMessages": {
-                        "formValidation": {
-
-                        },
                         "dataValidation": {
                             
                         }
@@ -621,23 +689,17 @@
                         "failure": ""
                     },
                     "errorMessages": {
-                        "formValidation": {
-
-                        },
                         "dataValidation": {
                             
                         }
                     }
                 },
-                "editRole": {
+                "updateRole": {
                     "actionResults": {
                         "success": "",
                         "failure": ""
                     },
                     "errorMessages": {
-                        "formValidation": {
-
-                        },
                         "dataValidation": {
                             
                         }
@@ -649,9 +711,6 @@
                         "failure": ""
                     },
                     "errorMessages": {
-                        "formValidation": {
-
-                        },
                         "dataValidation": {
                             
                         }
@@ -670,17 +729,48 @@
             "cancel": "Anuluj",
             "submit": "Wyślij",
             "return": "Powrót",
+            "login": "Zaloguj",
+            "register": "Zarejestruj się",
             "reset": "Wyczyść",
+            "edit": "Edytuj",
             "save": "Zapisz",
-            "discard": "Odrzuć"
+            "discard": "Odrzuć",
+            "selectTeam": "Wybierz zespół",
+            "selectCategory": "Wybierz kategorię",
+            "selectStatus": "Wybierz status",
+            "selectOrganization": "Wybierz organizację",
+            "addMember": "Dodaj nowych uczestników",
+            "addTeam": "Dodaj zespoły",
+            "setStatus": "Ustaw status"
         }
     },
     "commonErrors": {
+        "noTeamsAvailable": "Brak dostępnych zespołów",
+        "noMembersAvailable": "Brak dostępnych użytkowników",
+        "noStatusesAvailable": "Brak dostępnych statusów",
         "cannotDisplayRequestedResource": "Nie można wyświetlić żądanego zasobu",
         "cannotAccessRequestedResource": "Nie można otworzyć żądanego zasobu",
         "cannotFindRequestedResource": "Nie można odnaleźć żądanego zasobu",
         "permissionsNotSufficient": "Dostęp do żądanego zasobu wymaga odpowiednich uprawnień",
         "accessDenied": "Odmowa dostępu",
-        "IncorrectNumberOfArguments": "Nieprawidłowa liczba argumentów"
+        "unauthorized": "Brak autoryzacji",
+        "notFound": "Nie znaleziono",
+        "IncorrectNumberOfArguments": "Nieprawidłowa liczba argumentów",
+        "formValidation": {
+            "requiredDate": "musi posiadać wybraną datę",
+            "emptyForm": "Przesłany formularz jest pusty",
+            "requiredFieldIsEmpty": "jest wymagane",
+            "requiredDropDownSelection": "musi posiadać zaznaczoną opcję",
+            "allowedCharsOnly": "Dozwolone są wyłącznie następujące znaki: ",
+            "digitsOnly": "Dozwolone sa wyłącznie cyfry",
+            "emailNotValid": "Podany adres email nie spełnia wymagań dotyczących formatu",
+            "loginNotValid": "Podany login nie spełnia wymagań dotyczących nazwy użytkownika lub adresu email",
+            "passwordsDoNotMatch": "Podane hasła nie są identyczne",
+            "phoneIncorrectFormat": "Niepoprawny format numeru telefonu",
+            "passwordTooShort": "Hasło musi mieć przynajmniej 6 znaków długości",
+            "confirmPasswordIsEmpty": "Potwierdź hasło, aby zarejestrować konto",
+            "incorrectPhoneNumberFormat": "Numer telefonu musi posiadać jeden z następujących formatów: ",
+            "InvalidUrlFormat": "Podany URL nie spełnia wymagań poprawności formatu linku zewnętrznego"
+        }
     }
 }

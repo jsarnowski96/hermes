@@ -58,12 +58,12 @@ class RepositoryList extends React.Component {
     render() {
         const {t} = this.props;
         return(
-            <table class="tab-table">
+            <table className="tab-table">
                 <thead>
                     <tr>
-                        <th>{t('content.repositories.fieldNames.name')}</th>
-                        <th>{t('content.repositories.fieldNames.type')}</th>
-                        <th>{t('content.repositories.fieldNames.content')}</th>
+                        <th>{t('content.repositories.fields.name')}</th>
+                        <th>{t('content.repositories.fields.type')}</th>
+                        <th>{t('content.repositories.fields.content')}</th>
                     </tr>
                 </thead>
                 <tbody>

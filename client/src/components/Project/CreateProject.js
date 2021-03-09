@@ -22,8 +22,8 @@ class CreateProject extends React.Component {
                     refreshToken: this.jwt.refreshToken
                 },
                 categories: [],
-                statuses: [ 'To do', 'In progress', 'In review', 'Postponed', 'Done'],
                 teams: [],
+                statuses: [ 'To do', 'In progress', 'In review', 'Postponed', 'Done'],
                 fields: {},
                 errors: {},
                 serverResponse: null
@@ -33,27 +33,10 @@ class CreateProject extends React.Component {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${this.state.auth.refreshToken}`
             };
-        } else {
-            this.state = {
-                auth: {
-                    userId: null,
-                    refreshToken: null
-                },
-                categories: [],
-                statuses: [ 'To do', 'In progress', 'In review', 'Postponed', 'Done'],
-                teams: [],
-                fields: {},
-                errors: {},
-                serverResponse: null
-            }
         }
 
-        this.resetForm = this.resetForm.bind(this);        
-        this.getCategories = this.getCategories.bind(this);
-        this.getTeams = this.getTeams.bind(this);
-    }
+        this.resetForm = this.resetForm.bind(this);                
 
-    componentDidMount() {
         this.getCategories();
         this.getTeams();
     }
@@ -64,8 +47,22 @@ class CreateProject extends React.Component {
 
     resetForm() {
         document.getElementById('serverResponse').innerHTML = '';
-        document.getElementById('requirements').defaultValue = '';
+        document.getElementById('description').defaultValue = '';
         this.setState({fields: {}, errors: {}});
+    }
+
+    onChange(field, event) {
+        let fields = this.state.fields;
+        let errors = this.state.errors;
+        
+        if(field === 'restricted_access') {
+            fields[field] = event.target.checked;
+        } else {
+            fields[field] = event.target.value;       
+        }
+
+        errors[field] = '';
+        this.setState({fields, errors});
     }
 
     validateForm() {
@@ -76,23 +73,43 @@ class CreateProject extends React.Component {
 
         if(!fields['name']) {
             isValid = false;
-            errors['name'] = t('misc.phrases.field') + ' \'' + t('content.project.fieldNames.name') + '\' ' + t('content.project.actions.createProject.errorMessages.formValidation.requiredFieldIsEmpty');
-        } else if(typeof fields['name'] !== undefined) {
+            errors['name'] = t('misc.phrases.field') + ' \'' + t('content.project.fields.name') + '\' ' + t('commonErrors.formValidation.requiredFieldIsEmpty');
+        } else if(fields['name'] !== undefined) {
             if(!fields['name'].match(/^[ążśźęćńółĄŻŚŹĘĆŃÓŁA-Za-z0-9!@#$%^&*()_+\-=,./;'\\[\]<>?:"|{} ]{1,50}$/)) {
                 let regex = /^[ążśźęćńółĄŻŚŹĘĆŃÓŁA-Za-z0-9!@#$%^&*()_+\-=,./;'\\[\]<>?:"|{} ]{1,50}$/;
                 isValid = false;
-                errors['name'] = t('content.project.actions.createProject.errorMessages.formValidation.allowedCharsOnly') + regex;
+                errors['name'] = t('commonErrors.formValidation.allowedCharsOnly') + regex;
             }
         }
 
-        if(!fields['requirements']) {
+        if(!fields['dueDate']) {
             isValid = false;
-            errors['requirements'] = t('misc.phrases.field') + ' \'' + t('content.project.fieldNames.requirements') + '\' ' + t('content.project.actions.createProject.errorMessages.formValidation.requiredFieldIsEmpty');
-        } else if(typeof fields['requirements'] !== undefined) {
-            if(!fields['requirements'].match(/^.{1,500}$/)) {
+            errors['dueDate'] = errors['dueDate'] = t('misc.phrases.field') + ' \'' + t('content.project.fields.dueDate') + '\' ' + t('commonErrors.formValidation.requiredDate');
+        }
+
+        if(!fields['category'] || fields['category'] === 'none') {
+            isValid = false;
+            errors['category'] = t('misc.phrases.field') + ' \'' + t('content.category.title') + '\' ' + t('commonErrors.formValidation.requiredDropDownSelection');
+        }
+
+        if(!fields['team'] || fields['team'] === 'none') {
+            isValid = false;
+            errors['team'] = t('misc.phrases.field') + ' \'' + t('content.team.title') + '\' ' + t('commonErrors.formValidation.requiredDropDownSelection');
+        }
+
+        if(!fields['status'] || fields['status'] === 'none') {
+            isValid = false;
+            errors['status'] = t('misc.phrases.field') + ' \'' + t('content.project.fields.status') + '\' ' + t('commonErrors.formValidation.requiredDropDownSelection');
+        }
+
+        if(!fields['description']) {
+            isValid = false;
+            errors['description'] = t('misc.phrases.field') + ' \'' + t('content.project.fields.description') + '\' ' + t('commonErrors.formValidation.requiredFieldIsEmpty');
+        } else if(fields['description'] !== undefined) {
+            if(!fields['description'].match(/^.{1,500}$/)) {
                 let regex = /^.{1,500}$/;
                 isValid = false;
-                errors['requirements'] = t('content.project.actions.createProject.errorMessages.formValidation.allowedCharsOnly') + regex;
+                errors['description'] = t('content.project.actions.createProject.errorMessages.formValidation.allowedCharsOnly') + regex;
             }
         }
 
@@ -102,7 +119,7 @@ class CreateProject extends React.Component {
     }
 
     async getCategories() {
-        await axios.post('http://localhost:3300/category/list', { category_type: 'project'}, {headers: this.headers, withCredentials: true, })
+        await axios.post('http://localhost:3300/category/list', { category_type: 'project'}, {headers: this.headers, withCredentials: true })
             .then((response) => {
                 if(response.data.categories.length > 0 && response.data.categories !== null) {
                     this.setState({categories: response.data.categories});
@@ -111,13 +128,13 @@ class CreateProject extends React.Component {
                 }     
             })
             .catch((error) => {
-                //console.log(JSON.parse(JSON.stringify(error)));
-                if (error instanceof Error && (error.response.status === 404 || error.response.status === 406 || error.response.statu === 500)) {
-                    this.setState({
-                        serverResponse: error.response.data
-                    });
+                if(error.response.data.error === 'JwtTokenExpired') {
+                    removeJwtDataFromSessionStorage()
                 }
-                throw error;
+                
+                this.setState({
+                    serverResponse: error.response.data.error
+                })
             });
     }
 
@@ -131,26 +148,13 @@ class CreateProject extends React.Component {
                 }
             })
             .catch((error) => {
-                //console.log(JSON.parse(JSON.stringify(error)));
-                if (error instanceof Error && (error.response.status === 404 || error.response.status === 406 || error.response.statu === 500)) {
+                if (error.response.data.error instanceof Error && (error.response.status === 404 || error.response.status === 406 || error.response.status === 500)) {
                     this.setState({
-                        serverResponse: error.response.data
+                        serverResponse: error.response.data.error
                     });
                 }
                 throw error;
             });
-    }
-
-    onChange(field, event) {
-        let fields = this.state.fields;
-        let errors = this.state.errors;
-        if(field === 'restricted_access') {
-            fields[field] = event.target.checked;
-        } else {
-            fields[field] = event.target.value;       
-        }
-        errors[field] = '';
-        this.setState({fields, errors});
     }
 
     onFormSubmit = (event, errors) => {
@@ -161,35 +165,21 @@ class CreateProject extends React.Component {
         if(this.validateForm()) {
             try {
                 axios.post('http://localhost:3300/project/create', {
-                    name: fields['name'],
-                    category: fields['category'],
-                    requirements: fields['requirements'],
-                    restricted_access: fields['restricted_access'],
                     userId: this.state.auth.userId,
-                    dueDate: fields['dueDate']
+                    projectObj: this.state.fields
                 }, {headers: this.headers, withCredentials: true})
                 .then((response) => {
-                    let res = document.getElementById('serverResponse');
-                    if(response.data.message === 'ProjectCreateSuccess') {
-                        res.innerHTML = t('content.project.actions.createProject.actionResults.success');
-                        res.style.color = 'green';
-                    } else if(response.data.message === 'ProjectCreateFailure') {
-                        res.innerHTML = t('content.project.actions.createProject.actionResults.failure');
-                    } else {
-                        res.innerHTML = response.data.message;
+                    if(response !== undefined && response.data.project !== null) {
+                        this.setState({project: response.data.project, serverResponse: t('content.project.actions.createProject.actionResults.success')});
                     }
-                    res.style.display = 'block';   
                 })
                 .catch(error => {
-                    if (error instanceof Error && (error.response.status === 404 || error.response.status === 406 || error.response.statu === 500)) {
-                        this.setState({
-                            serverResponse: error.response.data
-                        });
+                    if(error) {
+                        this.setState({serverResponse: error.response.data.error});
                     }
-                    throw error;
                 }) 
             } catch(e) {
-                console.log(e);
+                this.setState({serverResponse: e.message});
             }
         } else {
             let errors = document.querySelectorAll('.error-msg-span');
@@ -207,60 +197,72 @@ class CreateProject extends React.Component {
                 <div className="card">
                     <p className="card-title">{t('content.project.actions.createProject.actionTitle')}</p><hr className="card-hr" />
                     <form className="card-form" onSubmit={this.onFormSubmit}>
-                        <label htmlFor="name">{t('content.project.fieldNames.name')}</label>
+                        <label htmlFor="name">{t('content.project.fields.name')}</label>
                         <input onChange={this.onChange.bind(this, 'name')} value={this.state.fields['name']} type="name" className="" name="name" />
                         <span className="error-msg-span">{this.state.errors["name"]}</span>
-                        <label htmlFor="category">{t('content.project.fieldNames.category')}</label>
+                        <label htmlFor="category">{t('content.project.fields.category')}</label>
                         <select onChange={this.onChange.bind(this, 'category')} value={this.state.fields['category']} type="category" className="" name="category">
-                            {this.state.categories.map((category, index) => {
-                                if(index === 0) {
-                                    return <option value={category} default>{category}</option>
-                                } else {
-                                    return <option value={category}>{category}</option>
-                                }
-                            })}
+                            <option selected value="none">{t('misc.actionDescription.selectCategory')}</option>
+                            {this.state.categories.length > 0 && (
+                                this.state.categories.map((category, index) => {
+                                    if(index === 0) {
+                                        return <option value={category.name}>{category.name}</option>
+                                    } else {
+                                        return <option value={category.name}>{category.name}</option>
+                                    }
+                                })
+                            )}
                         </select>
                         <span className="error-msg-span">{this.state.errors["category"]}</span>
-                        <label htmlFor="requirements">{t('content.project.fieldNames.requirements')}</label>
-                        <textarea onChange={this.onChange.bind(this, 'requirements')} value={this.state.fields['requirements']} type="requirements" id="requirements" name="requirements" />
-                        <span className="error-msg-span">{this.state.errors["requirements"]}</span>
-                        <label htmlFor="category">{t('content.project.fieldNames.assignedTeam')}</label>
+                        <label htmlFor="description">{t('content.project.fields.description')}</label>
+                        <textarea onChange={this.onChange.bind(this, 'description')} value={this.state.fields['description']} type="description" id="description" name="description" />
+                        <span className="error-msg-span">{this.state.errors["description"]}</span>
+                        <label htmlFor="team">{t('content.project.fields.team')}</label>
                         <select onChange={this.onChange.bind(this, 'team')} value={this.state.fields['team']} type="team" className="" name="team">
-                            {this.state.teams.map((team, index) => {
-                                if(index === 0) {
-                                    return <option value={team} default>{team}</option>
-                                } else {
-                                    return <option value={team}>{team}</option>
-                                }
-                            })}
+                            <option selected value="none">{t('misc.actionDescription.selectTeam')}</option>
+                            {this.state.teams.length > 0 && (
+                                this.state.teams.map((team, index) => {
+                                    if(index === 0) {
+                                        return <option value={team.name}>{team.name}</option>
+                                    } else {
+                                        return <option value={team.name}>{team.name}</option>
+                                    }
+                                })
+                            )}
                         </select>
-                        <label htmlFor="category">{t('content.project.fieldNames.status')}</label>
+                        <span className="error-msg-span">{this.state.errors["team"]}</span>
+                        <label htmlFor="status">{t('content.project.fields.status')}</label>
                         <select onChange={this.onChange.bind(this, 'status')} value={this.state.fields['status']} type="status" className="" name="status">
+                            <option selected value="none">{t('misc.actionDescription.selectStatus')}</option>
                             {this.state.statuses.map((status, index) => {
                                 if(index === 0) {
-                                    return <option value={status} default>{status}</option>
+                                    return <option value={status}>{status}</option>
                                 } else {
                                     return <option value={status}>{status}</option>
                                 }
                             })}
                         </select>
-                        <span className="error-msg-span">{this.state.errors["category"]}</span>
-                        <label htmlFor="dueDate">{t('content.project.fieldNames.dueDate')}</label>
+                        <span className="error-msg-span">{this.state.errors["status"]}</span>
+                        <label htmlFor="dueDate">{t('content.project.fields.dueDate')}</label>
                         <input onChange={this.onChange.bind(this, 'dueDate')} value={this.state.fields['dueDate']} type="date" className="" name="dueDate"
                             min="2021-02-01" max="2022-12-31" />
                         <span className="error-msg-span">{this.state.errors["dueDate"]}</span>
-                        <label htmlFor="restricted_access">{t('content.project.fieldNames.restrictedAccess')}</label>
-                        <input onChange={this.onChange.bind(this, 'restricted_access')} value={this.state.fields['restricted_access']} type="checkbox" className="" name="restricted_access" />
+                        <label htmlFor="restrictedAccess">{t('content.project.fields.restrictedAccess')}</label>
+                        <input onChange={this.onChange.bind(this, 'restrictedAccess')} value={this.state.fields['restrictedAccess']} type="checkbox" className="" name="restrictedAccess" />
                         <div class="card-form-divider">
                             <button type="submit" className="card-form-button">{t('misc.actionDescription.create')}</button>
                             <button type="reset" className="card-form-button" onClick={this.resetForm}>{t('misc.actionDescription.reset')}</button>
                             <button type="button" className="card-form-button"><Link to="/dashboard" className="card-form-button-link">{t('misc.actionDescription.cancel')}</Link></button>
                         </div>
                         {this.state.serverResponse !== null ? (
-                            <span className="error-msg-span" style={{display: "block"}} id="serverResponse">{this.state.serverResponse}</span>
-                        ) : (
-                            <span className="error-msg-span" id="serverResponse"></span>
-                        )}
+                                this.state.project !== null ? (
+                                    <span className="error-msg-span" style={{display: "block", color: 'green'}} id="serverResponse">{this.state.serverResponse}</span>
+                                ) : (
+                                    <span className="error-msg-span" style={{display: "block"}} id="serverResponse">{t('content.project.actions.createProject.errorMessages.dataValidation.' + this.state.serverResponse)}</span>
+                                )
+                            ) : (
+                                <span className="error-msg-span" id="serverResponse"></span>
+                            )}
                     </form>
                 </div>
             )

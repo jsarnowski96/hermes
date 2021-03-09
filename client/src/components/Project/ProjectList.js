@@ -1,9 +1,10 @@
 import React from 'react';
 import {withTranslation} from 'react-i18next';
-import {Redirect} from 'react-router-dom';
+import {Redirect, Link} from 'react-router-dom';
 import axios from 'axios';
+import moment from 'moment';
 
-import {getJwtDataFromSessionStorage} from '../../middleware/jwtSessionStorage';
+import {getJwtDataFromSessionStorage, removeJwtDataFromSessionStorage} from '../../middleware/jwtSessionStorage';
 
 import '../../assets/css/dashboard.css';
 
@@ -19,21 +20,14 @@ class ProjectList extends React.Component {
                     userId: this.jwt.userId,
                     refreshToken: this.jwt.refreshToken
                 },
-                project: []
+                projects: [],
+                serverResponse: null
             }
 
             this.headers = {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${this.state.auth.refreshToken}`
             };
-        } else {
-            this.state = {
-                auth: {
-                    userId: null,
-                    refreshToken: null
-                },
-                project: []
-            }
         }
         
         this.getProjectList();
@@ -43,19 +37,27 @@ class ProjectList extends React.Component {
         try {
             axios.post('http://localhost:3300/project/list', 
             {
-                userId: this.state.auth.userId    
+                ref: 'user',
+                objId: this.state.auth.userId
             }, {headers: this.headers, withCredentials: true})
             .then((response) => {
-                if(response.data.project !== undefined && response.data.project !== '' && response.data.project !== null && response.data.project.length > 0) {
-                    this.setState({project: response.data.project});
+                if(response !== undefined && response.data.projects !== null && response.data.projects.length > 0) {
+                    this.setState({projects: response.data.projects});
                 }
             })
             .catch((error) => {
-                console.log(error);
-                console.log(error.response);
+                if(error) {
+                    if(error.response.data.error === 'JwtTokenExpired') {
+                        removeJwtDataFromSessionStorage()
+                    } else {
+                        this.setState({
+                            serverResponse: error.response.data.error
+                        })
+                    }
+                }
             });
         } catch(e) {
-            console.log(e);
+            this.setState({serverResponse: e.message});
         }
     }
 
@@ -63,26 +65,41 @@ class ProjectList extends React.Component {
         const{t} = this.props;
 
         if(this.jwt !== null && this.state.auth.userId !== null && this.state.auth.refreshToken !== null) {
-            
             return(
-                <table class="tab-table">
+                <table className="tab-table">
                     <thead>
                         <tr>
-                            <th>{t('content.project.fieldNames.name')}</th>
-                            <th>{t('content.project.fieldNames.assignedTeam')}</th>
-                            <th>{t('content.project.fieldNames.category')}</th>
-                            <th>{t('content.project.fieldNames.dueDate')}</th>
+                            <th>{t('content.project.fields.name')}</th>
+                            <th>{t('content.project.fields.associatedTeams')}</th>
+                            <th>{t('content.project.fields.category')}</th>
+                            <th>{t('content.project.fields.dueDate')}</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {this.state.project.map((project, index) => (
+                        {this.state.projects.length > 0 ? (
+                            this.state.projects.map((project, index) => (
+                                <tr>
+                                    <td>
+                                        <Link to={{pathname: '/project/details', state: {projectId: project._id}}}>{project.name}</Link>
+                                    </td>
+                                    <td>
+                                        {project.teams.map((team) => {
+                                            return <span style={{marginLeft: '1vw'}}><Link to={{pathname: '/team/details', state: {ref: 'team', objId: team._id}}}>{team.name}</Link></span>
+                                        })}
+                                    </td>
+                                    <td>{project.category.name}</td>
+                                    <td>{moment(project.dueDate).format('YYYY-MM-DD')}</td>
+                                </tr>
+                            ))
+                        ) : (
                             <tr>
-                                <td>{project.name}</td>
-                                <td>{project.assignedTeam}</td>
-                                <td>{project.category}</td>
-                                <td>{project.dueDate}</td>
+                                {this.state.serverResponse !== null ? (
+                                    <td colspan="6" align="center">- {t('content.project.actions.selectProjectList.errorMessages.dataValidation.' + this.state.serverResponse)} -</td>
+                                ) : (
+                                    <td colspan="6" align="center">-</td>
+                                )}
                             </tr>
-                        ))}
+                        )}
                     </tbody>
                 </table>
             )

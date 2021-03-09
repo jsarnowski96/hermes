@@ -7,32 +7,90 @@ const {
     getUser,
     getUserList,
     createUser,
-    editUser,
+    updateUser,
     deleteUser
-} = require('../../services/userService');
+} = require('../../services/dbTransactionService');
 
 const {ensureAuthenticated} = require('../../middleware/jwtAuthentication');
 
 router.all('*', ensureAuthenticated);
 
-router.get('/details/:id', async (req, res, next) => {
-    res.status(200).json({message: 'User ID route'});
+router.post('/profile/:userId', async (req, res, next) => {
+    await getUser(req.params.userId)
+    .then((result) => {
+        if(!result || result === null) {
+            throw new Error('UserNotFound');
+        } else {
+            return res.status(200).json({user: result});
+        }
+    })
+    .catch((error) => {
+        if(error) {
+            return res.status(500).json({error: error.message});
+        }
+    })
+});
+
+router.post('/profile', async (req, res, next) => {
+    await getUser(req.body.userId)
+    .then((result) => {
+        if(!result || result === null) {
+            throw new Error('UserNotFound');
+        } else {
+            return res.status(200).json({user: result});
+        }
+    })
+    .catch((error) => {
+        if(error) {
+            return res.status(500).json({error: error.message});
+        }
+    })
 });
 
 router.post('/list', async (req, res, next) => {
-    return res.status(200);
+    await getUserList(req.body.ref, req.body.objId)
+    .then((result) => {
+        if(!result || result === null || result.length === 0) {
+            throw new Error('NoUsersFound');
+        } else {
+            return res.status(200).json({users: result});
+        }
+    })
+    .catch((error) => {
+        if(error) {
+            return res.status(500).json({error: error.message});
+        }
+    })
 });
 
-router.get('/edit', async (req, res, next) => {
-
+router.post('/update', async (req, res, next) => {
+    await updateUser(req.body.userId, req.body.docId, req.body.userObj)
+    .then((result) => {
+        if(!result || result === null) {
+            throw new Error('UserNotUpdated');
+        } else {
+            return res.status(200).json({user: result});
+        }
+    })
+    .catch((error) => {
+        if(error) {
+            return res.status(500).json({error: error.message});
+        }
+    })
 });
 
 router.post('/create', async (req, res, next) => {
-    if(await createUser(req.body)) {
-        res.status(200).json({message: 'User succesfully added to the database'});
-    } else {
-        res.status(400).json({message: 'Could not add user to the database'});
-    }
+    await createUser(req.body)
+    .then((result) => {
+        if(!result || result === null) {
+            throw new Error('UserNotCreated');
+        } else {
+            return res.status(200).json({user: result});
+        }
+    })
+    .catch((error) => {
+        return res.status(500).json({error: error.message});
+    })
 });
 
 router.post('/delete', async (req, res, next) => {

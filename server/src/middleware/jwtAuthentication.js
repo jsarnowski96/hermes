@@ -14,28 +14,28 @@ module.exports = {
                 if(err) {
                     if (err.name === 'TokenExpiredError') {
                         console.log('JWT Token expired');
-                        return res.status(403).json({message: 'JwtTokenExpired'});
+                        return res.status(403).json({error: 'JwtTokenExpired'});
                     } else if (err.name === 'JsonWebTokenError') {
                         console.log('JWT Token malformed');
-                        return res.status(406).json({message: 'JwtTokenMalformed'});
+                        return res.status(406).json({error: 'JwtTokenMalformed'});
                     } else {
                         console.log(err.name + "\n" + err.message);
-                        return res.status(500).json({message: err.name + "\n" + err.message});
+                        return res.status(500).json({error: err.name + "\n" + err.message});
                     }
                 } else {
                     if(payload) {
                         //console.log('JWT Token successfully validated');
                         passport.authenticate('jwt', { session: false });
+                        next();
                     } else {
                         console.log('Missing JWT Token payload');
-                        return res.status(406).json({message: 'MissingJwtTokenPayload'});
+                        return res.status(406).json({error: 'MissingJwtTokenPayload'});
                     }
                 }
             });
         } else {
             console.log('Missing Auth Header');
-            return res.status(403).json({message: 'MissingAuthHeader'});
+            return res.status(403).json({error: 'MissingAuthHeader'});
         }
-        next();
     }
 }

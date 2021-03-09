@@ -53,103 +53,105 @@ class Register extends React.Component {
 
         if(!fields['firstname']) {
             isValid = false;
-            errors['firstname'] = t('misc.phrases.field') + ' \'' + t('content.register.firstname') + '\' ' + t('content.register.errorMessages.formValidation.requiredFieldIsEmpty');
-        } else if(typeof fields['firstname'] !== undefined) {
+            errors['firstname'] = t('misc.phrases.field') + ' \'' + t('content.register.firstname') + '\' ' + t('commonErrors.formValidation.requiredFieldIsEmpty');
+        } else if(fields['firstname'] !== undefined) {
             if(!fields['firstname'].match(/^[ążśźęćńółĄŻŚŹĘĆŃÓŁa-zA-Z\- ]{1,20}$/)) {
                 let regex = /^[ążśźęćńółĄŻŚŹĘĆŃÓŁa-zA-Z\- ]{1,20}$/;
                 isValid = false;
-                errors['firstname'] = t('content.register.errorMessages.formValidation.allowedCharsOnly') + regex;
+                errors['firstname'] = t('commonErrors.formValidation.allowedCharsOnly') + regex;
             }
         }
 
         if(!fields['lastname']) {
             isValid = false;
-            errors['lastname'] = t('misc.phrases.field') + ' \'' + t('content.register.lastname') + '\' ' + t('content.register.errorMessages.formValidation.requiredFieldIsEmpty');
-        } else if(typeof fields['lastname'] !== undefined) {
+            errors['lastname'] = t('misc.phrases.field') + ' \'' + t('content.register.lastname') + '\' ' + t('commonErrors.formValidation.requiredFieldIsEmpty');
+        } else if(fields['lastname'] !== undefined) {
             if(!fields['lastname'].match(/^[ążśźęćńółĄŻŚŹĘĆŃÓŁa-zA-Z\- ]{1,20}$/)) {
                 let regex = /^[ążśźęćńółĄŻŚŹĘĆŃÓŁa-zA-Z\- ]{1,20}$/;
                 isValid = false;
-                errors['lastname'] = t('content.register.errorMessages.formValidation.allowedCharsOnly') + regex;
+                errors['lastname'] = t('commonErrors.formValidation.allowedCharsOnly') + regex;
             }
         }
 
         if(!fields['username']) {
             isValid = false;
-            errors['username'] = t('misc.phrases.field') + ' \'' + t('content.register.username') + '\' ' + t('content.register.errorMessages.formValidation.requiredFieldIsEmpty');
-        } else if(typeof fields['username'] !== undefined) {
+            errors['username'] = t('misc.phrases.field') + ' \'' + t('content.register.username') + '\' ' + t('commonErrors.formValidation.requiredFieldIsEmpty');
+        } else if(fields['username'] !== undefined) {
             if(!fields['username'].match(/^[a-zA-Z0-9\-_.]+$/)) {
                 let regex = /^[a-zA-Z0-9\-_.]+$/;
                 isValid = false;
-                errors['username'] = t('content.register.errorMessages.formValidation.allowedCharsOnly') + regex;
+                errors['username'] = t('commonErrors.formValidation.allowedCharsOnly') + regex;
             }
         }
 
         if(!fields['email']) {
             isValid = false;
-            errors['email'] = t('misc.phrases.field') + ' \'' + t('content.register.email') + '\' ' + t('content.register.errorMessages.formValidation.requiredFieldIsEmpty');
-        } else if(typeof fields['email'] != undefined) {
+            errors['email'] = t('misc.phrases.field') + ' \'' + t('content.register.email') + '\' ' + t('commonErrors.formValidation.requiredFieldIsEmpty');
+        } else if(fields['email'] != undefined) {
             if(!fields['email'].match(/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/) && !fields['email'].match(/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/)) {
                 isValid = false;
-                errors['email'] = t('content.register.errorMessages.formValidation.emailNotValid');
+                errors['email'] = t('commonErrors.formValidation.emailNotValid');
             }
         }
 
         if(!fields['phone']) {
             isValid = false;
-            errors['phone'] = t('misc.phrases.field') + ' \'' + t('content.register.phone') + '\' ' + t('content.register.errorMessages.formValidation.requiredFieldIsEmpty');
-        } else if(typeof fields['phone'] != undefined) {
+            errors['phone'] = t('misc.phrases.field') + ' \'' + t('content.register.phone') + '\' ' + t('commonErrors.formValidation.requiredFieldIsEmpty');
+        } else if(fields['phone'] != undefined) {
             if(!fields['phone'].match(/^\+?([0-9]{2})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{3}?[-. ]?([0-9]{3}))$/) && !fields['phone'].match(/^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{3})$/) && !fields['phone'].match(/^([0-9]{9})$/)) {
                 let regex1 = 'yy xxx xxx xxx';
                 let regex2 = 'xxx xxx xxx';
                 let regex3 = 'xxxxxxxxx';
                 isValid = false;
-                errors['phone'] = t('content.register.errorMessages.formValidation.incorrectPhoneNumberFormat') + '\n\n' + regex1 + ', ' + regex2 + ' ' + t('misc.phrases.or') + ' ' + regex3;
+                errors['phone'] = t('commonErrors.formValidation.incorrectPhoneNumberFormat') + '\n\n' + regex1 + ', ' + regex2 + ' ' + t('misc.phrases.or') + ' ' + regex3;
             }
         }
 
         if(!fields['position']) {
             isValid = false;
-            errors['position'] = t('misc.phrases.field') + ' \'' + t('content.register.position') + '\' ' +  t('content.register.errorMessages.formValidation.requiredFieldIsEmpty');
-        } else if(typeof fields['position'] !== undefined) {
+            errors['position'] = t('misc.phrases.field') + ' \'' + t('content.register.position') + '\' ' +  t('commonErrors.formValidation.requiredFieldIsEmpty');
+        } else if(fields['position'] !== undefined) {
             if(!fields['position'].match(/^[ążśźęćńółĄŻŚŹĘĆŃÓŁa-zA-Z\- ]{1,30}$/)) {
                 let regex = /^[ążśźęćńółĄŻŚŹĘĆŃÓŁa-zA-Z\- ]{1,30}$/;
                 isValid = false;
-                errors['position'] = t('content.register.errorMessages.formValidation.allowedCharsOnly') + regex;
+                errors['position'] = t('commonErrors.formValidation.allowedCharsOnly') + regex;
             }
         }
 
-        if(!fields['company']) {
-            isValid = false;
-            errors['company'] = t('misc.phrases.field') + ' \'' + t('content.register.company') + '\' ' + t('content.register.errorMessages.formValidation.requiredFieldIsEmpty');
-        } else if(typeof fields['company'] !== undefined) {
+        if(fields['company'] !== undefined && fields['company'] !== '') {
             if(!fields['company'].match(/^[ążśźęćńółĄŻŚŹĘĆŃÓŁA-Za-z0-9!@#$%^&*()_+\-=,./;'\\[\]<>?:"|{} ]{1,50}$/)) {
                 let regex = /^[ążśźęćńółĄŻŚŹĘĆŃÓŁA-Za-z0-9!@#$%^&*()_+\-=,./;'\\[\]<>?:"|{} ]{1,50}$/;
                 isValid = false;
-                errors['company'] = t('content.register.errorMessages.formValidation.allowedCharsOnly') + regex;
+                errors['company'] = t('commonErrors.formValidation.allowedCharsOnly') + regex;
             }
         }
 
+        // if(!fields['company']) {
+        //     isValid = false;
+        //     errors['company'] = t('misc.phrases.field') + ' \'' + t('content.register.company') + '\' ' + t('commonErrors.formValidation.requiredFieldIsEmpty');
+        // }
+
         if(!fields['password']) {
             isValid = false;
-            errors['password'] = t('misc.phrases.field') + ' \'' + t('content.register.password') + '\' ' + t('content.register.errorMessages.formValidation.requiredFieldIsEmpty');
-        } else if(typeof fields['password'] !== undefined) {
+            errors['password'] = t('misc.phrases.field') + ' \'' + t('content.register.password') + '\' ' + t('commonErrors.formValidation.requiredFieldIsEmpty');
+        } else if(fields['password'] !== undefined) {
             if(fields['password'].length < 6) {
                 isValid = false;
-                errors['password'] = t('content.register.errorMessages.formValidation.passwordTooShort');
+                errors['password'] = t('commonErrors.formValidation.passwordTooShort');
             }
             if(fields['password'] !== fields['confirm']) {
                 isValid = false;
-                errors['password'] = t('content.register.errorMessages.formValidation.passwordsDoNotMatch');
+                errors['password'] = t('commonErrors.formValidation.passwordsDoNotMatch');
             }
         }
 
         if(!fields['confirm']) {
             isValid = false;
-            errors['confirm'] = t('content.register.errorMessages.formValidation.confirmPasswordIsEmpty');
-        } else if(typeof fields['confirm'] !== undefined) {
+            errors['confirm'] = t('commonErrors.formValidation.confirmPasswordIsEmpty');
+        } else if(fields['confirm'] !== undefined) {
             if(fields['confirm'] !== fields['password']) {
                 isValid = false;
-                errors['confirm'] = t('content.register.errorMessages.formValidation.passwordsDoNotMatch');
+                errors['confirm'] = t('commonErrors.formValidation.passwordsDoNotMatch');
             }
         }
 
@@ -234,9 +236,9 @@ class Register extends React.Component {
                     <input type="password" onChange={this.onChange.bind(this, 'confirm')} value={this.state.fields['confirm']} className="" id="confirm" />
                     <span className="error-msg-span">{this.state.errors["confirm"]}</span>
                     <div class="card-form-divider">
-                        <button type="submit" className="card-form-button">{t('content.register.submit')}</button>
-                        <button type="reset" onClick={this.resetForm} className="card-form-button" >{t('content.register.reset')}</button>
-                        <button type="button" className="card-form-button"><Link to="/" className="card-form-button-link">{t('content.register.cancel')}</Link></button>
+                        <button type="submit" className="card-form-button">{t('misc.actionDescription.register')}</button>
+                        <button type="reset" onClick={this.resetForm} className="card-form-button" >{t('misc.actionDescription.reset')}</button>
+                        <button type="button" className="card-form-button"><Link to="/" className="card-form-button-link">{t('misc.actionDescription.cancel')}</Link></button>
                     </div>
                     {this.state.authenticated ? (
                         <span className="error-msg-span" id="serverResponse">Already authenticated</span>

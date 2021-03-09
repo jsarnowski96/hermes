@@ -7,7 +7,7 @@ const {
     getCompany,
     getCompanyList,
     createCompany,
-    editCompany,
+    updateCompany,
     deleteCompany,
     createResourceUserRole
 } = require('../../services/dbTransactionService');
@@ -24,30 +24,34 @@ router.post('/list', async (req, res, next) => {
     return res.status(200);
 });
 
-router.get('/edit', async (req, res, next) => {
+router.post('/update', async (req, res, next) => {
 
 });
 
 router.post('/create', async (req, res, next) => {
-    await createCompany(req.body)
+    await createCompany(req.body.userId, req.body.companyObj)
     .then((result) => {
-        return res.status(200).json({result: result});
+        if(!result || result === null) {
+            throw new Error('CompanyNotCreated');
+        } else {
+            return res.status(200).json({company: result});
+        }
     })
     .catch((error) => {
         if(error) {
-            if(error === 'MissingOwnerId') {
-                return res.status(406).json({message: 'Missing owner ID'});
-            } else if(error === 'EmptyFormField') {
-                return res.status(406).json({message: 'One or more form fields are empty'});
-            } else if(error === 'OwnerIdDoesNotExist')  {
-                return res.status(404).json({message: 'User with this ID does not exist'});
-            } else if(error === 'OwnerIdNotValid') {
-                return res.status(406).json({message: 'Owner ID is not valid'});
+            if(error.message === 'MissingOwnerId') {
+                return res.status(406).json({error: error.message});
+            } else if(error.message === 'EmptyFormField') {
+                return res.status(406).json({error: error.message});
+            } else if(error.message === 'OwnerIdDoesNotExist')  {
+                return res.status(404).json({error: error.message});
+            } else if(error.message === 'OwnerIdNotValid') {
+                return res.status(406).json({error: error.message});
             } else {
-                return res.status(500).json({message: error});
+                return res.status(500).json({error: error.message});
             }
         } else {
-            return res.status(500).json({message: 'Unknown error'});
+            return res.status(500).json({error: 'UnknownError'});
         }
     })
 });

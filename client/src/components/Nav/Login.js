@@ -16,6 +16,7 @@ class Login extends React.Component {
             this.state = {
                 authenticated: true,
                 redirected: false,
+                serverResponse: null,
                 fields: {},
                 errors: {}
             }
@@ -24,6 +25,7 @@ class Login extends React.Component {
                 this.state = {
                     authenticated: this.props.location.state.authenticated,
                     redirected: this.props.location.state.redirected,
+                    serverResponse: null,
                     fields: {},
                     errors: {}
                 }
@@ -31,6 +33,7 @@ class Login extends React.Component {
                 this.state = {
                     authenticated: null,
                     redirected: false,
+                    serverResponse: null,
                     fields: {},
                     errors: {}
                 }
@@ -54,8 +57,8 @@ class Login extends React.Component {
 
         if(!fields['login']) {
             isValid = false;
-            errors['login'] = t('misc.phrases.field') + ' \'' + t('content.login.login') + '\' ' + t('content.login.errorMessages.formValidation.requiredFieldIsEmpty');
-        } else if(typeof fields['login'] !== undefined) {
+            errors['login'] = t('misc.phrases.field') + ' \'' + t('content.login.login') + '\' ' + t('commonErrors.formValidation.requiredFieldIsEmpty');
+        } else if(fields['login'] !== undefined) {
             if(!fields['login'].match(/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/) && !fields['login'].match(/^[a-zA-Z0-9\-_.]+$/)) {
                 isValid = false;
                 errors['login'] = t('content.login.errorMessages.loginNotValid');
@@ -64,7 +67,7 @@ class Login extends React.Component {
 
         if(!fields['password']) {
             isValid = false;
-            errors['password'] = t('misc.phrases.field') + ' \'' + t('content.login.password') + '\' ' + t('content.login.errorMessages.formValidation.requiredFieldIsEmpty');
+            errors['password'] = t('misc.phrases.field') + ' \'' + t('content.login.password') + '\' ' + t('commonErrors.formValidation.requiredFieldIsEmpty');
         }
 
         this.setState({errors: errors});
@@ -101,24 +104,15 @@ class Login extends React.Component {
                         this.setState({ authenticated: true, redirected: false});
                     }
                     sessionStorage.setItem('renderLogoutBtn', true);
-                    axios.defaults.headers.common['Authorization'] = `Bearer $getJwtDataFromSessionStorage().refreshToken`;
                 };
             })
             .catch((error) => {
-                let sr = document.getElementById('serverResponse');
-                if(error && error !== undefined) {
-                    if(error.response.data.error === 'usernameOrPasswordIncorrect') {
-                        sr.innerHTML = t('content.login.errorMessages.dataValidation.usernameOrPasswordIncorrect');
-                    } else {
-                        sr.innerHTML = error;
-                    }
-                } else {
-                    sr.innerHTML = 'Could not get server error message';
+                if(error !== undefined) {
+                    this.setState({serverResponse: error.response.data.error, authenticated: false});
                 }
-                sr.style.display = 'block';
             });
             } catch(e) {
-                console.log(e);
+                this.setState({serverResponse: e.message});
             }
         } else {
             let errors = document.querySelectorAll('.error-msg-span');
@@ -151,13 +145,17 @@ class Login extends React.Component {
                         <input onChange={this.onChange.bind(this, 'password')} value={this.state.fields['password']} type="password" className="" id="password" name="password" />
                         <span className="error-msg-span">{this.state.errors["password"]}</span>
                         <div class="card-form-divider">
-                            <button type="submit" className="card-form-button">{t('content.login.submit')}</button>
-                            <button type="button" className="card-form-button"><Link to="/" className="card-form-button-link">{t('content.login.cancel')}</Link></button>
+                            <button type="submit" className="card-form-button">{t('misc.actionDescription.login')}</button>
+                            <button type="button" className="card-form-button"><Link to="/" className="card-form-button-link">{t('misc.actionDescription.cancel')}</Link></button>
                         </div>
                         {!this.state.authenticated && this.state.redirected ? (
-                            <span className="error-msg-span" style={{display: "block"}} id="serverResponse">UNAUTHORIZED</span>
+                            <span className="error-msg-span" style={{display: "block"}} id="serverResponse">{t('commonErrors.unauthorized')}</span>
                         ) : (
-                            <span className="error-msg-span" id="serverResponse"></span>
+                            this.state.serverResponse !== null ? (
+                                <span className="error-msg-span" style={{display: "block"}} id="serverResponse">{t('content.login.errorMessages.dataValidation.' + this.state.serverResponse)}</span>
+                            ) : (
+                                <span className="error-msg-span" id="serverResponse"></span>
+                            )
                         )}
                     </form>
                     <p className="card-form-reminder">{t('content.login.registerTip')} <Link to="/register">{t('content.login.registerLink')}</Link></p>

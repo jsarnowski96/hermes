@@ -7,7 +7,7 @@ const {
     getRole,
     getRoleList,
     createRole,
-    editRole,
+    updateRole,
     deleteRole
 } = require('../../services/dbTransactionService');
 
@@ -23,7 +23,7 @@ router.post('/list', async (req, res, next) => {
     return res.status(200);
 });
 
-router.get('/edit', async (req, res, next) => {
+router.post('/update', async (req, res, next) => {
 
 });
 

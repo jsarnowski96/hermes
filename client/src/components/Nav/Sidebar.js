@@ -8,7 +8,7 @@ import axios from 'axios';
 
 import '../../assets/css/sidebar.css';
 
-import getJwtDataFromSessionStorage from '../../middleware/jwtSessionStorage';
+import getJwtDataFromSessionStorage, { removeJwtDataFromSessionStorage } from '../../middleware/jwtSessionStorage';
 
 library.add(faCheckSquare, faCoffee, faHome, faPaperPlane, faInfoCircle, faUserPlus, faFingerprint, faSignOutAlt);
 
@@ -52,25 +52,13 @@ class Sidebar extends React.Component {
     }
 
     onLogout() {
-        if(this.jwt !== null && this.jwt !== undefined && this.jwt !== '') {
-            try {
-                axios.post('http://localhost:3300/auth/logout');
-                sessionStorage.setItem('renderLogoutBtn', false);
-                sessionStorage.removeItem('jwt');
-            } catch(e) {
-                console.log(e);
-            }
-        }        
-    }
-
-    renderBtn() {
-        const {t} = this.props;
-        var btn = <li className="nav-item"><Link to="/" className="nav-link"><FontAwesomeIcon icon="sign-out-alt" size="lg" /><span className="link-text" onClick={this.onLogout}>{t('content.navbar.logout')}</span></Link></li>
-        if(this.state.renderLogoutBtn === true) {
-            return btn
-        } else {
-            return null
-        }
+        try {
+            axios.post('http://localhost:3300/auth/logout');
+            sessionStorage.setItem('renderLogoutBtn', false);
+            removeJwtDataFromSessionStorage();
+        } catch(e) {
+            this.setState({serverResponse: e.message});
+        }     
     }
 
     render() {
@@ -85,7 +73,11 @@ class Sidebar extends React.Component {
                     <li className="nav-item"><Link to="/register" className="nav-link"><FontAwesomeIcon icon="user-plus" size="lg" /><span className="link-text">{t('content.navbar.register')}</span></Link></li>
                     <li className="nav-item"><Link to="/about" className="nav-link"><FontAwesomeIcon icon="info-circle" size="lg" /><span className="link-text">{t('content.navbar.about')}</span></Link></li>
                     <li className="nav-item"><Link to="/contact" className="nav-link"><FontAwesomeIcon icon="paper-plane" size="lg" /><span className="link-text">{t('content.navbar.contact')}</span></Link></li>
-                    {this.renderBtn()}
+                    {localStorage.getItem('renderLogoutBtn') === true ? (
+                        <li className="nav-item"><Link to="/" className="nav-link"><FontAwesomeIcon icon="sign-out-alt" size="lg" /><span className="link-text" onClick={this.onLogout}>{t('content.navbar.logout')}</span></Link></li>
+                    ) : (
+                        null
+                    )}
                     <li className="nav-item lng-change">
                         <button type="button" name='pl' style={{backgroundColor: "white"}} className="lng-button" onClick={this.onLanguageChange}>PL</button>
                         <button type="button" name='en' style={{backgroundColor: "red"}} className="lng-button" onClick={this.onLanguageChange}>EN</button>

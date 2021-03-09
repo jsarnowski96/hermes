@@ -10,12 +10,12 @@ router.post('/login', (req, res, next) => {
         if (err || !user) {
             if(err === 'usernameOrPasswordIncorrect') {
                 return res.status(403).json({
-                    message: info ? info.message: 'ACCESS DENIED - Incorrect username or password',
+                    error: info ? info.message: 'ACCESS DENIED - Incorrect username or password',
                     user: user
                 })
             } else {
                 return res.status(500).json({
-                    message: info ? info.message : err,
+                    error: info ? info.message : err,
                     user: user
                 });
             }
@@ -30,7 +30,7 @@ router.post('/login', (req, res, next) => {
         req.login(payload, {session: false}, (err) => {
             if(err) {
                 console.log(err);
-                return res.status(500).json({err});
+                return res.status(500).json({error: err.message});
             }
 
             const refreshToken = jwt.sign(payload, process.env.REFRESH_TOKEN_SECRET, 

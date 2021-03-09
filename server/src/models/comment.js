@@ -7,10 +7,12 @@ const CommentSchema = new mongoose.Schema({
         trim: true,
         required: true
     },
-    user: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        required: true,
+    collection_name: {
+        type: String,
+        enum: ['task', 'project', 'comment'],
+        default: 'task',
+        trim: true,
+        required: true
     },
     modified_at: {
         type: Date,
@@ -21,6 +23,23 @@ const CommentSchema = new mongoose.Schema({
         type: Date,
         required: true,
         default: Date.now
+    },
+    author: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true,
+    },
+    document: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: function() {
+            switch(this.collection_name) {
+                case 'team': return 'Team';
+                case 'project': return 'Project';
+                case 'comment': return 'Comment';
+                default: return null;
+            }
+        },
+        required: true
     }
 });
 

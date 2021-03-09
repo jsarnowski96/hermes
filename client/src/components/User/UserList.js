@@ -59,12 +59,12 @@ class UserList extends React.Component {
     render() {
         const {t} = this.props;
         return(
-            <table class="tab-table">
+            <table className="tab-table">
                 <thead>
                     <tr>
-                        <th>{t('content.users.fieldNames.name')}</th>
-                        <th>{t('content.users.fieldNames.position')}</th>
-                        <th>{t('content.users.fieldNames.team')}</th>
+                        <th>{t('content.users.fields.name')}</th>
+                        <th>{t('content.users.fields.position')}</th>
+                        <th>{t('content.users.fields.team')}</th>
                     </tr>
                 </thead>
                 <tbody>
