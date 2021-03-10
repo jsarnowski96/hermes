@@ -48,20 +48,37 @@ router.post('/details/:projectId', async (req, res, next) => {
 });
 
 router.post('/list', async (req, res, next) => {
-    await getProjectList(req.body.ref, req.body.objId)
-    .then((result) => {
-        if(result && result !== null && result.length > 0) {
-            return res.status(200).json({projects: result});
-        } else {
-            throw new Error('NoProjectsFound');
-        }
-    })
-    .catch((error) => {
-        if(error) {
-            console.log(error.message);
-            return res.status(500).json({error: error.message});
-        }
-    });
+    if(req.body.ref && req.body.objId) {
+        await getProjectList(req.body.ref, req.body.objId)
+        .then((result) => {
+            if(result && result !== null && result.length > 0) {
+                return res.status(200).json({projects: result});
+            } else {
+                throw new Error('NoProjectsFound');
+            }
+        })
+        .catch((error) => {
+            if(error) {
+                console.log(error.message);
+                return res.status(500).json({error: error.message});
+            }
+        });
+    } else {
+        await getProjectList()
+        .then((result) => {
+            if(result && result !== null && result.length > 0) {
+                return res.status(200).json({projects: result});
+            } else {
+                throw new Error('NoProjectsFound');
+            }
+        })
+        .catch((error) => {
+            if(error) {
+                console.log(error.message);
+                return res.status(500).json({error: error.message});
+            }
+        });
+    }
 });
 
 router.post('/create', async (req, res, next) => {

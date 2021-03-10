@@ -51,7 +51,7 @@ class RepositoryList extends React.Component {
                 console.log(error.response);
             });
         } catch(e) {
-            console.log(e);
+            this.setState({serverResponse: e.message});
         }
     }
 

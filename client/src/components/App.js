@@ -40,6 +40,7 @@ import CreateCompany from './Company/CreateCompany';
 import CreateTeam from './Team/CreateTeam';
 import CreateRepository from './Repository/CreateRepository';
 import CreateRole from './Role/CreateRole';
+import CreateUser from './User/CreateUser';
 import CreateOrganization from './Organization/CreateOrganization';
 
 import NotFound from './NotFound';
@@ -47,6 +48,7 @@ import NotFound from './NotFound';
 import getLanguageFromLocalStorage from '../middleware/languageLocalStorage';
 
 import '../assets/css/style.css';
+import CreateTaskTranslation from './Task/CreateTask';
 
 class App extends React.Component {    
     constructor(props) {
@@ -95,7 +97,12 @@ class App extends React.Component {
                         <Route exact path="/company" component={Company} />
                         <Route exact path="/company/list" component={CompanyList} />
                         <Route exact path="/company/create" component={CreateCompany} />
+                        <Route exact path="/task/list" component={TaskList} />
+                        <Route exact path="/task/create" component={CreateTask} />
+                        <Route exact path="/task/details" component={Task} />
                         <Route exact path="/user/profile" component={User} />
+                        <Route exact path="/user/create" component={CreateUser} />
+                        <Route exact path="/user/list" component={UserList} />
                         <Route component={NotFound} />
                     </Switch>
                 </main>

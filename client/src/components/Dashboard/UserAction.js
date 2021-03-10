@@ -68,10 +68,10 @@ class UserAction extends React.Component {
                             <td align="center"><Link to="/task/create">{t('content.userAction.actions.createTask')}</Link></td>
                         </tr>
                         <tr>
-                            <td align="center"><Link to="/project/list">{t('content.userAction.actions.projectsOverview')}</Link></td>
+                            <td align="center"><Link to={{pathname: "/project/list", state: { navBtn: true}}}>{t('content.userAction.actions.projectsOverview')}</Link></td>
                         </tr>
                         <tr>
-                            <td align="center"><Link to="/task/list">{t('content.userAction.actions.tasksOverview')}</Link></td>
+                            <td align="center"><Link to={{pathname: "/task/list", state: { navBtn: true}}}>{t('content.userAction.actions.tasksOverview')}</Link></td>
                         </tr>
                         <tr>
                             <td align="center"><Link to="/" onClick={this.onLogout}>{t('content.navbar.logout')}</Link></td>

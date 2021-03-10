@@ -110,7 +110,7 @@
                     }
                 },
                 "createProject": {
-                    "actionTitle": "Tworzenie nowego projektu",
+                    "actionTitle": "Tworzenie projektu",
                     "actionResults": {
                         "success": "Projekt został pomyślnie utworzony",
                         "failure": "Wystąpił błąd podczas tworzenia projektu"
@@ -180,6 +180,7 @@
                 "selectTeam": {
                     "actionTitle": "Szczegóły zespołu",
                     "associatedTasks": "Powiązane zadania",
+                    "members": "Członkowie zespołu",
                     "associatedProjects": "Powiązane projekty",
                     "actionResults": {
                         "success": "",
@@ -318,7 +319,10 @@
                 "name": "Nazwa",
                 "status": "Status",
                 "author": "Autor",
+                "project": "Projekt",
+                "overview": "Podgląd zadania",
                 "description": "Opis",
+                "assignedTeams": "Przydzielone zespoły",
                 "assignedUser": "Przydzielony użytkownik",
                 "category": "Kategoria",
                 "dueDate": "Termin realizacji"
@@ -347,10 +351,10 @@
                     }
                 },
                 "createTask": {
-                    
+                    "actionTitle": "Tworzenie zadania",
                     "actionResults": {
-                        "success": "",
-                        "failure": ""
+                        "success": "Zadanie zostało pomyślnie utworzone",
+                        "failure": "Wystąpił błąd podczas tworzenia zadania"
                     },
                     "errorMessages": {
                         "dataValidation": {
@@ -360,8 +364,8 @@
                 },
                 "updateTask": {
                     "actionResults": {
-                        "success": "",
-                        "failure": ""
+                        "success": "Zadanie zostało zaktualizowane",
+                        "failure": "Wystąpił błąd podczas aktualizacji zadania"
                     },
                     "errorMessages": {
                         "dataValidation": {
@@ -739,6 +743,8 @@
             "selectCategory": "Wybierz kategorię",
             "selectStatus": "Wybierz status",
             "selectOrganization": "Wybierz organizację",
+            "selectUser": "Wybierz użytkownika",
+            "selectProject": "Wybierz projekt",
             "addMember": "Dodaj nowych uczestników",
             "addTeam": "Dodaj zespoły",
             "setStatus": "Ustaw status"

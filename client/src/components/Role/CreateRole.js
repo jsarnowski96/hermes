@@ -94,7 +94,7 @@ class CreateRole extends React.Component {
                 }
             }) 
         } catch(e) {
-            console.log(e);
+            this.setState({serverResponse: e.message});
         }
     }
 

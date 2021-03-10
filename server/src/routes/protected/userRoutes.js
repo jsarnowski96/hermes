@@ -48,19 +48,35 @@ router.post('/profile', async (req, res, next) => {
 });
 
 router.post('/list', async (req, res, next) => {
-    await getUserList(req.body.ref, req.body.objId)
-    .then((result) => {
-        if(!result || result === null || result.length === 0) {
-            throw new Error('NoUsersFound');
-        } else {
-            return res.status(200).json({users: result});
-        }
-    })
-    .catch((error) => {
-        if(error) {
-            return res.status(500).json({error: error.message});
-        }
-    })
+    if(req.body.ref && req.body.objId) {
+        await getUserList(req.body.ref, req.body.objId)
+        .then((result) => {
+            if(!result || result === null || result.length === 0) {
+                throw new Error('NoUsersFound');
+            } else {
+                return res.status(200).json({users: result});
+            }
+        })
+        .catch((error) => {
+            if(error) {
+                return res.status(500).json({error: error.message});
+            }
+        })
+    } else {
+        await getUserList()
+        .then((result) => {
+            if(!result || result === null || result.length === 0) {
+                throw new Error('NoUsersFound');
+            } else {
+                return res.status(200).json({users: result});
+            }
+        })
+        .catch((error) => {
+            if(error) {
+                return res.status(500).json({error: error.message});
+            }
+        })
+    }
 });
 
 router.post('/update', async (req, res, next) => {

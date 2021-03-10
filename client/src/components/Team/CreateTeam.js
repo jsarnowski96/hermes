@@ -92,8 +92,8 @@ class CreateTeam extends React.Component {
             isValid = false;
             errors['description'] = t('misc.phrases.field') + ' \'' + t('content.team.fields.description') + '\' ' + t('commonErrors.formValidation.requiredFieldIsEmpty');
         } else if(fields['description'] !== undefined) {
-            if(!fields['description'].match(/^.{1,500}$/)) {
-                let regex = /^.{1,500}$/;
+            if(!fields['description'].match(/^.{1,500}$/gm)) {
+                let regex = /^.{1,500}$/gm;
                 isValid = false;
                 errors['description'] = t('commonErrors.formValidation.allowedCharsOnly') + regex;
             }

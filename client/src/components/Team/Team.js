@@ -6,6 +6,7 @@ import Select from 'react-select';
 
 import ProjectList from '../Project/ProjectList';
 import TaskList from '../Task/TaskList';
+import UserList from '../User/UserList';
 
 import {getJwtDataFromSessionStorage, removeJwtDataFromSessionStorage} from '../../middleware/jwtSessionStorage';
 
@@ -79,7 +80,6 @@ class Team extends React.Component {
         fields['owner'] = this.state.team.owner;
         fields['avatar_url'] = this.state.team.avatar_url;
 
-        document.getElementById('serverResponse').innerHTML = '';
         this.setState({fields, errors: {}, serverResponse: null});
     }
 
@@ -114,8 +114,8 @@ class Team extends React.Component {
             isValid = false;
             errors['description'] = t('misc.phrases.field') + ' \'' + t('content.team.fields.description') + '\' ' + t('commonErrors.formValidation.requiredFieldIsEmpty');
         } else if(fields['description'] !== undefined) {
-            if(!fields['description'].match(/^.{1,500}$/)) {
-                let regex = /^.{1,500}$/;
+            if(!fields['description'].match(/^.{1,500}$/gm)) {
+                let regex = /^.{1,500}$/gm;
                 isValid = false;
                 errors['description'] = t('commonErrors.formValidation.allowedCharsOnly') + regex;
             }
@@ -203,8 +203,6 @@ class Team extends React.Component {
         try {
             await axios.post('http://localhost:3300/user/list', 
             {
-                ref: 'team',
-                objId: this.state.team._id
             }, {headers: this.headers, withCredentials: true })
             .then((response) => {
                 if(response.data.users.length > 0 && response.data.users !== null) {
@@ -390,11 +388,16 @@ class Team extends React.Component {
                                 </div>
                             )}
 
+                            <br /><hr /><br />
+
+                            <h3>{t('content.team.actions.selectTeam.members')}</h3>
+                            <UserList params={{ref: 'team', objId: this.state.team._id}} />
+
                             <h3>{t('content.team.actions.selectTeam.associatedProjects')}</h3>
-                            <ProjectList ref='team' objId={this.state.team._id} />
+                            <ProjectList params={{ref: 'team', objId: this.state.team._id}} />
 
                             <h3>{t('content.team.actions.selectTeam.associatedTasks')}</h3>
-                            <TaskList ref='team' objId={this.state.team._id} />
+                            <TaskList params={{ref: 'team', objId: this.state.team._id}} />
                         </div>
                     ) : (
                         <div>

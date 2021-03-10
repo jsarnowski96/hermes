@@ -22,11 +22,6 @@ class Sidebar extends React.Component {
             renderLogoutBtn: sessionStorage.getItem('renderLogoutBtn')
         }
 
-        this.onLanguageChange = this.onLanguageChange.bind(this);
-        this.onLogout = this.onLogout.bind(this);
-    }
-
-    componentDidMount() {
         if(this.jwt !== null && this.jwt !== undefined) {
             if(sessionStorage.getItem('renderLogoutBtn') === false) {
                 sessionStorage.setItem('renderLogoutBtn', true);
@@ -37,7 +32,12 @@ class Sidebar extends React.Component {
             }
         }
 
-        //this.setState({ renderLogoutBtn: sessionStorage.getItem('renderLogoutBtn')})
+        this.onLanguageChange = this.onLanguageChange.bind(this);
+        this.onLogout = this.onLogout.bind(this);
+    }
+
+    componentDidUpdate() {
+        
     }
 
     onLanguageChange(event) {
@@ -68,12 +68,18 @@ class Sidebar extends React.Component {
             <nav className="navbar">
                 <ul className="navbar-nav">
                     <Link to="/" className="navbar-title">Hermes</Link><hr className="navbar-title-hr" />
-                    <li className="nav-item"><Link to="/" className="nav-link"><FontAwesomeIcon icon="home" size="lg" /><span className="link-text">{t('content.navbar.home')}</span></Link></li>
+                    <li className="nav-item">
+                        {this.jwt !== undefined && this.jwt !== null ? (
+                            <Link to="/dashboard" className="nav-link"><FontAwesomeIcon icon="home" size="lg" /><span className="link-text">{t('content.navbar.home')}</span></Link>
+                        ) : (
+                            <Link to="/" className="nav-link"><FontAwesomeIcon icon="home" size="lg" /><span className="link-text">{t('content.navbar.home')}</span></Link>
+                        )}
+                    </li>
                     <li className="nav-item"><Link to="/login" className="nav-link"><FontAwesomeIcon icon="fingerprint" size="lg" /><span className="link-text">{t('content.navbar.login')}</span></Link></li>
                     <li className="nav-item"><Link to="/register" className="nav-link"><FontAwesomeIcon icon="user-plus" size="lg" /><span className="link-text">{t('content.navbar.register')}</span></Link></li>
                     <li className="nav-item"><Link to="/about" className="nav-link"><FontAwesomeIcon icon="info-circle" size="lg" /><span className="link-text">{t('content.navbar.about')}</span></Link></li>
                     <li className="nav-item"><Link to="/contact" className="nav-link"><FontAwesomeIcon icon="paper-plane" size="lg" /><span className="link-text">{t('content.navbar.contact')}</span></Link></li>
-                    {localStorage.getItem('renderLogoutBtn') === true ? (
+                    {this.state.renderLogoutBtn === true ? (
                         <li className="nav-item"><Link to="/" className="nav-link"><FontAwesomeIcon icon="sign-out-alt" size="lg" /><span className="link-text" onClick={this.onLogout}>{t('content.navbar.logout')}</span></Link></li>
                     ) : (
                         null

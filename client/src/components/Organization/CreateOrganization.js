@@ -94,8 +94,8 @@ class CreateOrganization extends React.Component {
             isValid = false;
             errors['description'] = t('misc.phrases.field') + ' \'' + t('content.organization.fields.description') + '\' ' + t('commonErrors.formValidation.requiredFieldIsEmpty');
         } else if(fields['description'] !== undefined) {
-            if(!fields['description'].match(/^.{1,500}$/)) {
-                let regex = /^.{1,500}$/;
+            if(!fields['description'].match(/^.{1,500}$/gm)) {
+                let regex = /^.{1,500}$/gm;
                 isValid = false;
                 errors['description'] = t('commonErrors.formValidation.allowedCharsOnly') + regex;
             }
@@ -120,7 +120,8 @@ class CreateOrganization extends React.Component {
                 .then((response) => {
                     if(response !== undefined && response.data.organization !== null) {
                         this.setState({
-                            organization: response.data.organization
+                            organization: response.data.organization,
+                            serverResponse: t('content.organization.actions.createOrganization.actionResults.success')
                         })
                     }
                 })
@@ -170,10 +171,14 @@ class CreateOrganization extends React.Component {
                             <button type="button" className="card-form-button"><Link to="/dashboard" className="card-form-button-link">{t('misc.actionDescription.cancel')}</Link></button>
                         </div>
                         {this.state.serverResponse !== null ? (
-                            <span className="error-msg-span" style={{display: "block"}} id="serverResponse">{this.state.serverResponse}</span>
-                        ) : (
-                            <span className="error-msg-span" id="serverResponse"></span>
-                        )}
+                                this.state.organization !== null ? (
+                                    <span className="error-msg-span" style={{display: "block", color: 'green'}} id="serverResponse">{this.state.serverResponse}</span>
+                                ) : (
+                                    <span className="error-msg-span" style={{display: "block"}} id="serverResponse">{t('content.organization.actions.createOrganization.errorMessages.dataValidation.' + this.state.serverResponse)}</span>
+                                )
+                            ) : (
+                                <span className="error-msg-span" id="serverResponse"></span>
+                            )}
                     </form>
                 </div>
             )

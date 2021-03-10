@@ -311,8 +311,10 @@ class User extends React.Component {
                             </div>
                         )}
 
+                        <br /><hr /><br />
+
                         <h2>{t('content.team.actions.selectTeam.associatedTasks')}</h2>
-                        <TaskList ref='user' objId={this.state.user._id} />
+                        <TaskList params={{ref: 'user', objId: this.state.user._id}} />
                     </div>
                 ) : (
                     <table className="tab-table">

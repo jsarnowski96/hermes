@@ -131,8 +131,8 @@ class Project extends React.Component {
             isValid = false;
             errors['description'] = t('misc.phrases.field') + ' \'' + t('content.project.fields.description') + '\' ' + t('commonErrors.formValidation.requiredFieldIsEmpty');
         } else if(fields['description'] !== undefined) {
-            if(!fields['description'].match(/^.{1,500}$/)) {
-                let regex = /^.{1,500}$/;
+            if(!fields['description'].match(/^.{1,500}$/gm)) {
+                let regex = /^.{1,500}$/gm;
                 isValid = false;
                 errors['description'] = t('content.project.actions.createProject.errorMessages.formValidation.allowedCharsOnly') + regex;
             }
@@ -179,7 +179,7 @@ class Project extends React.Component {
                 }
             });
         } catch(e) {
-            console.log(e);
+            this.setState({serverResponse: e.message});
         }
     }
 
@@ -282,7 +282,7 @@ class Project extends React.Component {
                                 <tr>
                                     <th>{t('content.project.fields.description')}</th>
                                     <td>
-                                        <input onChange={this.onChange.bind(this, 'description')} value={this.state.fields['description']} type="description" className="" name="description" disabled={!this.state.enableEdit} />
+                                        <textarea onChange={this.onChange.bind(this, 'description')} cols="40" rows="20" value={this.state.fields['description']} type="description" id="description" name="description" disabled={!this.state.enableEdit}/>
                                         <span className="error-msg-span">{this.state.errors["description"]}</span>
                                     </td>
                                 </tr>

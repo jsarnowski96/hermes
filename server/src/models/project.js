@@ -6,11 +6,12 @@ const ProjectSchema = new mongoose.Schema({
         type: String,
         validate: /^[ążśźęćńółĄŻŚŹĘĆŃÓŁA-Za-z0-9!@#$%^&*()_+\-=,./;'\\[\]<>?:"|{} ]{1,50}$/,
         trim: true,
+        unique: true,
         required: true
     },
     description: {
         type: String,
-        validate: /^.{1,500}$/,
+        validate: /^.{1,500}$/gm,
         trim: true,
         required: true
     },

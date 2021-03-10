@@ -191,7 +191,7 @@ class Register extends React.Component {
                     }
                 });
             } catch(e) {
-                console.log(e);
+                this.setState({serverResponse: e.message});
             }
         } else {
             let errors = document.querySelectorAll('.error-msg-span');

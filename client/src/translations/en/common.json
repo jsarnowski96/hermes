@@ -154,7 +154,7 @@
                     "actionTitle": "Edit project",
                     "actionResults": {
                         "success": "Project updated successfully",
-                        "failure": "Failed to update project"
+                        "failure": "Project update failed"
                     },
                     "errorMessages": {
                         "dataValidation": {
@@ -192,6 +192,7 @@
                 "selectTeam": {
                     "actionTitle": "Team details",
                     "associatedTasks": "Associated tasks",
+                    "members": "Members",
                     "associatedProjects": "Associated projects",
                     "actionResults": {
                         "success": "",
@@ -231,7 +232,7 @@
                     "actionTitle": "Update team",
                     "actionResults": {
                         "success": "Team updated successfully",
-                        "failure": "Failed to update team"
+                        "failure": "Team update failed"
                     },
                     "errorMessages": {
                         "dataValidation": {
@@ -326,7 +327,10 @@
                 "name": "Name",
                 "description": "Description",
                 "status": "Status",
+                "overview": "Task overview",
+                "project": "Project",
                 "author": "Author",
+                "assignedTeams": "Assigned teams",
                 "assignedUser": "Assigned user",
                 "category": "Category",
                 "dueDate": "Due date"
@@ -355,9 +359,10 @@
                     }
                 },
                 "createTask": {
+                    "actionTitle": "Create task",
                     "actionResults": {
-                        "success": "",
-                        "failure": ""
+                        "success": "Task created successfully",
+                        "failure": "Failed to create new task"
                     },
                     "errorMessages": {
                         "dataValidation": {
@@ -367,8 +372,8 @@
                 },
                 "updateTask": {
                     "actionResults": {
-                        "success": "",
-                        "failure": ""
+                        "success": "Task updated successfully",
+                        "failure": "Failed to update task"
                     },
                     "errorMessages": {
                         "dataValidation": {
@@ -581,7 +586,7 @@
                 "updateUser": {
                     "actionResults": {
                         "success": "User profile updated successfully",
-                        "failure": ""
+                        "failure": "User profile update failed"
                     },
                     "errorMessages": {
                         "dataValidation": {
@@ -762,6 +767,8 @@
             "selectCategory": "Select category",
             "selectStatus": "Select status",
             "selectOrganization": "Select organization",
+            "selectUser": "Select user",
+            "selectProject": "Select project",
             "addMember": "Add new members",
             "addTeam": "Add teams",
             "setStatus": "Set status"

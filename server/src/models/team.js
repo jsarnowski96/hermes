@@ -10,7 +10,7 @@ const TeamSchema = new mongoose.Schema({
     },
     description: {
         type: String,
-        validate: /^.{1,500}$/,
+        validate: /^.{1,500}$/gm,
         trim: true,
         required: true
     },

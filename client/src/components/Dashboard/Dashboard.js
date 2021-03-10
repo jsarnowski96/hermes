@@ -54,15 +54,15 @@ class Dashboard extends React.Component {
                 <div className="dashboard">
                     <div className="tab project">
                         <p className="tab-title"><FontAwesomeIcon icon="project-diagram" size="xs" />{t('content.project.titlePlural')}</p>
-                        <ProjectList ref='user' objId={this.state.auth.userId} />
+                        <ProjectList params={{ref: 'user', objId: this.state.auth.userId}} />
                     </div>
                     <div className="tab teams">
                         <p className="tab-title"><FontAwesomeIcon icon="users" size="xs" />{t('content.team.titlePlural')}</p>
-                        <TeamList />
+                        <TeamList params={{ref: 'user', objId: this.state.auth.userId}} />
                     </div>
                     <div className="tab tasks">
                         <p className="tab-title"><FontAwesomeIcon icon="tasks" size="xs" />{t('content.task.titlePlural')}</p>
-                        <TaskList />
+                        <TaskList params={{ref: 'user', objId: this.state.auth.userId}} />
                     </div>
                     <div className="tab recent">
                         <p className="tab-title"><FontAwesomeIcon icon="history" size="xs" />{t('content.recent.title')}</p>
