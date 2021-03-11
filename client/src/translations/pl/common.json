@@ -61,24 +61,28 @@
             "titlePlural": "Projekty",
             "fields": {
                 "name": "Nazwa",
-                "description": "Wymagania",
+                "description": "Opis",
                 "status": "Status",
                 "dueDate": "Termin realizacji",
                 "category": "Kategoria",
                 "overview": "Podgląd projektu",
                 "team": "Zespół",
-                "projectManager": "Menedżer projektu",
                 "associatedTeams": "Zespoły projektowe",
+                "organization": "Organizacja",
+                "projectManager": "Menedżer projektu",
                 "restrictedAccess": "Włącz ograniczenie dostępu"
             },
             "actions": {
                 "selectProject": {
+                    "associatedTeams": "Zespoły projektowe",
+                    "associatedTasks": "Powiązane zadania",
                     "actionResults": {
                         "success": "",
                         "failure": ""
                     },
                     "errorMessages": {
                         "dataValidation": {
+                            "missingProps": "Brak danych projektu",
                             "ProjectNotFound": "Nie znaleziono projektu",
                             "ReferenceMissing": "Brakująca referencja",
                             "NoProjectsFound": "Nie znaleziono projektów",
@@ -188,6 +192,7 @@
                     },
                     "errorMessages": {
                         "dataValidation": {
+                            "missingProps": "Brak danych zespołu",
                             "TeamIdEqualsNull": "ID zespołu jest równy NULL",
                             "TeamIdUndefined": "ID zespołu jest niezdefiniowany",
                             "TeamIdMissing": "Brakujący ID zespołu",
@@ -204,7 +209,8 @@
                     },
                     "errorMessages": {
                         "dataValidation": {
-                            "NoTeamsFound": "Nie znaleziono zespołów"
+                            "NoTeamsFound": "Nie znaleziono zespołów",
+                            "TeamNotFound": "Nie znaleziono zespołu"
                         }
                     }
                 },
@@ -261,7 +267,7 @@
                     },
                     "errorMessages": {
                         "dataValidation": {
-                            
+                            "missingProps": "Brak danych organizacji"
                         }
                     }
                 },
@@ -329,13 +335,14 @@
             },
             "actions": {
                 "selectTask": {
+                    "associatedProjects": "Powiązane projekty",
                     "actionResults": {
                         "success": "",
                         "failure": ""
                     },
                     "errorMessages": {
                         "dataValidation": {
-                            
+                            "missingProps": "Brak danych zadania"
                         }
                     }
                 },
@@ -487,9 +494,11 @@
                 "createProject": "Stwórz projekt",
                 "createTeam": "Stwórz zespół",
                 "createTask": "Stwórz zadanie",
-                "projectsOverview": "Przegląd projektów",
-                "tasksOverview": "Przegląd zadań",
-                "teamOverview": "Przegląd zespołu",
+                "projectsOverview": "Podgląd projektów",
+                "tasksOverview": "Podgląd zadań",
+                "teamOverview": "Podgląd zespołu",
+                "teamsOverview": "Podgląd zespołów",
+                "usersOverview": "Podgląd użytkowników",
                 "userProfile": "Profil użytkownika"
             }
         },
@@ -516,7 +525,7 @@
             }
         },
         "user": {
-            "title": "Użytkownik",
+            "title": "Profil użytkownika",
             "titlePlural": "Użytkownicy",
             "fields": {
                 "email": "Adres email",
@@ -536,6 +545,7 @@
                     },
                     "errorMessages": {
                         "dataValidation": {
+                            "missingProps": "Brak danych użytkownika",
                             "UserIdMissing": "Brakujące ID użytkownika"
                         }
                     }
@@ -607,7 +617,7 @@
                     },
                     "errorMessages": {
                         "dataValidation": {
-                            
+                            "missingProps": "Brak danych firmy"
                         }
                     }
                 },
@@ -728,6 +738,10 @@
             "field": "Pole",
             "or": "lub"
         },
+        "fields": {
+            "createdAt": "Data utworzenia:",
+            "modifiedAt": "Data ostatniej modyfikacji:"
+        },
         "actionDescription": {
             "create": "Utwórz",
             "cancel": "Anuluj",
@@ -739,6 +753,7 @@
             "edit": "Edytuj",
             "save": "Zapisz",
             "discard": "Odrzuć",
+            "delete": "Usuń",
             "selectTeam": "Wybierz zespół",
             "selectCategory": "Wybierz kategorię",
             "selectStatus": "Wybierz status",
@@ -747,11 +762,18 @@
             "selectProject": "Wybierz projekt",
             "addMember": "Dodaj nowych uczestników",
             "addTeam": "Dodaj zespoły",
-            "setStatus": "Ustaw status"
+            "setStatus": "Ustaw status",
+            "insertName": "Wprowadź nazwę",
+            "enterPhone": "Wprowadź numer telefonu",
+            "enterEmail": "Wprowadź adres email",
+            "enterWebsite": "Wprowadź stronę internetową",
+            "enterUrl": "Wprowadź URL",
+            "enterCompany": "Wprowadź nazwę firmy"
         }
     },
     "commonErrors": {
         "noTeamsAvailable": "Brak dostępnych zespołów",
+        "projectDeleted": "Project został usunięty",
         "noMembersAvailable": "Brak dostępnych użytkowników",
         "noStatusesAvailable": "Brak dostępnych statusów",
         "cannotDisplayRequestedResource": "Nie można wyświetlić żądanego zasobu",

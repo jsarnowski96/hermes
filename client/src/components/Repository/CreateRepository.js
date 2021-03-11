@@ -107,7 +107,7 @@ class CreateRepository extends React.Component {
                     <p className="card-title">Create new Repository</p><hr className="card-hr" />
                     <form className="card-form" onSubmit={this.onFormSubmit}>
                         <label htmlFor="name">Repository name</label>
-                        <input onChange={this.onChange.bind(this, 'name')} value={this.state.fields['name']} type="name" className="" name="name" />
+                        <input placeholder={t('misc.actionDescription.insertName')} onChange={this.onChange.bind(this, 'name')} value={this.state.fields['name']} type="name" className="" name="name" />
                         <span className="error-msg-span">{this.state.errors["name"]}</span>
                         <label htmlFor="category">Category</label>
                         <select onChange={this.onChange.bind(this, 'category')} value={this.state.fields['category']} type="category" className="" name="category">

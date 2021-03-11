@@ -94,11 +94,19 @@ class ProjectList extends React.Component {
         if(this.jwt !== null && this.state.auth.userId !== null && this.state.auth.refreshToken !== null) {
             return(
                 <div>
+                    {
+                        (() => {
+                            if(this.props.location !== undefined && this.props.location.state !== undefined && this.props.location.state.navBtn === true) {
+                                return(
+                                    <h2>{t('content.userAction.actions.projectsOverview')}</h2>
+                                )
+                            }
+                        })()
+                    }
                     <table className="tab-table">
                         <thead>
                             <tr>
                                 <th>{t('content.project.fields.name')}</th>
-                                <th>{t('content.project.fields.description')}</th>
                                 <th>{t('content.project.fields.associatedTeams')}</th>
                                 <th>{t('content.project.fields.category')}</th>
                                 <th>{t('content.project.fields.dueDate')}</th>
@@ -111,7 +119,7 @@ class ProjectList extends React.Component {
                                         <td>
                                             <Link to={{pathname: '/project/details', state: {userId: this.state.auth.userId, projectId: project._id}}}>{project.name}</Link>
                                         </td>
-                                        <td style={{wordWrap: 'break-word', maxWidth: '10vw'}}><p dangerouslySetInnerHTML={{__html: project.description}} style={{whiteSpace: "pre-wrap"}} /></td>
+                                        {/* <td style={{wordWrap: 'break-word', maxWidth: '10vw'}}><p dangerouslySetInnerHTML={{__html: project.description}} style={{whiteSpace: "pre-wrap"}} /></td> */}
                                         <td>
                                             {project.teams.map((team) => {
                                                 return <span style={{marginLeft: '0.5vw'}}><Link to={{pathname: '/team/details', state: {ref: 'team', objId: team._id}}}>{team.name}</Link></span>
@@ -124,7 +132,7 @@ class ProjectList extends React.Component {
                             ) : (
                                 <tr>
                                     {this.state.serverResponse !== null ? (
-                                        <td colspan="6" align="center">{t('content.project.actions.selectProjectList.errorMessages.dataValidation.' + this.state.serverResponse)}</td>
+                                        <td colspan="6" align="center">- {t('content.project.actions.selectProjectList.errorMessages.dataValidation.' + this.state.serverResponse)} -</td>
                                     ) : (
                                         <td colspan="6" align="center">-</td>
                                     )}
@@ -132,11 +140,17 @@ class ProjectList extends React.Component {
                             )}
                         </tbody>
                     </table>
-                    {/* {this.props.location.state !== undefined && this.props.location.state.navBtn === true &
-                        <div class="card-form-divider">
-                            <button className="card-form-button"><Link to='/dashboard'>{t('misc.actionDescription.return')}</Link></button>
-                        </div>
-                    } */}
+                    {
+                        (() => {
+                            if(this.props.location !== undefined && this.props.location.state !== undefined && this.props.location.state.navBtn === true) {
+                                return(
+                                    <div class="card-form-divider">
+                                        <Link to='/dashboard'><button className="card-form-button">{t('misc.actionDescription.return')}</button></Link>
+                                    </div>
+                                )
+                            }
+                        })()
+                    }
                 </div>
             )
         } else {

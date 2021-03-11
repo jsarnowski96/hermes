@@ -9,6 +9,21 @@
     --bg-secondary: #141418;
 }
 
+@media screen and (max-width: 599px) {
+    .card {
+        height: 100%;
+        width: 100%;
+        margin: 0 auto;
+    }
+}
+
+@media screen and (min-width: 600px) {
+    .card {
+        height: 100%;
+        width: 25vw;
+    }
+}
+
 body {
     margin: 0;
     padding: 0;
@@ -113,17 +128,14 @@ main section {
     margin-bottom: 1rem;
 }
 
-@media screen and (max-width: 599px) {
-    .card {
-        height: 100%;
-        width: 100%;
-        margin: 0 auto;
-    }
+.animate{
+    position: relative;
+    left: 0;
+    top: 0;
+    -moz-transition:all 0.4s ease-in-out;
+    -webkit-transition:all 0.4s ease-in-out;
 }
 
-@media screen and (min-width: 600px) {
-    .card {
-        height: 100%;
-        width: 25vw;
-    }
+.slide{
+    left: 250px;
 }

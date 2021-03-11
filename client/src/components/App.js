@@ -48,12 +48,16 @@ import NotFound from './NotFound';
 import getLanguageFromLocalStorage from '../middleware/languageLocalStorage';
 
 import '../assets/css/style.css';
-import CreateTaskTranslation from './Task/CreateTask';
 
 class App extends React.Component {    
     constructor(props) {
         super(props);
         const {i18n} = this.props;
+
+        this.state = {
+            toggleSlide: false
+        }
+
         let lsLanguage = getLanguageFromLocalStorage();
         if(i18n.language !== lsLanguage) {
             i18n.changeLanguage(lsLanguage);

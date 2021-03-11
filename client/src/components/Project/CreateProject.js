@@ -3,6 +3,8 @@ import {withTranslation} from 'react-i18next';
 import {Redirect} from 'react-router';
 import {Link} from 'react-router-dom';
 import axios from 'axios';
+import Select from 'react-select';
+import JoditEditor from 'jodit-react';
 
 import {getJwtDataFromSessionStorage, removeJwtDataFromSessionStorage} from '../../middleware/jwtSessionStorage';
 
@@ -22,6 +24,7 @@ class CreateProject extends React.Component {
                     refreshToken: this.jwt.refreshToken
                 },
                 categories: [],
+                organizations: [],
                 teams: [],
                 statuses: [ 'To do', 'In progress', 'In review', 'Postponed', 'Done'],
                 fields: {},
@@ -39,6 +42,7 @@ class CreateProject extends React.Component {
 
         this.getCategories();
         this.getTeams();
+        this.getOrganizations();
     }
 
     componentWillUnmount() {
@@ -47,7 +51,7 @@ class CreateProject extends React.Component {
 
     resetForm() {
         // document.getElementById('serverResponse').innerHTML = '';
-        document.getElementById('description').defaultValue = '';
+        //document.getElementById('description').defaultValue = '';
         this.setState({fields: {}, errors: {}});
     }
 
@@ -92,9 +96,14 @@ class CreateProject extends React.Component {
             errors['category'] = t('misc.phrases.field') + ' \'' + t('content.category.title') + '\' ' + t('commonErrors.formValidation.requiredDropDownSelection');
         }
 
-        if(!fields['team'] || fields['team'] === 'none') {
+        if(!fields['organization'] || fields['organization'] === 'none') {
             isValid = false;
-            errors['team'] = t('misc.phrases.field') + ' \'' + t('content.team.title') + '\' ' + t('commonErrors.formValidation.requiredDropDownSelection');
+            errors['organization'] = t('misc.phrases.field') + ' \'' + t('content.organization.title') + '\' ' + t('commonErrors.formValidation.requiredDropDownSelection');
+        }
+
+        if(!fields['teams'] || fields['teams'] === 'none') {
+            isValid = false;
+            errors['teams'] = t('misc.phrases.field') + ' \'' + t('content.team.title') + '\' ' + t('commonErrors.formValidation.requiredDropDownSelection');
         }
 
         if(!fields['status'] || fields['status'] === 'none') {
@@ -118,6 +127,78 @@ class CreateProject extends React.Component {
         return isValid;
     }
 
+    async getOrganizations() {
+        if(this.props.params === undefined) {
+            if(this.props.location === undefined && this.props.location.state === undefined) {
+                try {
+                    await axios.post('http://localhost:3300/organization/list',
+                    {
+                        ref: 'user',
+                        objId: this.state.auth.userId
+                    }, {headers: this.headers, withCredentials: true })
+                    .then((response) => {
+                        if(response.data.organizations.length > 0 && response.data.organizations !== null) {
+                            this.setState({organizations: response.data.organizations});
+                        }   
+                    })
+                    .catch((error) => {
+                        if(error.response.data.error === 'JwtTokenExpired') {
+                            removeJwtDataFromSessionStorage();
+                        } else {
+                            this.setState({serverResponse: error.response.data.error});
+                        }
+                    });
+                } catch(e) {
+                    this.setState({serverResponse: e.message});
+                }
+            } else {
+                try {
+                    await axios.post('http://localhost:3300/organization/list',
+                    {
+                        ref: this.props.location.state.ref,
+                        objId: this.props.location.state.objId
+                    }, {headers: this.headers, withCredentials: true })
+                    .then((response) => {
+                        if(response.data.organizations.length > 0 && response.data.organizations !== null) {
+                            this.setState({organizations: response.data.organizations});
+                        }   
+                    })
+                    .catch((error) => {
+                        if(error.response.data.error === 'JwtTokenExpired') {
+                            removeJwtDataFromSessionStorage();
+                        } else {
+                            this.setState({serverResponse: error.response.data.error});
+                        }
+                    });
+                } catch(e) {
+                    this.setState({serverResponse: e.message});
+                }
+            }
+        } else {
+            try {
+                await axios.post('http://localhost:3300/organization/list',
+                {
+                    ref: this.props.params.ref,
+                    objId: this.props.params.objId
+                }, {headers: this.headers, withCredentials: true })
+                .then((response) => {
+                    if(response.data.organizations.length > 0 && response.data.organizations !== null) {
+                        this.setState({organizations: response.data.organizations});
+                    }   
+                })
+                .catch((error) => {
+                    if(error.response.data.error === 'JwtTokenExpired') {
+                        removeJwtDataFromSessionStorage();
+                    } else {
+                        this.setState({serverResponse: error.response.data.error});
+                    }
+                });
+            } catch(e) {
+                this.setState({serverResponse: e.message});
+            }
+        }
+    }
+
     async getCategories() {
         await axios.post('http://localhost:3300/category/list', { category_type: 'project'}, {headers: this.headers, withCredentials: true })
             .then((response) => {
@@ -138,29 +219,89 @@ class CreateProject extends React.Component {
             });
     }
 
-    async getTeams() {
-        await axios.get('http://localhost:3300/team/list', {headers: this.headers, withCredentials: true})
-            .then((response) => {
-                if(response.data.teams.length > 0 && response.data.teams !== null) {
-                    this.setState({teams: response.data.teams});
-                } else {
-                    this.setState({teams: null});
-                }
-            })
-            .catch((error) => {
-                if (error.response.data.error instanceof Error && (error.response.status === 404 || error.response.status === 406 || error.response.status === 500)) {
-                    this.setState({
-                        serverResponse: error.response.data.error
+    getTeams() {
+        if(this.props.params === undefined) {
+            if(this.props.location === undefined && this.props.location.state === undefined) {
+                try {
+                    axios.post('http://localhost:3300/team/list',
+                    {
+                        ref: 'user',
+                        objId: this.state.auth.userId
+                    }, {headers: this.headers, withCredentials: true})
+                    .then((response) => {
+                        if(response.data.teams !== undefined && response.data.teams !== '' && response.data.teams !== null && response.data.teams.length > 0) {
+                            this.setState({teams: response.data.teams});
+                        }
+                    })
+                    .catch((error) => {
+                        if(error.response.data.error === 'JwtTokenExpired') {
+                            removeJwtDataFromSessionStorage()
+                        } else {
+                            this.setState({
+                                serverResponse: error.response.data.error
+                            })
+                        }
                     });
+                } catch(e) {
+                    this.setState({serverResponse: e.message});
                 }
-                throw error;
-            });
+            } else {
+                try {
+                    axios.post('http://localhost:3300/team/list',
+                    {
+                        ref: this.props.location.state.ref,
+                        objId: this.props.location.state.objId
+                    }, {headers: this.headers, withCredentials: true})
+                    .then((response) => {
+                        if(response.data.teams !== undefined && response.data.teams !== '' && response.data.teams !== null && response.data.teams.length > 0) {
+                            this.setState({teams: response.data.teams});
+                        }
+                    })
+                    .catch((error) => {
+                        if(error.response.data.error === 'JwtTokenExpired') {
+                            removeJwtDataFromSessionStorage()
+                        } else {
+                            this.setState({
+                                serverResponse: error.response.data.error
+                            })
+                        }
+                    });
+                } catch(e) {
+                    this.setState({serverResponse: e.message});
+                }
+            }
+        } else {
+            try {
+                axios.post('http://localhost:3300/team/list',
+                {
+                    ref: this.props.params.ref,
+                    objId: this.props.params.objId
+                }, {headers: this.headers, withCredentials: true})
+                .then((response) => {
+                    if(response.data.teams !== undefined && response.data.teams !== '' && response.data.teams !== null && response.data.teams.length > 0) {
+                        this.setState({teams: response.data.teams});
+                    }
+                })
+                .catch((error) => {
+                    if(error.response.data.error === 'JwtTokenExpired') {
+                        removeJwtDataFromSessionStorage()
+                    } else {
+                        this.setState({
+                            serverResponse: error.response.data.error
+                        })
+                    }
+                });
+            } catch(e) {
+                this.setState({serverResponse: e.message});
+            }
+        }
     }
 
     onFormSubmit = (event, errors) => {
         event.preventDefault();
         const {t} = this.props;
         const fields = this.state.fields;
+        this.setState({serverResponse: null})
 
         if(this.validateForm()) {
             try {
@@ -194,75 +335,147 @@ class CreateProject extends React.Component {
 
         if(this.jwt !== null && this.state.auth.userId !== null && this.state.auth.refreshToken !== null) {
             return(
-                <div className="card">
-                    <p className="card-title">{t('content.project.actions.createProject.actionTitle')}</p><hr className="card-hr" />
+                <div>
+                    <h2>{t('content.project.actions.createProject.actionTitle')}</h2>
                     <form className="card-form" onSubmit={this.onFormSubmit}>
-                        <label htmlFor="name">{t('content.project.fields.name')}</label>
-                        <input onChange={this.onChange.bind(this, 'name')} value={this.state.fields['name']} type="name" className="" name="name" />
-                        <span className="error-msg-span">{this.state.errors["name"]}</span>
-                        <label htmlFor="category">{t('content.project.fields.category')}</label>
-                        <select onChange={this.onChange.bind(this, 'category')} value={this.state.fields['category']} type="category" className="" name="category">
-                            <option selected value="none">{t('misc.actionDescription.selectCategory')}</option>
-                            {this.state.categories.length > 0 && (
-                                this.state.categories.map((category, index) => {
-                                    if(index === 0) {
-                                        return <option value={category.name}>{category.name}</option>
-                                    } else {
-                                        return <option value={category.name}>{category.name}</option>
-                                    }
-                                })
-                            )}
-                        </select>
-                        <span className="error-msg-span">{this.state.errors["category"]}</span>
-                        <label htmlFor="description">{t('content.project.fields.description')}</label>
-                        <textarea onChange={this.onChange.bind(this, 'description')} value={this.state.fields['description']} type="description" id="description" name="description" />
-                        <span className="error-msg-span">{this.state.errors["description"]}</span>
-                        <label htmlFor="team">{t('content.project.fields.team')}</label>
-                        <select onChange={this.onChange.bind(this, 'team')} value={this.state.fields['team']} type="team" className="" name="team">
-                            <option selected value="none">{t('misc.actionDescription.selectTeam')}</option>
-                            {this.state.teams.length > 0 && (
-                                this.state.teams.map((team, index) => {
-                                    if(index === 0) {
-                                        return <option value={team.name}>{team.name}</option>
-                                    } else {
-                                        return <option value={team.name}>{team.name}</option>
-                                    }
-                                })
-                            )}
-                        </select>
-                        <span className="error-msg-span">{this.state.errors["team"]}</span>
-                        <label htmlFor="status">{t('content.project.fields.status')}</label>
-                        <select onChange={this.onChange.bind(this, 'status')} value={this.state.fields['status']} type="status" className="" name="status">
-                            <option selected value="none">{t('misc.actionDescription.selectStatus')}</option>
-                            {this.state.statuses.map((status, index) => {
-                                if(index === 0) {
-                                    return <option value={status}>{status}</option>
-                                } else {
-                                    return <option value={status}>{status}</option>
-                                }
-                            })}
-                        </select>
-                        <span className="error-msg-span">{this.state.errors["status"]}</span>
-                        <label htmlFor="dueDate">{t('content.project.fields.dueDate')}</label>
-                        <input onChange={this.onChange.bind(this, 'dueDate')} value={this.state.fields['dueDate']} type="date" className="" name="dueDate"
-                            min="2021-02-01" max="2022-12-31" />
-                        <span className="error-msg-span">{this.state.errors["dueDate"]}</span>
-                        <label htmlFor="restrictedAccess">{t('content.project.fields.restrictedAccess')}</label>
-                        <input onChange={this.onChange.bind(this, 'restrictedAccess')} value={this.state.fields['restrictedAccess']} type="checkbox" className="" name="restrictedAccess" />
+                        <table className="tab-table">
+                            <thead>
+                                <tr>
+                                    <th>{t('content.project.fields.name')}</th>
+                                    <th>{t('content.project.fields.category')}</th>
+                                    <th>{t('content.project.fields.associatedTeams')}</th>
+                                    <th>{t('content.project.fields.organization')}</th>
+                                    <th>{t('content.project.fields.status')}</th>
+                                    <th>{t('content.project.fields.dueDate')}</th>
+                                    <th>{t('content.project.fields.restrictedAccess')}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <input placeholder={t('misc.actionDescription.insertName')} onChange={this.onChange.bind(this, 'name')} value={this.state.fields['name']} type="name" className="" name="name" />
+                                    </td>
+                                    <td>
+                                        <select onChange={this.onChange.bind(this, 'category')} value={this.state.fields['category']} type="category" className="" name="category">
+                                            <option selected value="none">{t('misc.actionDescription.selectCategory')}</option>
+                                            {this.state.categories.length > 0 && (
+                                                this.state.categories.map((category, index) => {
+                                                    if(index === 0) {
+                                                        return <option value={category.name}>{category.name}</option>
+                                                    } else {
+                                                        return <option value={category.name}>{category.name}</option>
+                                                    }
+                                                })
+                                            )}
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <Select 
+                                                options={this.state.teams} 
+                                                isMulti
+                                                value={this.state.fields['teams']}
+                                                onChange={(value) => {
+                                                    let fields = this.state.fields;
+                                                    fields['teams'] = value;
+                                                    this.setState({fields});
+                                                }}
+                                                name="Teams"
+                                                //defaultValue={() => this.state.project.teams.map((team) => {return [team.name]})}
+                                                placeholder={t('misc.actionDescription.addTeam')}
+                                                getOptionLabel={(option) => option.name} 
+                                                getOptionValue={(option) => option._id}
+                                                noOptionsMessage={() => t('commonErrors.noTeamsAvailable')}
+                                                />
+                                    </td>
+                                    <td>
+                                        <select onChange={this.onChange.bind(this, 'organization')} value={this.state.fields['organization']} type="organization" className="" name="organization">
+                                            <option selected value="none">{t('misc.actionDescription.selectOrganization')}</option>
+                                            {this.state.organizations.length > 0 && (
+                                                this.state.organizations.map((organization, index) => {
+                                                    return <option value={organization.name}>{organization.name}</option>
+                                                })
+                                            )}
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <select onChange={this.onChange.bind(this, 'status')} value={this.state.fields['status']} type="status" className="" name="status">
+                                            <option selected value="none">{t('misc.actionDescription.selectStatus')}</option>
+                                            {this.state.statuses.map((status, index) => {
+                                                if(index === 0) {
+                                                    return <option value={status}>{status}</option>
+                                                } else {
+                                                    return <option value={status}>{status}</option>
+                                                }
+                                            })}
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <input onChange={this.onChange.bind(this, 'dueDate')} value={this.state.fields['dueDate']} type="date" className="" name="dueDate"
+                                            min="2021-02-01" max="2022-12-31" />
+                                        
+                                    </td>
+                                    <td>
+                                        <input onChange={this.onChange.bind(this, 'restrictedAccess')} value={this.state.fields['restrictedAccess']} type="checkbox" className="" name="restrictedAccess" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><span className="error-msg-span">{this.state.errors["name"]}</span></td>
+                                    <td><span className="error-msg-span">{this.state.errors["category"]}</span></td>
+                                    <td><span className="error-msg-span">{this.state.errors["teams"]}</span></td>
+                                    <td><span className="error-msg-span">{this.state.errors["organization"]}</span></td>
+                                    <td><span className="error-msg-span">{this.state.errors["status"]}</span></td>
+                                    <td><span className="error-msg-span">{this.state.errors["dueDate"]}</span></td>
+                                </tr>
+                            </tbody>
+                            <thead>
+                                <tr>
+                                    <th colSpan="7">{t('content.project.fields.description')}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td colSpan="7">
+                                        <JoditEditor
+                                            ref={this.state.fields['description']}
+                                            value={this.state.fields['description']}
+                                            
+                                            tabIndex={1} // tabIndex of textarea
+                                            onChange={(value) => {let fields = this.state.fields; 
+                                                let errors = this.state.errors;
+                                                fields['description'] = value; 
+                                                errors['description'] = '';
+                                                this.setState({fields, errors})}}
+                                            //onBlur={newContent => { let fields = this.state.fields; fields['description'] = newContent; this.setState({fields})}} // preferred to use only this option to update the content for performance reasons
+                                        />
+                                        
+                                    </td>
+                                </tr>
+                                <tr><td><span className="error-msg-span">{this.state.errors["description"]}</span></td></tr>
+                                {this.state.serverResponse !== null ? (
+                                    this.state.user !== null ? (
+                                        <tr>
+                                            <td colspan="8" align="center">
+                                                <span className="error-msg-span" style={{display: "block", color: 'green'}} id="serverResponse">{this.state.serverResponse}</span>                                                            
+                                            </td>
+                                        </tr>
+                                    ) : (
+                                        <tr>
+                                            <td colspan="8" align="center">
+                                                <span className="error-msg-span" style={{display: "block"}} id="serverResponse">{t('content.project.actions.createProject.errorMessages.dataValidation.' + this.state.serverResponse)}</span>
+                                            </td>
+                                        </tr>
+                                    )
+                                ) : (
+                                    null
+                                )}
+                            </tbody>
+                        </table>
                         <div class="card-form-divider">
                             <button type="submit" className="card-form-button">{t('misc.actionDescription.create')}</button>
                             <button type="reset" className="card-form-button" onClick={this.resetForm}>{t('misc.actionDescription.reset')}</button>
                             <button type="button" className="card-form-button"><Link to="/dashboard" className="card-form-button-link">{t('misc.actionDescription.cancel')}</Link></button>
                         </div>
-                        {this.state.serverResponse !== null ? (
-                                this.state.project !== null ? (
-                                    <span className="error-msg-span" style={{display: "block", color: 'green'}} id="serverResponse">{this.state.serverResponse}</span>
-                                ) : (
-                                    <span className="error-msg-span" style={{display: "block"}} id="serverResponse">{t('content.project.actions.createProject.errorMessages.dataValidation.' + this.state.serverResponse)}</span>
-                                )
-                            ) : (
-                                <span className="error-msg-span" id="serverResponse"></span>
-                            )}
+                        
                     </form>
                 </div>
             )

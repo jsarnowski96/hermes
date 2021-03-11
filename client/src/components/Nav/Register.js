@@ -19,13 +19,15 @@ class Register extends React.Component {
             this.state = {
                 authenticated: true,
                 fields: {},
-                errors: {}
+                errors: {},
+                serverResponse: null
             };
         } else {
             this.state = {
                 authenticated: false,
                 fields: {},
-                errors: {}
+                errors: {},
+                serverResponse: null
             };
         }
 
@@ -182,11 +184,8 @@ class Register extends React.Component {
                 .catch(error => {
                     let err = document.getElementById('serverResponse');
                     if(error) {
-                        if(error.response.data.type === 'AccountDuplication') {
-                            err.innerHTML = t('content.register.errorMessages.dataValidation.userAlreadyExists');
-                            err.style.display = 'block';
-                        } else {
-                            err.innerHTML = error.response;
+                        if(error !== undefined) {
+                            this.setState({serverResponse: error.response.data.error});
                         }
                     }
                 });
@@ -243,7 +242,7 @@ class Register extends React.Component {
                     {this.state.authenticated ? (
                         <span className="error-msg-span" id="serverResponse">Already authenticated</span>
                     ) : (
-                        <span className="error-msg-span" id="serverResponse"></span>
+                        <span className="error-msg-span" id="serverResponse">{t('content.register.errorMessages.dataValidation.' + this.state.serverResponse)}</span>
                     )}
                 </form>
                 <p className="card-form-reminder">{t('content.register.loginTip')} <Link to="/login">{t('content.register.loginLink')}</Link></p>

@@ -29,52 +29,73 @@ class UserList extends React.Component {
             };
         }
 
-        this.getUserList();
+        this.getUsers();
     }
 
-    getUserList() {
+    async getUsers() {
         if(this.props.params === undefined) {
-            try {
-                axios.post('http://localhost:3300/user/list', 
-                {
-                   
-                }, {headers: this.headers, withCredentials: true})
-                .then((response) => {
-                    if(response.data.users !== undefined && response.data.users !== '' && response.data.users !== null && response.data.users.length > 0) {
-                        this.setState({users: response.data.users});
-                    }
-                })
-                .catch((error) => {
-                    if(error.response.data.error === 'JwtTokenExpired') {
-                        removeJwtDataFromSessionStorage()
-                    } else {
-                        this.setState({
-                            serverResponse: error.response.data.error
-                        })
-                    }
-                });
-            } catch(e) {
-                this.setState({serverResponse: e.message});
+            if(this.props.location === undefined && this.props.location.state === undefined) {
+                try {
+                    await axios.post('http://localhost:3300/user/list', 
+                    {
+                        ref: 'company',
+                        objId: this.state.auth.userId
+                    }, {headers: this.headers, withCredentials: true })
+                    .then((response) => {
+                        if(response.data.users.length > 0 && response.data.users !== null) {
+                            this.setState({users: response.data.users});
+                        }   
+                    })
+                    .catch((error) => {
+                        if(error.response.data.error === 'JwtTokenExpired') {
+                            removeJwtDataFromSessionStorage();
+                        } else {
+                            this.setState({serverResponse: error.response.data.error});
+                        }
+                    });
+                } catch(e) {
+                    this.setState({serverResponse: e.message});
+                }
+            } else {
+                try {
+                    await axios.post('http://localhost:3300/user/list', 
+                    {
+                        ref: this.props.location.state.ref,
+                        objId: this.props.location.state.objId
+                    }, {headers: this.headers, withCredentials: true })
+                    .then((response) => {
+                        if(response.data.users.length > 0 && response.data.users !== null) {
+                            this.setState({users: response.data.users});
+                        }   
+                    })
+                    .catch((error) => {
+                        if(error.response.data.error === 'JwtTokenExpired') {
+                            removeJwtDataFromSessionStorage();
+                        } else {
+                            this.setState({serverResponse: error.response.data.error});
+                        }
+                    });
+                } catch(e) {
+                    this.setState({serverResponse: e.message});
+                }
             }
         } else {
             try {
-                axios.post('http://localhost:3300/user/list', 
+                await axios.post('http://localhost:3300/user/list', 
                 {
-                   ref: this.props.params.ref,
-                   objId: this.props.params.objId,
-                }, {headers: this.headers, withCredentials: true})
+                    ref: this.props.params.ref,
+                    objId: this.props.params.objId
+                }, {headers: this.headers, withCredentials: true })
                 .then((response) => {
-                    if(response.data.users !== undefined && response.data.users !== '' && response.data.users !== null && response.data.users.length > 0) {
+                    if(response.data.users.length > 0 && response.data.users !== null) {
                         this.setState({users: response.data.users});
-                    }
+                    }   
                 })
                 .catch((error) => {
                     if(error.response.data.error === 'JwtTokenExpired') {
-                        removeJwtDataFromSessionStorage()
+                        removeJwtDataFromSessionStorage();
                     } else {
-                        this.setState({
-                            serverResponse: error.response.data.error
-                        })
+                        this.setState({serverResponse: error.response.data.error});
                     }
                 });
             } catch(e) {
@@ -89,6 +110,15 @@ class UserList extends React.Component {
         if(this.jwt !== null && this.state.auth.userId !== null && this.state.auth.refreshToken !== null) {
             return(
                 <div>
+                    {
+                        (() => {
+                            if(this.props.location !== undefined && this.props.location.state !== undefined && this.props.location.state.navBtn === true) {
+                                return(
+                                    <h2>{t('content.userAction.actions.usersOverview')}</h2>
+                                )
+                            }
+                        })()
+                    }
                     <table className="tab-table">
                         <thead>
                             <tr>
@@ -121,11 +151,17 @@ class UserList extends React.Component {
                             )}
                         </tbody>
                     </table>
-                    {/* {this.props.location.state !== undefined && this.props.location.state.navBtn === true &
-                        <div class="card-form-divider">
-                            <button className="card-form-button"><Link to='/dashboard'>{t('misc.actionDescription.return')}</Link></button>
-                        </div>
-                    } */}
+                    {
+                        (() => {
+                            if(this.props.location !== undefined && this.props.location.state !== undefined && this.props.location.state.navBtn === true) {
+                                return(
+                                    <div class="card-form-divider">
+                                        <Link to='/dashboard'><button className="card-form-button">{t('misc.actionDescription.return')}</button></Link>
+                                    </div>
+                                )
+                            }
+                        })()
+                    }
                 </div>
             )
         } else {

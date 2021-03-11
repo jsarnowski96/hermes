@@ -62,7 +62,7 @@ class Dashboard extends React.Component {
                     </div>
                     <div className="tab tasks">
                         <p className="tab-title"><FontAwesomeIcon icon="tasks" size="xs" />{t('content.task.titlePlural')}</p>
-                        <TaskList params={{ref: 'user', objId: this.state.auth.userId}} />
+                        <TaskList params={{ref: 'user', info: 'basic', objId: this.state.auth.userId}} />
                     </div>
                     <div className="tab recent">
                         <p className="tab-title"><FontAwesomeIcon icon="history" size="xs" />{t('content.recent.title')}</p>

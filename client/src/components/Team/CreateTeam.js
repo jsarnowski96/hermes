@@ -3,6 +3,8 @@ import {withTranslation} from 'react-i18next';
 import {Redirect} from 'react-router';
 import {Link} from 'react-router-dom';
 import axios from 'axios';
+import Select from 'react-select';
+import JoditEditor from 'jodit-react';
 
 import {getJwtDataFromSessionStorage, removeJwtDataFromSessionStorage} from '../../middleware/jwtSessionStorage';
 
@@ -39,6 +41,7 @@ class CreateTeam extends React.Component {
 
         this.getCategories();
         this.getOrganizations();
+        this.getUsers();
     }
 
     componentWillUnmount() {
@@ -46,8 +49,6 @@ class CreateTeam extends React.Component {
     }
 
     resetForm() {
-        document.getElementById('serverResponse').innerHTML = '';
-        document.getElementById('description').defaultValue = '';
         this.setState({fields: {}, errors: {}});
     }
 
@@ -76,6 +77,11 @@ class CreateTeam extends React.Component {
                 isValid = false;
                 errors['name'] = t('commonErrors.formValidation.allowedCharsOnly') + regex;
             }
+        }
+
+        if(!fields['members'] || fields['members'] === 'none') {
+            isValid = false;
+            errors['members'] = t('misc.phrases.field') + ' \'' + t('content.team.fields.members') + '\' ' + t('commonErrors.formValidation.requiredDropDownSelection');
         }
 
         if(!fields['category'] || fields['category'] === 'none') {
@@ -127,9 +133,37 @@ class CreateTeam extends React.Component {
         
     }
 
+    async getUsers() {
+        try {
+            await axios.post('http://localhost:3300/user/list', 
+            {
+                ref: 'company',
+                objId: this.state.auth.userId
+            }, {headers: this.headers, withCredentials: true })
+            .then((response) => {
+                if(response.data.users.length > 0 && response.data.users !== null) {
+                    this.setState({users: response.data.users});
+                }   
+            })
+            .catch((error) => {
+                if(error.response.data.error === 'JwtTokenExpired') {
+                    removeJwtDataFromSessionStorage();
+                } else {
+                    this.setState({serverResponse: error.response.data.error});
+                }
+            });
+        } catch(e) {
+            this.setState({serverResponse: e.message});
+        }
+    }
+
     async getOrganizations() {
         try {
-            await axios.post('http://localhost:3300/organization/list', { company: 'Firma testowa #1'}, {headers: this.headers, withCredentials: true })
+            await axios.post('http://localhost:3300/organization/list', 
+            {
+                ref: 'user',
+                objId: this.state.auth.userId
+            }, {headers: this.headers, withCredentials: true })
             .then((response) => {
                 if(response.data.organizations.length > 0 && response.data.organizations !== null) {
                     this.setState({organizations: response.data.organizations});
@@ -153,6 +187,7 @@ class CreateTeam extends React.Component {
         event.preventDefault();
         const fields = this.state.fields;
         const {t} = this.props;
+        this.setState({serverResponse: null})
 
         if(this.validateForm()) {
             try {
@@ -192,49 +227,114 @@ class CreateTeam extends React.Component {
 
         if(this.jwt !== null && this.state.auth.userId !== null && this.state.auth.refreshToken !== null) {
             return(
-                <div className="card">
-                    <p className="card-title">{t('content.team.actions.createTeam.actionTitle')}</p><hr className="card-hr" />
+                <div>
+                    <h2>{t('content.team.actions.createTeam.actionTitle')}</h2>
                     <form className="card-form" onSubmit={this.onFormSubmit}>
-                        <label htmlFor="name">{t('content.team.fields.name')}</label>
-                        <input onChange={this.onChange.bind(this, 'name')} value={this.state.fields['name']} type="name" className="" name="name" />
-                        <span className="error-msg-span">{this.state.errors["name"]}</span>
-                        <label htmlFor="description">{t('content.team.fields.description')}</label>
-                        <textarea onChange={this.onChange.bind(this, 'description')} value={this.state.fields['description']} type="description" id="description" name="description" />
-                        <span className="error-msg-span">{this.state.errors["description"]}</span>
-                        <label htmlFor="category">{t('content.category.title')}</label>
-                        <select onChange={this.onChange.bind(this, 'category')} value={this.state.fields['category']} type="category" className="" name="category">
-                            <option selected value="none">{t('misc.actionDescription.selectCategory')}</option>
-                            {this.state.categories.length > 0 && (
-                                this.state.categories.map((category, index) => {
-                                    return <option value={category.name}>{category.name}</option>
-                                })
-                            )}
-                        </select>
-                        <span className="error-msg-span">{this.state.errors["category"]}</span>
-                        <label htmlFor="organization">{t('content.organization.title')}</label>
-                        <select onChange={this.onChange.bind(this, 'organization')} value={this.state.fields['organization']} type="organization" className="" name="organization">
-                            <option selected value="none">{t('misc.actionDescription.selectOrganization')}</option>
-                            {this.state.organizations.length > 0 && (
-                                this.state.organizations.map((organization, index) => {
-                                    return <option value={organization.name}>{organization.name}</option>
-                                })
-                            )}
-                        </select>
-                        <span className="error-msg-span">{this.state.errors["organization"]}</span>
+                        <table className="tab-table">
+                            <thead>
+                                <tr>
+                                    <th>{t('content.team.fields.name')}</th>
+                                    <th>{t('content.category.title')}</th>
+                                    <th>{t('content.organization.title')}</th>
+                                    <th>{t('content.team.fields.members')}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <input placeholder={t('misc.actionDescription.insertName')} onChange={this.onChange.bind(this, 'name')} value={this.state.fields['name']} type="name" className="" name="name" />
+                                    </td>
+                                    <td>
+                                        <select onChange={this.onChange.bind(this, 'category')} value={this.state.fields['category']} type="category" className="" name="category">
+                                            <option selected value="none">{t('misc.actionDescription.selectCategory')}</option>
+                                            {this.state.categories.length > 0 && (
+                                                this.state.categories.map((category, index) => {
+                                                    return <option value={category.name}>{category.name}</option>
+                                                })
+                                            )}
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <select onChange={this.onChange.bind(this, 'organization')} value={this.state.fields['organization']} type="organization" className="" name="organization">
+                                            <option selected value="none">{t('misc.actionDescription.selectOrganization')}</option>
+                                            {this.state.organizations.length > 0 && (
+                                                this.state.organizations.map((organization, index) => {
+                                                    return <option value={organization.name}>{organization.name}</option>
+                                                })
+                                            )}
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <Select 
+                                            options={this.state.users} 
+                                            isMulti
+                                            value={this.state.fields['members']}
+                                            onChange={(value) => { 
+                                                let fields = this.state.fields; 
+                                                let errors = this.state.errors;
+                                                fields['members'] = value; 
+                                                errors['members'] = ''
+                                                this.setState({fields, errors})}}
+                                            name="Members"
+                                            placeholder={t('misc.actionDescription.addMember')}
+                                            getOptionLabel={(option) => option.username} 
+                                            getOptionValue={(option) => option._id} 
+                                            noOptionsMessage={() => t('commonErrors.noMembersAvailable')}
+                                        />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><span className="error-msg-span">{this.state.errors["name"]}</span></td>
+                                    <td><span className="error-msg-span">{this.state.errors["category"]}</span></td>
+                                    <td><span className="error-msg-span">{this.state.errors["organization"]}</span></td>
+                                    <td><span className="error-msg-span">{this.state.errors["members"]}</span></td>
+                                </tr>
+                            </tbody>
+                            <thead>
+                                <tr><th colspan="4">{t('content.team.fields.description')}</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td colSpan="4">
+                                        <JoditEditor
+                                            ref={this.state.fields['description']}
+                                            value={this.state.fields['description']}
+                                            tabIndex={1} // tabIndex of textarea
+                                            onChange={(value) => {
+                                                let fields = this.state.fields; 
+                                                let errors = this.state.errors;
+                                                fields['description'] = value; 
+                                                errors['description'] = '';
+                                                this.setState({fields, errors})}}
+                                            //onBlur={newContent => { let fields = this.state.fields; fields['description'] = newContent; this.setState({fields})}} // preferred to use only this option to update the content for performance reasons
+                                        />
+                                    </td>
+                                </tr>
+                                <tr><td><span className="error-msg-span">{this.state.errors["description"]}</span></td></tr>
+                                {this.state.serverResponse !== null ? (
+                                    this.state.user !== null ? (
+                                        <tr>
+                                            <td colspan="4" align="center">
+                                                <span className="error-msg-span" style={{display: "block", color: 'green'}} id="serverResponse">{this.state.serverResponse}</span>                                                            
+                                            </td>
+                                        </tr>
+                                    ) : (
+                                        <tr>
+                                            <td colspan="4" align="center">
+                                                <span className="error-msg-span" style={{display: "block"}} id="serverResponse">{t('content.team.actions.createTeam.errorMessages.dataValidation.' + this.state.serverResponse)}</span>
+                                            </td>
+                                        </tr>
+                                    )
+                                ) : (
+                                    null
+                                )}
+                            </tbody>
+                        </table>
                         <div class="card-form-divider">
                             <button type="submit" className="card-form-button">{t('misc.actionDescription.create')}</button>
                             <button type="reset" className="card-form-button" onClick={this.resetForm}>{t('misc.actionDescription.reset')}</button>
                             <button type="button" className="card-form-button"><Link to="/dashboard" className="card-form-button-link">{t('misc.actionDescription.cancel')}</Link></button>
                         </div>
-                        {this.state.serverResponse !== null ? (
-                                this.state.team !== null ? (
-                                    <span className="error-msg-span" style={{display: "block", color: 'green'}} id="serverResponse">{this.state.serverResponse}</span>
-                                ) : (
-                                    <span className="error-msg-span" style={{display: "block"}} id="serverResponse">{t('content.team.actions.createTeam.errorMessages.dataValidation.' + this.state.serverResponse)}</span>
-                                )
-                            ) : (
-                                <span className="error-msg-span" id="serverResponse"></span>
-                            )}
                     </form>
                 </div>
             )

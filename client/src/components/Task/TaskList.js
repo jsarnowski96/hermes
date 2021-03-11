@@ -35,29 +35,58 @@ class TaskList extends React.Component {
 
     getTaskList() {
         if(this.props.params === undefined) {
-            try {
-                axios.post('http://localhost:3300/task/list', 
-                {
-
-                }, {headers: this.headers, withCredentials: true})
-                .then((response) => {
-                    if(response !== undefined && response.data.tasks !== null && response.data.tasks.length > 0) {
-                        this.setState({tasks: response.data.tasks});
-                    }
-                })
-                .catch((error) => {
-                    if(error !== undefined) {
-                        if(error.response.data.error === 'JwtTokenExpired') {
-                            removeJwtDataFromSessionStorage()
-                        } else {
-                            this.setState({
-                                serverResponse: error.response.data.error
-                            })
+            if(this.props.location === undefined && this.props.location.state === undefined) {
+                try {
+                    axios.post('http://localhost:3300/task/list', 
+                    {
+                        ref: 'user',
+                        objId: this.state.auth.userId
+                    }, {headers: this.headers, withCredentials: true})
+                    .then((response) => {
+                        if(response !== undefined && response.data.tasks !== null && response.data.tasks.length > 0) {
+                            this.setState({tasks: response.data.tasks});
                         }
-                    }
-                });
-            } catch(e) {
-                this.setState({serverResponse: e.message});
+                    })
+                    .catch((error) => {
+                        if(error !== undefined) {
+                            if(error.response.data.error === 'JwtTokenExpired') {
+                                removeJwtDataFromSessionStorage()
+                            } else {
+                                this.setState({
+                                    serverResponse: error.response.data.error
+                                })
+                            }
+                        }
+                    });
+                } catch(e) {
+                    this.setState({serverResponse: e.message});
+                }
+            } else {
+                try {
+                    axios.post('http://localhost:3300/task/list', 
+                    {
+                        ref: this.props.location.state.ref,
+                        objId: this.props.location.state.objId
+                    }, {headers: this.headers, withCredentials: true})
+                    .then((response) => {
+                        if(response !== undefined && response.data.tasks !== null && response.data.tasks.length > 0) {
+                            this.setState({tasks: response.data.tasks});
+                        }
+                    })
+                    .catch((error) => {
+                        if(error !== undefined) {
+                            if(error.response.data.error === 'JwtTokenExpired') {
+                                removeJwtDataFromSessionStorage()
+                            } else {
+                                this.setState({
+                                    serverResponse: error.response.data.error
+                                })
+                            }
+                        }
+                    });
+                } catch(e) {
+                    this.setState({serverResponse: e.message});
+                }
             }
         } else {
             try {
@@ -94,12 +123,28 @@ class TaskList extends React.Component {
         if(this.jwt !== null && this.state.auth.userId !== null && this.state.auth.refreshToken !== null) {
             return(
                 <div>
+                    {
+                        (() => {
+                            if(this.props.location !== undefined && this.props.location.state !== undefined && this.props.location.state.navBtn === true) {
+                                return(
+                                    <h2>{t('content.userAction.actions.tasksOverview')}</h2>
+                                )
+                            }
+                        })()
+                    }
                     <table className="tab-table">
                         <thead>
                             <tr>
                                 <th>{t('content.task.fields.name')}</th>
-                                <th>{t('content.task.fields.description')}</th>
-                                <th>{t('content.task.fields.assignedUser')}</th>
+                                {
+                                    (() => {
+                                        if(this.props.params !== undefined && this.props.params.info === 'basic') {
+                                            return <th>{t('content.task.fields.project')}</th>
+                                        } else {
+                                            return <th>{t('content.task.fields.assignedUser')}</th>
+                                        }
+                                    })()
+                                }
                                 <th>{t('content.task.fields.category')}</th>
                                 <th>{t('content.task.fields.dueDate')}</th>
                             </tr>
@@ -111,9 +156,21 @@ class TaskList extends React.Component {
                                         <td>
                                             <Link to={{pathname: '/task/details', state: {taskId: task._id}}}>{task.name}</Link>
                                         </td>
-                                        <td style={{wordWrap: 'break-word', maxWidth: '10vw'}}><p dangerouslySetInnerHTML={{__html: task.description}} style={{whiteSpace: "pre-wrap"}} /></td>
+                                        {/* <td style={{wordWrap: 'break-word', maxWidth: '10vw'}}><p dangerouslySetInnerHTML={{__html: task.description}} style={{whiteSpace: "pre-wrap"}} /></td> */}
                                         <td>
-                                            <Link to={{pathname: '/user/profile', state: {userId: task.assigned_user._id}}}>{task.assigned_user.firstname} {task.assigned_user.lastname}</Link>
+                                            {
+                                                (() => {
+                                                    if(this.props.params !== undefined && this.props.params.info === 'basic') {
+                                                        task.project !== null ? (
+                                                            <Link to={{pathname: '/project/details', state: {userId: this.state.auth.userId, projectId: task.project._id}}}>{task.project.name}</Link>
+                                                        ) : (
+                                                            <Link to={{pathname: '/project/details', state: {userId: this.state.auth.userId, projectId: null}}}>-</Link>
+                                                        )
+                                                    } else {
+                                                        return <Link to={{pathname: '/user/profile', state: {userId: task.assigned_user._id}}}>{task.assigned_user.firstname} {task.assigned_user.lastname}</Link>
+                                                    }
+                                                })()
+                                            }
                                         </td>
                                         <td>{task.category.name}</td>
                                         <td>{moment(task.dueDate).format('YYYY-MM-DD')}</td>
@@ -122,7 +179,7 @@ class TaskList extends React.Component {
                             ) : (
                                 <tr>
                                     {this.state.serverResponse !== null ? (
-                                        <td colspan="6" align="center">{t('content.task.actions.selectTaskList.errorMessages.dataValidation.' + this.state.serverResponse)}</td>
+                                        <td colspan="6" align="center">- {t('content.task.actions.selectTaskList.errorMessages.dataValidation.' + this.state.serverResponse)} -</td>
                                     ) : (
                                         <td colspan="6" align="center">-</td>
                                     )}
@@ -130,11 +187,17 @@ class TaskList extends React.Component {
                             )}
                         </tbody>
                     </table>
-                    {/* {this.props.location.state !== undefined && this.props.location.state.navBtn === true &
-                        <div class="card-form-divider">
-                            <button className="card-form-button"><Link to='/dashboard'>{t('misc.actionDescription.return')}</Link></button>
-                        </div>
-                    } */}
+                    {
+                        (() => {
+                            if(this.props.location !== undefined && this.props.location.state !== undefined && this.props.location.state.navBtn === true) {
+                                return(
+                                    <div class="card-form-divider">
+                                        <button className="card-form-button"><Link to='/dashboard'>{t('misc.actionDescription.return')}</Link></button>
+                                    </div>
+                                )
+                            }
+                        })()
+                    }
                 </div>
             )
         } else {

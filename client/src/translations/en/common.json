@@ -66,20 +66,24 @@
                 "dueDate": "Due date",
                 "category": "Category",
                 "team": "Team",
+                "organization": "Organization",
                 "overview": "Project overview",
-                "projectManager": "Project Manager",
                 "associatedTeams": "Project teams",
+                "projectManager": "Project Manager",
                 "restrictedAccess": "Enable restricted access"
             },
             "actions": {
                 "selectProject": {
                     "actionTitle": "Project details",
+                    "associatedTeams": "Project teams",
+                    "associatedTasks": "Project tasks",
                     "actionResults": {
                         "success": "",
                         "failure": ""
                     },
                     "errorMessages": {
                         "dataValidation": {
+                            "missingProps": "No project data provided",
                             "ProjectNotFound": "Project not found",
                             "ReferenceMissing": "Reference missing",
                             "NoProjectsFound": "No projects found",
@@ -200,7 +204,7 @@
                     },
                     "errorMessages": {
                         "dataValidation": {
-                            
+                            "missingProps": "No team data provided"
                         }
                     }
                 },
@@ -212,7 +216,8 @@
                     },
                     "errorMessages": {
                         "dataValidation": {
-                            "NoTeamsFound": "No teams found"
+                            "NoTeamsFound": "No teams found",
+                            "TeamNotFound": "Team not found"
                         }
                     }
                 },
@@ -224,7 +229,7 @@
                     },
                     "errorMessages": {
                         "dataValidation": {
-                            
+                            "NoOrganizationsFound": "No organizations found"
                         }
                     }
                 },
@@ -269,7 +274,7 @@
                     },
                     "errorMessages": {
                         "dataValidation": {
-                            
+                            "missingProps": "No organization data provided"
                         }
                     }
                 },
@@ -337,13 +342,14 @@
             },
             "actions": {
                 "selectTask": {
+                    "associatedProjects": "Associated projects",
                     "actionResults": {
                         "success": "",
                         "failure": ""
                     },
                     "errorMessages": {
                         "dataValidation": {
-                            
+                            "missingProps": "No task data provided"
                         }
                     }
                 },
@@ -510,6 +516,7 @@
                 "projectsOverview": "Projects overview",
                 "tasksOverview": "Tasks overview",
                 "teamOverview": "Team overview",
+                "usersOverview": "Users overview",
                 "userProfile": "User profile"
             }
         },
@@ -536,7 +543,7 @@
             }
         },
         "user": {
-            "title": "User",
+            "title": "User profile",
             "titlePlural": "Users",
             "fields": {
                 "email": "Email address",
@@ -556,6 +563,7 @@
                     },
                     "errorMessages": {
                         "dataValidation": {
+                            "missingProps": "No user data provided",
                             "UserIdMissing": "User ID missing"
                         }
                     }
@@ -627,7 +635,7 @@
                     },
                     "errorMessages": {
                         "dataValidation": {
-                            
+                            "missingProps": "No company data provided"
                         }
                     }
                 },
@@ -748,6 +756,10 @@
         }
     },
     "misc": {
+        "fields": {
+            "createdAt": "Created at:",
+            "modifiedAt": "Modified at:"
+        },
         "phrases": {
             "field": "Field",
             "or": "or"
@@ -761,6 +773,7 @@
             "register": "Register",
             "edit": "Edit",
             "reset": "Reset",
+            "delete": "Delete",
             "save": "Save",
             "discard": "Discard",
             "selectTeam": "Select team",
@@ -771,11 +784,18 @@
             "selectProject": "Select project",
             "addMember": "Add new members",
             "addTeam": "Add teams",
-            "setStatus": "Set status"
+            "setStatus": "Set status",
+            "insertName": "Enter name",
+            "enterPhone": "Enter phone number",
+            "enterEmail": "Enter email address",
+            "enterWebsite": "Enter website",
+            "enterUrl": "Enter URL",
+            "enterCompany": "Enter company name"
         }
     },
     "commonErrors": {
         "noTeamsAvailable": "No teams available",
+        "projectDeleted": "Project was deleted",
         "noMembersAvailable": "No members available",
         "noStatusesAvailable": "No statuses available",
         "cannotDisplayRequestedResource": "Cannot display requested resource",

@@ -3,6 +3,8 @@ import {withTranslation} from 'react-i18next';
 import {Redirect} from 'react-router';
 import {Link} from 'react-router-dom';
 import axios from 'axios';
+import Select from 'react-select';
+import JoditEditor from 'jodit-react';
 
 import {getJwtDataFromSessionStorage, removeJwtDataFromSessionStorage} from '../../middleware/jwtSessionStorage';
 
@@ -150,35 +152,80 @@ class CreateOrganization extends React.Component {
 
         if(this.jwt !== null && this.state.auth.userId !== null && this.state.auth.refreshToken !== null) {
             return(
-                <div className="card">
-                    <p className="card-title">{t('content.organization.actions.createOrganization.actionTitle')}</p><hr className="card-hr" />
+                <div>
+                    <h2>{t('content.organization.actions.createOrganization.actionTitle')}</h2>
                     <form className="card-form" onSubmit={this.onFormSubmit}>
-                        <label htmlFor="name">{t('content.organization.fields.name')}</label>
-                        <input onChange={this.onChange.bind(this, 'name')} value={this.state.fields['name']} type="name" className="" name="name" />
-                        <span className="error-msg-span">{this.state.errors["name"]}</span>
-                        <label htmlFor="company">{t('content.company.title')}</label>
-                        <input onChange={this.onChange.bind(this, 'company')} value={this.state.fields['company']} type="company" className="" name="company" />
-                        <span className="error-msg-span">{this.state.errors["company"]}</span>
-                        <label htmlFor="description">{t('content.organization.fields.description')}</label>
-                        <textarea onChange={this.onChange.bind(this, 'description')} value={this.state.fields['description']} type="description" id="description" name="description" />
-                        <span className="error-msg-span">{this.state.errors["description"]}</span>
-                        <label htmlFor="phone">{t('content.company.fields.avatarUrl')}</label>
-                        <input onChange={this.onChange.bind(this, 'avatar_url')} value={this.state.fields['avatar_url']} type="avatar_url" className="" name="avatar_url" />
-                        <span className="error-msg-span">{this.state.errors["avatar_url"]}</span>
+                        <table className="tab-table">
+                            <thead>
+                                <tr>
+                                    <th>{t('content.organization.fields.name')}</th>
+                                    <th>{t('content.company.title')}</th>
+                                    <th>{t('content.organization.fields.avatarUrl')}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <input placeholder={t('misc.actionDescription.insertName')} onChange={this.onChange.bind(this, 'name')} value={this.state.fields['name']} type="name" className="" name="name" />
+                                        <span className="error-msg-span">{this.state.errors["name"]}</span>
+                                    </td>
+                                    <td>
+                                        <input placeholder={t('misc.actionDescription.enterCompany')} onChange={this.onChange.bind(this, 'company')} value={this.state.fields['company']} type="company" className="" name="company" />
+                                        <span className="error-msg-span">{this.state.errors["company"]}</span>
+                                    </td>
+                                    <td>
+                                        <input placeholder={t('misc.actionDescription.enterUrl')} nChange={this.onChange.bind(this, 'avatar_url')} value={this.state.fields['avatar_url']} type="avatar_url" className="" name="avatar_url" />
+                                        <span className="error-msg-span">{this.state.errors["avatar_url"]}</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                            <thead>
+                                <tr>
+                                    <th colSpan="4">{t('content.organization.fields.description')}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td colSpan="4">
+                                        <JoditEditor
+                                            ref={this.state.fields['description']}
+                                            value={this.state.fields['description']}
+                                            tabIndex={1} // tabIndex of textarea
+                                            onChange={(value) => {
+                                                let fields = this.state.fields; 
+                                                let errors = this.state.errors;
+                                                fields['description'] = value; 
+                                                errors['description'] = '';
+                                                this.setState({fields, errors})}}
+                                            //onBlur={newContent => { let fields = this.state.fields; fields['description'] = newContent; this.setState({fields})}} // preferred to use only this option to update the content for performance reasons
+                                        />
+                                    </td>
+                                </tr>
+                                <tr><td><span className="error-msg-span">{this.state.errors["description"]}</span></td></tr>
+                                {this.state.serverResponse !== null ? (
+                                    this.state.user !== null ? (
+                                        <tr>
+                                            <td colspan="8" align="center">
+                                                <span className="error-msg-span" style={{display: "block", color: 'green'}} id="serverResponse">{this.state.serverResponse}</span>                                                            
+                                            </td>
+                                        </tr>
+                                    ) : (
+                                        <tr>
+                                            <td colspan="8" align="center">
+                                                <span className="error-msg-span" style={{display: "block"}} id="serverResponse">{t('content.organization.actions.createOrganization.errorMessages.dataValidation.' + this.state.serverResponse)}</span>
+                                            </td>
+                                        </tr>
+                                    )
+                                ) : (
+                                    null
+                                )}
+                            </tbody>
+                        </table>
                         <div class="card-form-divider">
                             <button type="submit" className="card-form-button">{t('misc.actionDescription.create')}</button>
                             <button type="reset" className="card-form-button" onClick={this.resetForm}>{t('misc.actionDescription.reset')}</button>
                             <button type="button" className="card-form-button"><Link to="/dashboard" className="card-form-button-link">{t('misc.actionDescription.cancel')}</Link></button>
                         </div>
-                        {this.state.serverResponse !== null ? (
-                                this.state.organization !== null ? (
-                                    <span className="error-msg-span" style={{display: "block", color: 'green'}} id="serverResponse">{this.state.serverResponse}</span>
-                                ) : (
-                                    <span className="error-msg-span" style={{display: "block"}} id="serverResponse">{t('content.organization.actions.createOrganization.errorMessages.dataValidation.' + this.state.serverResponse)}</span>
-                                )
-                            ) : (
-                                <span className="error-msg-span" id="serverResponse"></span>
-                            )}
                     </form>
                 </div>
             )

@@ -103,7 +103,7 @@ async function registerUser(userObj) {
             }
 
             if(!mongoose.Types.ObjectId.isValid(companyId)) {
-                throw new Error('ComapnyIdNotValid')
+                throw new Error('CompanyIdNotValid')
             }
 
             user = new User({

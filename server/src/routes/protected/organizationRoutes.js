@@ -21,19 +21,35 @@ router.get('/details/:id', async (req, res, next) => {
 });
 
 router.post('/list', async (req, res, next) => {
-    await getOrganizationList(req.body.company)
-    .then((result) => {
-        if(!result || result === null || result.length === 0) {
-            throw new Error('NoOrganizationsFound');
-        } else {
-            return res.status(200).json({organizations: result});
-        }
-    })
-    .catch((error) => {
-        if(error) {
-            return res.status(500).json({error: error.message});
-        }
-    })
+    if(req.body.ref && req.body.objId) {
+        await getOrganizationList(req.body.ref, req.body.objId)
+        .then((result) => {
+            if(!result || result === null || result.length === 0) {
+                throw new Error('NoOrganizationsFound');
+            } else {
+                return res.status(200).json({organizations: result});
+            }
+        })
+        .catch((error) => {
+            if(error) {
+                return res.status(500).json({error: error.message});
+            }
+        })
+    } else {
+        await getOrganizationList()
+        .then((result) => {
+            if(!result || result === null || result.length === 0) {
+                throw new Error('NoOrganizationsFound');
+            } else {
+                return res.status(200).json({organizations: result});
+            }
+        })
+        .catch((error) => {
+            if(error) {
+                return res.status(500).json({error: error.message});
+            }
+        })
+    }
 });
 
 router.post('/update', async (req, res, next) => {

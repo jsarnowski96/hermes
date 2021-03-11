@@ -157,42 +157,77 @@ class User extends React.Component {
     async getUserData() {
         let fields = this.state.fields;
         
-        try {
-            await axios.post('http://localhost:3300/user/profile', 
-            {
-                userId: this.props.location.state.userId
-            }, {headers: this.headers, withCredentials: true})
-            .then((response) => {
-                if(response !== '' && response.data.user !== null) {
-                    this.setState({user: response.data.user});
-                    fields['firstname'] = this.state.user.firstname;
-                    fields['lastname'] = this.state.user.lastname;
-                    fields['username'] = this.state.user.username;
-                    fields['position'] = this.state.user.position;
-                    fields['company'] = this.state.user.company.name;
-                    fields['avatar_url'] = this.state.user.avatar_url;
-                    fields['email'] = this.state.user.email; 
-                    fields['phone'] = this.state.user.phone;
-                    this.setState({fields});
-                }
-            })
-            .catch((error) => {
-                if(error) {
-                    if(error.response.data.error === 'JwtTokenExpired') {
-                        removeJwtDataFromSessionStorage();
-                    } else {
-                        this.setState({serverResponse: error.response.data.error});
+        if(this.props.location === undefined && this.props.location.state === undefined) {
+            try {
+                await axios.post('http://localhost:3300/user/profile', 
+                {
+                    userId: this.state.auth.userId
+                }, {headers: this.headers, withCredentials: true})
+                .then((response) => {
+                    if(response !== '' && response.data.user !== null) {
+                        this.setState({user: response.data.user});
+                        fields['firstname'] = this.state.user.firstname;
+                        fields['lastname'] = this.state.user.lastname;
+                        fields['username'] = this.state.user.username;
+                        fields['position'] = this.state.user.position;
+                        fields['company'] = this.state.user.company.name;
+                        fields['avatar_url'] = this.state.user.avatar_url;
+                        fields['email'] = this.state.user.email; 
+                        fields['phone'] = this.state.user.phone;
+                        this.setState({fields});
                     }
-                }
-            });
-        } catch(e) {
-            this.setState({serverResponse: e.message});
+                })
+                .catch((error) => {
+                    if(error) {
+                        if(error.response.data.error === 'JwtTokenExpired') {
+                            removeJwtDataFromSessionStorage();
+                        } else {
+                            this.setState({serverResponse: error.response.data.error});
+                        }
+                    }
+                });
+            } catch(e) {
+                this.setState({serverResponse: e.message});
+            }
+        } else {
+            try {
+                await axios.post('http://localhost:3300/user/profile', 
+                {
+                    userId: this.props.location.state.userId
+                }, {headers: this.headers, withCredentials: true})
+                .then((response) => {
+                    if(response !== '' && response.data.user !== null) {
+                        this.setState({user: response.data.user});
+                        fields['firstname'] = this.state.user.firstname;
+                        fields['lastname'] = this.state.user.lastname;
+                        fields['username'] = this.state.user.username;
+                        fields['position'] = this.state.user.position;
+                        fields['company'] = this.state.user.company.name;
+                        fields['avatar_url'] = this.state.user.avatar_url;
+                        fields['email'] = this.state.user.email; 
+                        fields['phone'] = this.state.user.phone;
+                        this.setState({fields});
+                    }
+                })
+                .catch((error) => {
+                    if(error) {
+                        if(error.response.data.error === 'JwtTokenExpired') {
+                            removeJwtDataFromSessionStorage();
+                        } else {
+                            this.setState({serverResponse: error.response.data.error});
+                        }
+                    }
+                });
+            } catch(e) {
+                this.setState({serverResponse: e.message});
+            }
         }
     }
 
     onFormSubmit = (event, errors) => {
         event.preventDefault();
         const {t} = this.props;
+        this.setState({serverResponse: null})
 
         if(this.validateForm()) {
             try {
@@ -225,121 +260,133 @@ class User extends React.Component {
     render() {
         const {t} = this.props;
         if(this.jwt !== null && this.state.auth.userId !== null && this.state.auth.refreshToken !== null) {
-            return(
-                <div>
-                    {this.state.user !== null ? (
+            if(this.props.location.state !== undefined && this.props.location.state.userId) {
+                return(
                     <div>
-                        <form id="form" onSubmit={this.onFormSubmit}>
-                            <table className="tab-table">
-                                <thead>
-                                    <tr>
-                                        <th>{t('content.user.fields.firstname')}</th>
-                                        <th>{t('content.user.fields.lastname')}</th>
-                                        <th>{t('content.user.fields.username')}</th>
-                                        <th>{t('content.user.fields.email')}</th>
-                                        <th>{t('content.user.fields.phone')}</th>
-                                        <th>{t('content.user.fields.position')}</th>
-                                        <th>{t('content.user.fields.company')}</th>
-                                        <th>{t('content.user.fields.avatarUrl')}</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>
-                                            <input onChange={this.onChange.bind(this, 'firstname')} value={this.state.fields['firstname']} type="firstname" className="" id="firstname" name="firstname" disabled={!this.state.enableEdit}/>
-                                            <span className="error-msg-span">{this.state.errors["firstname"]}</span>
-                                        </td>
-                                        <td>
-                                            <input onChange={this.onChange.bind(this, 'lastname')} value={this.state.fields['lastname']} type="lastname" className="" id="lastname" name="lastname" disabled={!this.state.enableEdit}/>
-                                            <span className="error-msg-span">{this.state.errors["lastname"]}</span>
-                                        </td>
-                                        <td>
-                                            <input onChange={this.onChange.bind(this, 'username')} value={this.state.fields['username']} type="username" className="" id="username" name="username" disabled={!this.state.enableEdit}/>
-                                            <span className="error-msg-span">{this.state.errors["username"]}</span>
-                                        </td>
-                                        <td>
-                                            <input onChange={this.onChange.bind(this, 'email')} value={this.state.fields['email']} type="email" className="" id="email" name="email" disabled={!this.state.enableEdit}/>
-                                            <span className="error-msg-span">{this.state.errors["email"]}</span>
-                                        </td>
-                                        <td>
-                                            <input onChange={this.onChange.bind(this, 'phone')} value={this.state.fields['phone']} type="phone" className="" id="phone" name="phone" disabled={!this.state.enableEdit}/>
-                                            <span className="error-msg-span">{this.state.errors["phone"]}</span>
-                                        </td>
-                                        <td>
-                                            <input onChange={this.onChange.bind(this, 'position')} value={this.state.fields['position']} type="position" className="" id="position" name="position" disabled={!this.state.enableEdit}/>
-                                            <span className="error-msg-span">{this.state.errors["position"]}</span>
-                                        </td>
-                                        <td>
-                                            <input onChange={this.onChange.bind(this, 'company')} value={this.state.fields['company']} type="company" className="" id="company" name="company" disabled={!this.state.enableEdit}/>
-                                            <span className="error-msg-span">{this.state.errors["company"]}</span>
-                                        </td>
-                                        <td>
-                                            <input nowrap="nowrap" onChange={this.onChange.bind(this, 'avatar_url')} value={this.state.fields['avatar_url']} type="avatar_url" className="" id="avatar_url" name="avatar_url" disabled={!this.state.enableEdit}/>
-                                            <span className="error-msg-span">{this.state.errors["avatar_url"]}</span>
-                                        </td>
-                                    </tr>
-                                    {this.state.serverResponse !== null ? (
-                                        this.state.user !== null ? (
-                                            <tr>
-                                                <td colspan="8" align="center">
-                                                    <span className="error-msg-span" style={{display: "block", color: 'green'}} id="serverResponse">{this.state.serverResponse}</span>                                                            
-                                                </td>
-                                            </tr>
+                        {this.state.user !== null ? (
+                        <div>
+                            <h2>{t('content.user.title')}</h2>
+                            <form id="form" onSubmit={this.onFormSubmit}>
+                                <table className="tab-table">
+                                    <thead>
+                                        <tr>
+                                            <th>{t('content.user.fields.firstname')}</th>
+                                            <th>{t('content.user.fields.lastname')}</th>
+                                            <th>{t('content.user.fields.username')}</th>
+                                            <th>{t('content.user.fields.email')}</th>
+                                            <th>{t('content.user.fields.phone')}</th>
+                                            <th>{t('content.user.fields.position')}</th>
+                                            <th>{t('content.user.fields.company')}</th>
+                                            <th>{t('content.user.fields.avatarUrl')}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <input onChange={this.onChange.bind(this, 'firstname')} value={this.state.fields['firstname']} type="firstname" className="" id="firstname" name="firstname" disabled={!this.state.enableEdit}/>
+                                            </td>
+                                            <td>
+                                                <input onChange={this.onChange.bind(this, 'lastname')} value={this.state.fields['lastname']} type="lastname" className="" id="lastname" name="lastname" disabled={!this.state.enableEdit}/>
+                                            </td>
+                                            <td>
+                                                <input onChange={this.onChange.bind(this, 'username')} value={this.state.fields['username']} type="username" className="" id="username" name="username" disabled={!this.state.enableEdit}/>
+                                            </td>
+                                            <td>
+                                                <input onChange={this.onChange.bind(this, 'email')} value={this.state.fields['email']} type="email" className="" id="email" name="email" disabled={!this.state.enableEdit}/>
+                                            </td>
+                                            <td>
+                                                <input onChange={this.onChange.bind(this, 'phone')} value={this.state.fields['phone']} type="phone" className="" id="phone" name="phone" disabled={!this.state.enableEdit}/>
+                                            </td>
+                                            <td>
+                                                <input onChange={this.onChange.bind(this, 'position')} value={this.state.fields['position']} type="position" className="" id="position" name="position" disabled={!this.state.enableEdit}/>
+                                            </td>
+                                            <td>
+                                                <input onChange={this.onChange.bind(this, 'company')} value={this.state.fields['company']} type="company" className="" id="company" name="company" disabled={!this.state.enableEdit}/>
+                                            </td>
+                                            <td>
+                                                <input nowrap="nowrap" onChange={this.onChange.bind(this, 'avatar_url')} value={this.state.fields['avatar_url']} type="avatar_url" className="" id="avatar_url" name="avatar_url" disabled={!this.state.enableEdit}/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><span className="error-msg-span">{this.state.errors["firstname"]}</span></td>
+                                            <td><span className="error-msg-span">{this.state.errors["lastname"]}</span></td>
+                                            <td><span className="error-msg-span">{this.state.errors["username"]}</span></td>
+                                            <td><span className="error-msg-span">{this.state.errors["email"]}</span></td>
+                                            <td><span className="error-msg-span">{this.state.errors["phone"]}</span></td>
+                                            <td><span className="error-msg-span">{this.state.errors["position"]}</span></td>
+                                            <td><span className="error-msg-span">{this.state.errors["company"]}</span></td>
+                                            <td><span className="error-msg-span">{this.state.errors["avatar_url"]}</span></td>
+                                        </tr>
+                                        {this.state.serverResponse !== null ? (
+                                            this.state.user !== null ? (
+                                                <tr>
+                                                    <td colspan="8" align="center">
+                                                        <span className="error-msg-span" style={{display: "block", color: 'green'}} id="serverResponse">{this.state.serverResponse}</span>                                                            
+                                                    </td>
+                                                </tr>
+                                            ) : (
+                                                <tr>
+                                                    <td colspan="8" align="center">
+                                                        <span className="error-msg-span" style={{display: "block"}} id="serverResponse">{t('content.user.actions.selectUser.errorMessages.dataValidation.' + this.state.serverResponse)}</span>
+                                                    </td>
+                                                </tr>
+                                            )
                                         ) : (
-                                            <tr>
-                                                <td colspan="8" align="center">
-                                                <span className="error-msg-span" style={{display: "block"}} id="serverResponse">{t('content.team.actions.selectTeam.errorMessages.dataValidation.' + this.state.serverResponse)}</span>
-                                                </td>
-                                            </tr>
-                                        )
-                                    ) : (
-                                        null
-                                    )}
-                                </tbody>
-                            </table>
-                        </form>
-                        {this.state.auth.userId === this.state.user._id ? (
-                            <div class="card-form-divider">
-                                <button className="card-form-button"><Link to='/dashboard'>{t('misc.actionDescription.return')}</Link></button>
-                                <button className="card-form-button" form="form" type="submit" hidden={!this.state.enableEdit} disabled={!this.state.allowSave}>{t('misc.actionDescription.save')}</button>
-                                <button className="card-form-button" onClick={() => {this.setState(prev => ({enableEdit: !prev.enableEdit}))}} hidden={this.state.enableEdit}>{t('misc.actionDescription.edit')}</button>
-                                <button className="card-form-button" onClick={() => {this.setState(prev => ({enableEdit: !prev.enableEdit})); this.resetForm()}} hidden={!this.state.enableEdit}>{t('misc.actionDescription.cancel')}</button>
-                            </div>
-                        ) : (
-                            <div class="card-form-divider">
-                                <button className="card-form-button"><Link to='/dashboard'>{t('misc.actionDescription.return')}</Link></button>
-                            </div>
-                        )}
-
-                        <br /><hr /><br />
-
-                        <h2>{t('content.team.actions.selectTeam.associatedTasks')}</h2>
-                        <TaskList params={{ref: 'user', objId: this.state.user._id}} />
-                    </div>
-                ) : (
-                    <table className="tab-table">
-                        {this.state.serverResponse !== null ? (
-                            this.state.serverResponse === 'unauthorized' ? (
-                                <tr>
-                                    <td colspan="8" align="center">
-                                        <tr><b>{t('commonErrors.' + this.state.serverResponse)}</b></tr>
-                                        <tr><button className="card-form-button"><Link to='/dashboard'>{t('misc.actionDescription.return')}</Link></button></tr>
-                                    </td>
-                                </tr>
+                                            null
+                                        )}
+                                    </tbody>
+                                </table>
+                            </form>
+                            {this.state.auth.userId === this.state.user._id ? (
+                                <div class="card-form-divider">
+                                    <Link to='/dashboard'><button className="card-form-button">{t('misc.actionDescription.return')}</button></Link>
+                                    <button className="card-form-button" form="form" type="submit" hidden={!this.state.enableEdit} disabled={!this.state.allowSave}>{t('misc.actionDescription.save')}</button>
+                                    <button className="card-form-button" onClick={() => {this.setState(prev => ({enableEdit: !prev.enableEdit}))}} hidden={this.state.enableEdit}>{t('misc.actionDescription.edit')}</button>
+                                    <button className="card-form-button" onClick={() => {this.setState(prev => ({enableEdit: !prev.enableEdit})); this.resetForm()}} hidden={!this.state.enableEdit}>{t('misc.actionDescription.cancel')}</button>
+                                </div>
                             ) : (
-                                <tr>
-                                    <td colspan="8" align="center">{t('content.user.actions.selectUser.errorMessages.dataValidation.' + this.state.serverResponse)}</td>
-                                </tr>
-                                )
-                            ) : (
-                                <tr>
-                                    <td colspan="8" align="center">-</td>
-                                </tr>
+                                <div class="card-form-divider">
+                                    <Link to='/dashboard'><button className="card-form-button">{t('misc.actionDescription.return')}</button></Link>
+                                </div>
                             )}
-                    </table>
-                    )}
-                </div>
-            )
+    
+                            <br /><hr className="tab-hr" /><br />
+    
+                            <h2>{t('content.team.actions.selectTeam.associatedTasks')}</h2>
+                            <TaskList params={{ref: 'user', objId: this.state.user._id}} />
+                        </div>
+                    ) : (
+                        <table className="tab-table">
+                            {this.state.serverResponse !== null ? (
+                                this.state.serverResponse === 'unauthorized' ? (
+                                    <tr>
+                                        <td colspan="8" align="center">
+                                            <tr><b>{t('commonErrors.' + this.state.serverResponse)}</b></tr>
+                                            <tr><Link to='/dashboard'><button className="card-form-button">{t('misc.actionDescription.return')}</button></Link></tr>
+                                        </td>
+                                    </tr>
+                                ) : (
+                                    <tr>
+                                        <td colspan="8" align="center">{t('content.user.actions.selectUser.errorMessages.dataValidation.' + this.state.serverResponse)}</td>
+                                    </tr>
+                                    )
+                                ) : (
+                                    <tr>
+                                        <td colspan="8" align="center">-</td>
+                                    </tr>
+                                )}
+                        </table>
+                        )}
+                    </div>
+                )
+            } else {
+                return( 
+                    <div align="center">
+                        <h3>{t('content.user.actions.selectUser.errorMessages.dataValidation.missingProps')}</h3>
+                        <Link to='/dashboard'><button className="card-form-button">{t('misc.actionDescription.return')}</button></Link>
+                    </div>
+                )
+            }
         } else {
             return(
                 <Redirect to=
