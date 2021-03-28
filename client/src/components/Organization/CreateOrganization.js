@@ -21,21 +21,30 @@ class CreateOrganization extends React.Component {
             this.state = {
                 auth: {
                     userId: this.jwt.userId,
-                    refreshToken: this.jwt.refreshToken
+                    accessToken: this.jwt.accessToken
                 },
                 fields: {},
                 errors: {},
+                user: null,
+                company: null,
                 organization: null,
-                serverResponse: null
+                disableForm: false,
+                serverResponse: {
+                    origin: null,
+                    content: null
+                }
             }
 
             this.headers = {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${this.state.auth.refreshToken}`
+                'Authorization': `Bearer ${this.state.auth.accessToken}`
             };
         }
 
         this.resetForm = this.resetForm.bind(this);                
+
+        this.getUser();
+        this.getCompany();
     }
 
     componentWillUnmount() {
@@ -43,7 +52,6 @@ class CreateOrganization extends React.Component {
     }
 
     resetForm() {
-        document.getElementById('serverResponse').innerHTML = '';
         this.setState({fields: {}, errors: {}});
     }
 
@@ -108,6 +116,70 @@ class CreateOrganization extends React.Component {
         return isValid;
     }
 
+    async getUser() {
+        await axios.post('/user/profile', {
+            userId: this.state.auth.userId
+        }, {headers: this.headers, withCredentials: true})
+        .then((response) => {
+            if(response !== undefined) {
+                this.setState({user: response.data.user})
+            }
+        })
+        .catch((error) => {
+            if(error.response.data.error === 'MissingRefreshToken') {
+                this.setState({
+                    disableForm: true,
+                    serverResponse: {
+                        origin: error.response.data.origin,
+                        content: error.response.data.error
+                    }
+                })
+            } else {
+                this.setState({
+                    serverResponse: {
+                        origin: error.response.data.origin,
+                        content: error.response.data.error
+                    }
+                })
+            }
+        })
+    }
+
+    async getCompany() {
+        let fields = this.state.fields;
+
+        await axios.post('/company/details',
+        {
+            userId: this.state.auth.userId
+        }, {headers: this.headers, withCredentials: true})
+        .then((response) => {
+            if(response !== undefined) {
+                fields['company'] = response.data.company.name;
+                this.setState({fields, company: response.data.company});
+            }
+        })
+        .catch((error) => {
+            if(error) {
+                if(error.response.data.error === 'MissingRefreshToken') {
+                    this.setState({
+                        disableForm: true,
+                        serverResponse: {
+                            origin: error.response.data.origin,
+                            content: error.response.data.error
+                        }
+                    })
+                } else {
+                    this.setState({
+                        serverResponse: {
+                            origin: error.response.data.origin,
+                            content: error.response.data.error
+                        }
+                    })
+                }
+            }
+        })
+    }
+
     onFormSubmit = (event, errors) => {
         event.preventDefault();
         const {t} = this.props;
@@ -115,7 +187,7 @@ class CreateOrganization extends React.Component {
 
         if(this.validateForm()) {
             try {
-                axios.post('http://localhost:3300/organization/create', {
+                axios.post('/organization/create', {
                     userId: this.state.auth.userId,
                     organizationObj: this.state.fields
                 }, {headers: this.headers, withCredentials: true})
@@ -123,20 +195,41 @@ class CreateOrganization extends React.Component {
                     if(response !== undefined && response.data.organization !== null) {
                         this.setState({
                             organization: response.data.organization,
-                            serverResponse: t('content.organization.actions.createOrganization.actionResults.success')
+                            serverResponse: {
+                                origin: response.data.origin,
+                                content: t('content.organization.actions.createOrganization.actionResults.success')
+                            }
                         })
                     }
                 })
                 .catch(error => {
-                    if (error) {
-                        this.setState({
-                            serverResponse: error.response.data.error
-                        });
+                    if(error !== undefined && error.response !== undefined) {
+                        if(error.response.data.error === 'JwtTokenExpired') {
+                            removeJwtDataFromSessionStorage()
+                        } else if(error.response.data.error === 'MissingRefreshToken') {
+                            this.setState({
+                                disableForm: true,
+                                serverResponse: {
+                                    origin: error.response.data.origin,
+                                    content: error.response.data.error
+                                }
+                            })
+                        } else {
+                            this.setState({
+                                serverResponse: {
+                                    origin: error.response.data.origin,
+                                    content: error.response.data.error
+                                }
+                            })
+                        }
                     }
                 }) 
             } catch(e) {
                 this.setState({
-                    serverResponse: e.message
+                    serverResponse: {
+                        origin: 'axios',
+                        content: e.message
+                    }
                 });
             }
         } else {
@@ -150,11 +243,12 @@ class CreateOrganization extends React.Component {
     render() {
         const {t} = this.props;
 
-        if(this.jwt !== null && this.state.auth.userId !== null && this.state.auth.refreshToken !== null) {
+        if(this.jwt !== null && this.state.auth.userId !== null && this.state.auth.accessToken !== null) {
             return(
                 <div>
                     <h2>{t('content.organization.actions.createOrganization.actionTitle')}</h2>
                     <form className="card-form" onSubmit={this.onFormSubmit}>
+                        <fieldset disabled={this.state.disableForm}>
                         <table className="tab-table">
                             <thead>
                                 <tr>
@@ -197,22 +291,23 @@ class CreateOrganization extends React.Component {
                                                 fields['description'] = value; 
                                                 errors['description'] = '';
                                                 this.setState({fields, errors})}}
+                                            readonly={this.state.disableForm}
                                             //onBlur={newContent => { let fields = this.state.fields; fields['description'] = newContent; this.setState({fields})}} // preferred to use only this option to update the content for performance reasons
                                         />
                                     </td>
                                 </tr>
                                 <tr><td><span className="error-msg-span">{this.state.errors["description"]}</span></td></tr>
-                                {this.state.serverResponse !== null ? (
+                                {this.state.serverResponse.content !== null ? (
                                     this.state.user !== null ? (
                                         <tr>
                                             <td colspan="8" align="center">
-                                                <span className="error-msg-span" style={{display: "block", color: 'green'}} id="serverResponse">{this.state.serverResponse}</span>                                                            
+                                                <span className="error-msg-span" style={{display: "block", color: 'green'}} id="serverResponse">{this.state.serverResponse.content}</span>                                                            
                                             </td>
                                         </tr>
                                     ) : (
                                         <tr>
                                             <td colspan="8" align="center">
-                                                <span className="error-msg-span" style={{display: "block"}} id="serverResponse">{t('content.organization.actions.createOrganization.errorMessages.dataValidation.' + this.state.serverResponse)}</span>
+                                                <span className="error-msg-span" style={{display: "block"}} id="serverResponse">{t('content.organization.actions.createOrganization.errorMessages.dataValidation.' + this.state.serverResponse.content)}</span>
                                             </td>
                                         </tr>
                                     )
@@ -221,6 +316,7 @@ class CreateOrganization extends React.Component {
                                 )}
                             </tbody>
                         </table>
+                        </fieldset>
                         <div class="card-form-divider">
                             <button type="submit" className="card-form-button">{t('misc.actionDescription.create')}</button>
                             <button type="reset" className="card-form-button" onClick={this.resetForm}>{t('misc.actionDescription.reset')}</button>

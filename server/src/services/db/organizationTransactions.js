@@ -48,6 +48,7 @@ async function getOrganization(organizationId) {
 }
 
 async function getOrganizationList() {
+    let companyId;
     if(arguments.length === 2) {
         ref = arguments[0]
         objId = arguments[1]
@@ -104,19 +105,34 @@ async function getOrganizationList() {
                 throw new Error('CompanyIdNotValid');
             }
         } else if(ref === 'company') {
-            companyId = await Company.findById(objId, '_id')
-            .then((result) => {
-                if(!result || result === null) {
-                    throw new Error('CompanyNotFound');
+            if(!(await Company.findById(objId))) {
+                if(!(await User.findById(objId))) {
+                    throw new Error('ObjNotFound');
                 } else {
-                    return result._id;
+                    companyId = await User.findById(objId, 'company')
+                    .then((result) => {
+                        if(!result || result === null) {
+                            throw new Error('UserNotFound');
+                        } else {
+                            return result.company;
+                        }
+                    })
                 }
-            })
-            .catch((error) => {
-                if(error) {
-                    throw error;
-                }
-            })
+            } else {
+                companyId = await Company.findById(objId, '_id')
+                .then((result) => {
+                    if(!result || result === null) {
+                        throw new Error('CompanyNotFound');
+                    } else {
+                        return result._id;
+                    }
+                })
+                .catch((error) => {
+                    if(error) {
+                        throw error;
+                    }
+                })
+            }
         } else {
             throw new Error('ReferenceIncorrect');
         }

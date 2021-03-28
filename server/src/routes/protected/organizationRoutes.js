@@ -8,13 +8,12 @@ const {
     getOrganizationList,
     createOrganization,
     updateOrganization,
-    deleteOrganization,
-    createResourceUserRole
+    deleteOrganization
 } = require('../../services/dbTransactionService');
 
-const {ensureAuthenticated} = require('../../middleware/jwtAuthentication');
+const {isAuthenticated} = require('../../middleware/authenticator');
 
-router.all('*', ensureAuthenticated);
+router.all('*', isAuthenticated);
 
 router.get('/details/:id', async (req, res, next) => {
     res.status(200).json({message: 'Organization ID route'});
@@ -32,7 +31,7 @@ router.post('/list', async (req, res, next) => {
         })
         .catch((error) => {
             if(error) {
-                return res.status(500).json({error: error.message});
+                return res.status(500).json({origin: 'OrganizationList', error: error.message});
             }
         })
     } else {
@@ -46,7 +45,7 @@ router.post('/list', async (req, res, next) => {
         })
         .catch((error) => {
             if(error) {
-                return res.status(500).json({error: error.message});
+                return res.status(500).json({origin: 'OrganizationList', error: error.message});
             }
         })
     }
@@ -62,12 +61,12 @@ router.post('/create', async (req, res, next) => {
         if(!result || result === null) {
             throw new Error('OrganizationNotCreated');
         } else {
-            return res.status(200).json({organization: result});
+            return res.status(200).json({origin: 'CreateOrganization', organization: result});
         }
     })
     .catch((error) => {
         if(error) {
-            return res.status(500).json({error: error.message});
+            return res.status(500).json({origin: 'CreateOrganization', error: error.message});
         }
     })
 });

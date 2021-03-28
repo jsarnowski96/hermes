@@ -18,15 +18,18 @@ class TaskList extends React.Component {
             this.state = {
                 auth: {
                     userId: this.jwt.userId,
-                    refreshToken: this.jwt.refreshToken
+                    accessToken: this.jwt.accessToken
                 },
                 tasks: [],
-                serverResponse: null
+                serverResponse: {
+                    origin: null,
+                    content: null
+                }
             }
 
             this.headers = {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${this.state.auth.refreshToken}`
+                'Authorization': `Bearer ${this.state.auth.accessToken}`
             };
         }
         
@@ -37,7 +40,7 @@ class TaskList extends React.Component {
         if(this.props.params === undefined) {
             if(this.props.location === undefined && this.props.location.state === undefined) {
                 try {
-                    axios.post('http://localhost:3300/task/list', 
+                    axios.post('/task/list', 
                     {
                         ref: 'user',
                         objId: this.state.auth.userId
@@ -48,22 +51,28 @@ class TaskList extends React.Component {
                         }
                     })
                     .catch((error) => {
-                        if(error !== undefined) {
+                        if(error !== undefined && error.response !== undefined) {
                             if(error.response.data.error === 'JwtTokenExpired') {
                                 removeJwtDataFromSessionStorage()
                             } else {
                                 this.setState({
-                                    serverResponse: error.response.data.error
+                                    serverResponse: {
+                                        origin: error.response.data.origin,
+                                        content: error.response.data.error
+                                    }
                                 })
                             }
                         }
                     });
                 } catch(e) {
-                    this.setState({serverResponse: e.message});
+                    this.setState({serverResponse: {
+                        origin: 'axios',
+                        content: e.message
+                    }});
                 }
             } else {
                 try {
-                    axios.post('http://localhost:3300/task/list', 
+                    axios.post('/task/list', 
                     {
                         ref: this.props.location.state.ref,
                         objId: this.props.location.state.objId
@@ -74,23 +83,29 @@ class TaskList extends React.Component {
                         }
                     })
                     .catch((error) => {
-                        if(error !== undefined) {
+                        if(error !== undefined && error.response !== undefined) {
                             if(error.response.data.error === 'JwtTokenExpired') {
                                 removeJwtDataFromSessionStorage()
                             } else {
                                 this.setState({
-                                    serverResponse: error.response.data.error
+                                    serverResponse: {
+                                        origin: error.response.data.origin,
+                                        content: error.response.data.error
+                                    }
                                 })
                             }
                         }
                     });
                 } catch(e) {
-                    this.setState({serverResponse: e.message});
+                    this.setState({serverResponse: {
+                        origin: 'axios',
+                        content: e.message
+                    }});
                 }
             }
         } else {
             try {
-                axios.post('http://localhost:3300/task/list', 
+                axios.post('/task/list', 
                 {
                     ref: this.props.params.ref,
                     objId: this.props.params.objId,
@@ -101,18 +116,24 @@ class TaskList extends React.Component {
                     }
                 })
                 .catch((error) => {
-                    if(error !== undefined) {
+                    if(error !== undefined && error.response !== undefined) {
                         if(error.response.data.error === 'JwtTokenExpired') {
                             removeJwtDataFromSessionStorage()
                         } else {
                             this.setState({
-                                serverResponse: error.response.data.error
+                                serverResponse: {
+                                    origin: error.response.data.origin,
+                                    content: error.response.data.error
+                                }
                             })
                         }
                     }
                 });
             } catch(e) {
-                this.setState({serverResponse: e.message});
+                this.setState({serverResponse: {
+                        origin: 'axios',
+                        content: e.message
+                    }});
             }
         }
     }
@@ -120,7 +141,7 @@ class TaskList extends React.Component {
     render() {
         const{t} = this.props;
 
-        if(this.jwt !== null && this.state.auth.userId !== null && this.state.auth.refreshToken !== null) {
+        if(this.jwt !== null && this.state.auth.userId !== null && this.state.auth.accessToken !== null) {
             return(
                 <div>
                     {
@@ -178,8 +199,8 @@ class TaskList extends React.Component {
                                 ))
                             ) : (
                                 <tr>
-                                    {this.state.serverResponse !== null ? (
-                                        <td colspan="6" align="center">- {t('content.task.actions.selectTaskList.errorMessages.dataValidation.' + this.state.serverResponse)} -</td>
+                                    {this.state.serverResponse.content !== null ? (
+                                        <td colspan="6" align="center">- {t('content.task.actions.selectTaskList.errorMessages.dataValidation.' + this.state.serverResponse.content)} -</td>
                                     ) : (
                                         <td colspan="6" align="center">-</td>
                                     )}

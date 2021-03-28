@@ -17,33 +17,38 @@ class UserAction extends React.Component {
             this.state = {
                 auth: {
                     userId: this.jwt.userId,
-                    refreshToken: this.jwt.refreshToken
+                    accessToken: this.jwt.accessToken
                 },
-                userActions: [],
-                serverResponse: null
+                serverResponse: {
+                    origin: null,
+                    content: null
+                }
             }
 
             this.headers = {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${this.state.auth.refreshToken}`
+                'Authorization': `Bearer ${this.state.auth.accessToken}`
             };
         }
     }
 
     onLogout() {
         try {
-            axios.post('http://localhost:3300/auth/logout');
+            axios.post('/auth/logout');
             sessionStorage.setItem('renderLogoutBtn', false);
             removeJwtDataFromSessionStorage();
         } catch(e) {
-            this.setState({serverResponse: e.message});
+            this.setState({serverResponse: {
+                origin: 'axios',
+                content: e.message
+            }});
         }      
     }
 
     render() {
         const{t} = this.props;
 
-        if(this.jwt !== null && this.state.auth.userId !== null && this.state.auth.refreshToken !== null) {
+        if(this.jwt !== null && this.state.auth.userId !== null && this.state.auth.accessToken !== null) {
             return(
                 <table className="tab-table">
                     <thead>
@@ -56,7 +61,7 @@ class UserAction extends React.Component {
                             <td align="center"><Link to={{pathname: '/user/profile', state: { userId: this.state.auth.userId}}}>{t('content.userAction.actions.userProfile')}</Link></td>
                         </tr>
                         <tr>
-                            <td align="center"><Link to={{pathname: '/team/details', state: { ref: 'user', objId: this.state.auth.userId}}}>{t('content.userAction.actions.teamOverview')}</Link></td>
+                            <td align="center"><Link to={{pathname: '/team/details', state: { ref: 'user', userId: this.state.auth.userId, objId: this.state.auth.userId}}}>{t('content.userAction.actions.teamOverview')}</Link></td>
                         </tr>
                         <tr>
                             <td align="center"><Link to="/project/create">{t('content.userAction.actions.createProject')}</Link></td>

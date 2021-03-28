@@ -16,7 +16,10 @@ class Login extends React.Component {
             this.state = {
                 authenticated: true,
                 redirected: false,
-                serverResponse: null,
+                serverResponse: {
+                    origin: null,
+                    content: null
+                },
                 fields: {},
                 errors: {}
             }
@@ -25,7 +28,10 @@ class Login extends React.Component {
                 this.state = {
                     authenticated: this.props.location.state.authenticated,
                     redirected: this.props.location.state.redirected,
-                    serverResponse: null,
+                    serverResponse: {
+                        origin: null,
+                        content: null
+                    },
                     fields: {},
                     errors: {}
                 }
@@ -33,7 +39,10 @@ class Login extends React.Component {
                 this.state = {
                     authenticated: null,
                     redirected: false,
-                    serverResponse: null,
+                    serverResponse: {
+                        origin: null,
+                        content: null
+                    },
                     fields: {},
                     errors: {}
                 }
@@ -82,7 +91,7 @@ class Login extends React.Component {
 
         if(this.validateForm()) {
             try {
-                axios.post('http://localhost:3300/auth/login', 
+                axios.post('/auth/login', 
                 {
                     login: fields['login'],
                     password: fields['password'],
@@ -94,9 +103,9 @@ class Login extends React.Component {
                         password: fields['password']
                     }
             }).then((response) => {
-                if(response.data.user._id !== undefined && response.data.user._id !== '' && response.data.user._id !== null && response.data.refreshToken !== undefined && response.data.refreshToken !== '' && response.data.refreshToken !== null) {
+                if(response.data.user._id !== undefined && response.data.user._id !== '' && response.data.user._id !== null && response.data.accessToken !== undefined && response.data.accessToken !== '' && response.data.accessToken !== null) {
                     if(this.jwt === null || this.jwt === undefined) {
-                        setJwtDataInSessionStorage(response.data.user._id, response.data.refreshToken);
+                        setJwtDataInSessionStorage(response.data.user._id, response.data.accessToken);
                         this.jwt = getJwtDataFromSessionStorage();
                     }
 
@@ -108,11 +117,18 @@ class Login extends React.Component {
             })
             .catch((error) => {
                 if(error !== undefined) {
-                    this.setState({serverResponse: error.response.data.error, authenticated: false});
+                    this.setState({
+                        serverResponse: {
+                            origin: error.response.data.origin,
+                            content: error.response.data.error
+                        }, authenticated: false});
                 }
             });
             } catch(e) {
-                this.setState({serverResponse: e.message});
+                this.setState({serverResponse: {
+                    origin: 'axios',
+                    content: e.message
+                }});
             }
         } else {
             let errors = document.querySelectorAll('.error-msg-span');
@@ -151,8 +167,8 @@ class Login extends React.Component {
                         {!this.state.authenticated && this.state.redirected ? (
                             <span className="error-msg-span" style={{display: "block"}} id="serverResponse">{t('commonErrors.unauthorized')}</span>
                         ) : (
-                            this.state.serverResponse !== null ? (
-                                <span className="error-msg-span" style={{display: "block"}} id="serverResponse">{t('content.login.errorMessages.dataValidation.' + this.state.serverResponse)}</span>
+                            this.state.serverResponse.content !== null ? (
+                                <span className="error-msg-span" style={{display: "block"}} id="serverResponse">{t('content.login.errorMessages.dataValidation.' + this.state.serverResponse.content)}</span>
                             ) : (
                                 <span className="error-msg-span" id="serverResponse"></span>
                             )

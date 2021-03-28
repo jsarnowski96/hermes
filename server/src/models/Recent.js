@@ -2,12 +2,6 @@ const mongoose  = require('mongoose');
 
 const RecentSchema = new mongoose.Schema({
     _id: mongoose.Schema.Types.ObjectId,
-    description: {
-        type: String,
-        validate: /^.{1,100}$/,
-        required: true,
-        trim: true
-    },
     user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
@@ -15,20 +9,16 @@ const RecentSchema = new mongoose.Schema({
     },
     collection_name: {
         type: String,
-        enum: ['team', 'project', 'comment', 'task', 'organization', 'company', 'category'],
+        enum: ['team', 'project', 'comment', 'task', 'organization', 'company', 'category', 'all'],
         default: 'project',
         trim: true,
         required: true
     },
-    modified_at: {
-        type: Date,
-        required: true,
-        default: Date.now
-    },
-    created_at: {
-        type: Date,
-        required: true,
-        default: Date.now
+    action_type: {
+        type: String,
+        enum: ['added', 'deleted', 'edited', 'created', 'removed'],
+        default: 'added',
+        required: true
     },
     document: {
         type: mongoose.Schema.Types.ObjectId,
@@ -41,10 +31,25 @@ const RecentSchema = new mongoose.Schema({
                 case 'organization': return 'Organization';
                 case 'company': return 'Company';
                 case 'category': return 'Category';
+                case 'all': return null;
                 default: return null;
             }
-        },
+        }
+    },
+    company: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Company',
         required: true
+    },
+    modified_at: {
+        type: Date,
+        required: true,
+        default: Date.now
+    },
+    created_at: {
+        type: Date,
+        required: true,
+        default: Date.now
     }
 }, {collection: 'recent'});
 

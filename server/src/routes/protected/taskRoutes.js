@@ -11,11 +11,11 @@ const {
     deleteTask
 } = require('../../services/dbTransactionService');
 
-const {ensureAuthenticated} = require('../../middleware/jwtAuthentication');
+const {isAuthenticated} = require('../../middleware/authenticator');
 
-router.all('*', ensureAuthenticated);
+router.all('*', isAuthenticated);
 
-router.post('/details/:id', async (req, res, next) => {
+router.post('/details/:taskId', async (req, res, next) => {
     await getTask(req.body.userId, req.params.taskId)
     .then((result) => {
         if(!result || result === null) {
@@ -27,22 +27,22 @@ router.post('/details/:id', async (req, res, next) => {
     .catch((error) => {
         if(error) {
             if(error.message === 'UserIdMissing') {
-                return res.status(406).json({error: error.message});
+                return res.status(406).json({origin: 'TaskDetails', error: error.message});
             } else if(error.message === 'UserIdNotValid') {
-                return res.status(406).json({error: error.message});
+                return res.status(406).json({origin: 'TaskDetails', error: error.message});
             } else if(error.message === 'TaskIdMissing') {
-                return res.status(406).json({error: error.message});
+                return res.status(406).json({origin: 'TaskDetails', error: error.message});
             } else if(error.message === 'TaskIdNotValid') {
-                return res.status(406).json({error: error.message});
+                return res.status(406).json({origin: 'TaskDetails', error: error.message});
             } else if(error.message === 'TaskNotFound') {
-                return res.status(404).json({error: error.message});
+                return res.status(404).json({origin: 'TaskDetails', error: error.message});
             } else if(error.message === 'UserNotFound') {
-                return res.status(404).json({error: error.message});
+                return res.status(404).json({origin: 'TaskDetails', error: error.message});
             } else {
-                return res.status(500).json({error: error.message});
+                return res.status(500).json({origin: 'TaskDetails', error: error.message});
             }
         } else {
-            return res.status(500).json({error: 'UnknownError'});
+            return res.status(500).json({origin: 'TaskDetails', error: error.message});
         }
     })
 });
@@ -59,22 +59,22 @@ router.post('/details', async (req, res, next) => {
     .catch((error) => {
         if(error) {
             if(error.message === 'UserIdMissing') {
-                return res.status(406).json({error: error.message});
+                return res.status(406).json({origin: 'TaskDetails', error: error.message});
             } else if(error.message === 'UserIdNotValid') {
-                return res.status(406).json({error: error.message});
+                return res.status(406).json({origin: 'TaskDetails', error: error.message});
             } else if(error.message === 'TaskIdMissing') {
-                return res.status(406).json({error: error.message});
+                return res.status(406).json({origin: 'TaskDetails', error: error.message});
             } else if(error.message === 'TaskIdNotValid') {
-                return res.status(406).json({error: error.message});
+                return res.status(406).json({origin: 'TaskDetails', error: error.message});
             } else if(error.message === 'TaskNotFound') {
-                return res.status(404).json({error: error.message});
+                return res.status(404).json({origin: 'TaskDetails', error: error.message});
             } else if(error.message === 'UserNotFound') {
-                return res.status(404).json({error: error.message});
+                return res.status(404).json({origin: 'TaskDetails', error: error.message});
             } else {
-                return res.status(500).json({error: error.message});
+                return res.status(500).json({origin: 'TaskDetails', error: error.message});
             }
         } else {
-            return res.status(500).json({error: 'UnknownError'});
+            return res.status(500).json({origin: 'TaskDetails', error: error.message});
         }
     })
 })
@@ -92,30 +92,30 @@ router.post('/list', async (req, res, next) => {
         .catch((error) => {
             if(error) {
                 if(error.message === 'ReferenceMissing') {
-                    return res.status(406).json({error: error.message});
+                    return res.status(406).json({origin: 'TaskList', error: error.message});
                 } else if(error.message === 'ReferenceIncorrect') {
-                    return res.status(406).json({error: error.message});
+                    return res.status(406).json({origin: 'TaskList', error: error.message});
                 } else if(error.message === 'UserIdMissing') {
-                    return res.status(406).json({error: error.message});
+                    return res.status(406).json({origin: 'TaskList', error: error.message});
                 } else if(error.message === 'TeamIdMissing') {
-                    return res.status(406).json({error: error.message});
+                    return res.status(406).json({origin: 'TaskList', error: error.message});
                 } else if(error.message === 'UserIdNotValid') {
-                    return res.status(406).json({error: error.message});
+                    return res.status(406).json({origin: 'TaskList', error: error.message});
                 } else if(error.message === 'TeamIdNotValid') {
-                    return res.status(406).json({error: error.message});
+                    return res.status(406).json({origin: 'TaskList', error: error.message});
                 } else if(error.message === 'UserNotFound') {
-                    return res.status(404).json({error: error.message});
+                    return res.status(404).json({origin: 'TaskList', error: error.message});
                 } else if(error.message === 'TeamNotFound') {
-                    return res.status(404).json({error: error.message});
+                    return res.status(404).json({origin: 'TaskList', error: error.message});
                 } else if(error.message === 'NoTasksFound') {
-                    return res.status(404).json({error: error.message});
+                    return res.status(404).json({origin: 'TaskList', error: error.message});
                 } else if(error.message === 'IncorrectNumberOfArguments') {
-                    return res.status(406).json({error: error.message});
+                    return res.status(406).json({origin: 'TaskList', error: error.message});
                 } else {
-                    return res.status(500).json({error: error.message});
+                    return res.status(500).json({origin: 'TaskList', error: error.message});
                 }
             } else {
-                return res.status(500).json({error: 'UnknownError'});
+                return res.status(500).json({origin: 'TaskList', error: error.message});
             }
         });
     } else {
@@ -130,30 +130,30 @@ router.post('/list', async (req, res, next) => {
         .catch((error) => {
             if(error) {
                 if(error.message === 'ReferenceMissing') {
-                    return res.status(406).json({error: error.message});
+                    return res.status(406).json({origin: 'TaskList', error: error.message});
                 } else if(error.message === 'ReferenceIncorrect') {
-                    return res.status(406).json({error: error.message});
+                    return res.status(406).json({origin: 'TaskList', error: error.message});
                 } else if(error.message === 'UserIdMissing') {
-                    return res.status(406).json({error: error.message});
+                    return res.status(406).json({origin: 'TaskList', error: error.message});
                 } else if(error.message === 'TeamIdMissing') {
-                    return res.status(406).json({error: error.message});
+                    return res.status(406).json({origin: 'TaskList', error: error.message});
                 } else if(error.message === 'UserIdNotValid') {
-                    return res.status(406).json({error: error.message});
+                    return res.status(406).json({origin: 'TaskList', error: error.message});
                 } else if(error.message === 'TeamIdNotValid') {
-                    return res.status(406).json({error: error.message});
+                    return res.status(406).json({origin: 'TaskList', error: error.message});
                 } else if(error.message === 'UserNotFound') {
-                    return res.status(404).json({error: error.message});
+                    return res.status(404).json({origin: 'TaskList', error: error.message});
                 } else if(error.message === 'TeamNotFound') {
-                    return res.status(404).json({error: error.message});
+                    return res.status(404).json({origin: 'TaskList', error: error.message});
                 } else if(error.message === 'NoTasksFound') {
-                    return res.status(404).json({error: error.message});
+                    return res.status(404).json({origin: 'TaskList', error: error.message});
                 } else if(error.message === 'IncorrectNumberOfArguments') {
-                    return res.status(406).json({error: error.message});
+                    return res.status(406).json({origin: 'TaskList', error: error.message});
                 } else {
-                    return res.status(500).json({error: error.message});
+                    return res.status(500).json({origin: 'TaskList', error: error.message});
                 }
             } else {
-                return res.status(500).json({error: 'UnknownError'});
+                return res.status(500).json({origin: 'TaskList', error: error.message});
             }
         });
     }
@@ -171,38 +171,38 @@ router.post('/create', async (req, res, next) => {
     .catch((error) => {
         if(error) {
             if(error.message === 'EmptyFormField') {
-                return res.status(406).json({error: error.message})
+                return res.status(406).json({origin: 'CreateTask', error: error.message})
             } else if(error.message === 'UserIdMissing') {
-                return res.status(406).json({error: error.message})
+                return res.status(406).json({origin: 'CreateTask', error: error.message})
             } else if(error.message === 'ProjectIdMissing') {
-                return res.status(406).json({error: error.message})
+                return res.status(406).json({origin: 'CreateTask', error: error.message})
             } else if(error.message === 'UserIdNotValid') {
-                return res.status(406).json({error: error.message})
+                return res.status(406).json({origin: 'CreateTask', error: error.message})
             } else if(error.message === 'ProjectIdNotValid') {
-                return res.status(406).json({error: error.message})
+                return res.status(406).json({origin: 'CreateTask', error: error.message})
             } else if(error.message === 'UserNotFound') {
-                return res.status(404).json({error: error.message})
+                return res.status(404).json({origin: 'CreateTask', error: error.message})
             } else if(error.message === 'ProjectNotFound') {
-                return res.status(404).json({error: error.message})
+                return res.status(404).json({origin: 'CreateTask', error: error.message})
             } else if(error.message === 'CategoryNotFound') {
-                return res.status(404).json({error: error.message})
+                return res.status(404).json({origin: 'CreateTask', error: error.message})
             } else if(error.message === 'CategoryIdNotValid') {
-                return res.status(406).json({error: error.message})
+                return res.status(406).json({origin: 'CreateTask', error: error.message})
             } else if(error.message === 'TeamNotFound') {
-                return res.status(404).json({error: error.message})
+                return res.status(404).json({origin: 'CreateTask', error: error.message})
             } else if(error.message === 'TaskNotSaved') {
-                return res.status(304).json({error: error.message})
+                return res.status(304).json({origin: 'CreateTask', error: error.message})
             } else if(error.message === 'TaskNotFound') {
-                return res.status(404).json({error: error.message})
+                return res.status(404).json({origin: 'CreateTask', error: error.message})
             } else if(error.message === 'TaskIdNotValid') {
-                return res.status(406).json({error: error.message})
+                return res.status(406).json({origin: 'CreateTask', error: error.message})
             } else if(error.message === 'ProjectNotUpdated') {
-                return res.status(304).json({error: error.message})
+                return res.status(304).json({origin: 'CreateTask', error: error.message})
             } else {
-                return res.status(406).json({error: error.message})
+                return res.status(406).json({origin: 'CreateTask', error: error.message})
             }
         } else {
-            return res.status(500).json({error: 'UnknownError'});
+            return res.status(500).json({origin: 'CreateTask', error: error.message});
         }
     })
 });
@@ -219,32 +219,32 @@ router.post('/update', async (req, res, next) => {
     .catch((error) => {
         if(error) {
             if(error.message === 'UserIdMissing') {
-                return res.status(406).json({error: error.message});    
+                return res.status(406).json({origin: 'UpdateTask', error: error.message});    
             } else if(error.message === 'UserIdNotValid') {
-                return res.status(406).json({error: error.message});    
+                return res.status(406).json({origin: 'UpdateTask', error: error.message});    
             } else if(error.message === 'UserNotFound') {
-                return res.status(404).json({error: error.message});    
+                return res.status(404).json({origin: 'UpdateTask', error: error.message});    
             } else if(error.message === 'TaskIdMissing') {
-                return res.status(406).json({error: error.message});    
+                return res.status(406).json({origin: 'UpdateTask', error: error.message});    
             } else if(error.message === 'TaskIdNotValid') {
-                return res.status(406).json({error: error.message});    
+                return res.status(406).json({origin: 'UpdateTask', error: error.message});    
             } else if(error.message === 'UserIdMissing') {
-                return res.status(406).json({error: error.message});    
+                return res.status(406).json({origin: 'UpdateTask', error: error.message});    
             } else if(error.message === 'UserNotFound') {
-                return res.status(404).json({error: error.message});    
+                return res.status(404).json({origin: 'UpdateTask', error: error.message});    
             } else if(error.message === 'ProjectNotFound') {
-                return res.status(404).json({error: error.message});    
+                return res.status(404).json({origin: 'UpdateTask', error: error.message});    
             } else if(error.message === 'TaskNotFound') {
-                return res.status(404).json({error: error.message});    
+                return res.status(404).json({origin: 'UpdateTask', error: error.message});    
             } else if(error.message === 'CategoryNotFound') {
-                return res.status(404).json({error: error.message});    
+                return res.status(404).json({origin: 'UpdateTask', error: error.message});    
             } else if(error.message === 'TaskNotUpdated') {
-                return res.status(304).json({error: error.message});    
+                return res.status(304).json({origin: 'UpdateTask', error: error.message});    
             } else {
-                return res.status(500).json({error: error.message});    
+                return res.status(500).json({origin: 'UpdateTask', error: error.message});    
             }
         } else {
-            return res.status(500).json({error: 'UnknownError'});
+            return res.status(500).json({origin: 'UpdateTask', error: error.message});
         }
     })
 });
@@ -261,22 +261,22 @@ router.post('/delete', async (req, res, next) => {
     .catch((error) => {
         if(error) {
             if(error.message === 'UserIdMissing') {
-                return res.status(406).json({error: error.message});
+                return res.status(406).json({origin: 'DeleteTask', error: error.message});
             } else if(error.message === 'TaskIdMissing') {
-                return res.status(406).json({error: error.message});
+                return res.status(406).json({origin: 'DeleteTask', error: error.message});
             } else if(error.message === 'UserIdNotValid') {
-                return res.status(406).json({error: error.message});
+                return res.status(406).json({origin: 'DeleteTask', error: error.message});
             } else if(error.message === 'TaskIdNotValid') {
-                return res.status(406).json({error: error.message});
+                return res.status(406).json({origin: 'DeleteTask', error: error.message});
             } else if(error.message === 'UserNotFound') {
-                return res.status(404).json({error: error.message});
+                return res.status(404).json({origin: 'DeleteTask', error: error.message});
             } else if(error.message === 'TaskNotDeleted') {
-                return res.status(304).json({error: error.message});
+                return res.status(304).json({origin: 'DeleteTask', error: error.message});
             } else {
-                return res.status(500).json({error: error.message});
+                return res.status(500).json({origin: 'DeleteTask', error: error.message});
             }
         } else {
-            return res.status(500).json({error: 'UnknownError'});
+            return res.status(500).json({origin: 'DeleteTask', error: error.message});
         }
     })
 });

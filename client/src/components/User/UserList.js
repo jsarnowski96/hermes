@@ -17,26 +17,29 @@ class UserList extends React.Component {
             this.state = {
                 auth: {
                     userId: this.jwt.userId,
-                    refreshToken: this.jwt.refreshToken
+                    accessToken: this.jwt.accessToken
                 },
                 users: [],
-                serverResponse: null
+                serverResponse: {
+                    origin: null,
+                    content: null
+                }
             }
 
             this.headers = {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${this.state.auth.refreshToken}`
+                'Authorization': `Bearer ${this.state.auth.accessToken}`
             };
         }
 
-        this.getUsers();
+        this.getUserList();
     }
 
-    async getUsers() {
+    async getUserList() {
         if(this.props.params === undefined) {
             if(this.props.location === undefined && this.props.location.state === undefined) {
                 try {
-                    await axios.post('http://localhost:3300/user/list', 
+                    await axios.post('/user/list', 
                     {
                         ref: 'company',
                         objId: this.state.auth.userId
@@ -47,18 +50,28 @@ class UserList extends React.Component {
                         }   
                     })
                     .catch((error) => {
-                        if(error.response.data.error === 'JwtTokenExpired') {
-                            removeJwtDataFromSessionStorage();
-                        } else {
-                            this.setState({serverResponse: error.response.data.error});
+                        if(error !== undefined && error.response !== undefined) {
+                            if(error.response.data.error === 'JwtTokenExpired') {
+                                removeJwtDataFromSessionStorage()
+                            } else {
+                                this.setState({
+                                    serverResponse: {
+                                        origin: error.response.data.origin,
+                                        content: error.response.data.error
+                                    }
+                                })
+                            }
                         }
                     });
                 } catch(e) {
-                    this.setState({serverResponse: e.message});
+                    this.setState({serverResponse: {
+                        origin: 'axios',
+                        content: e.message
+                    }});
                 }
             } else {
                 try {
-                    await axios.post('http://localhost:3300/user/list', 
+                    await axios.post('/user/list', 
                     {
                         ref: this.props.location.state.ref,
                         objId: this.props.location.state.objId
@@ -69,19 +82,29 @@ class UserList extends React.Component {
                         }   
                     })
                     .catch((error) => {
-                        if(error.response.data.error === 'JwtTokenExpired') {
-                            removeJwtDataFromSessionStorage();
-                        } else {
-                            this.setState({serverResponse: error.response.data.error});
+                        if(error !== undefined && error.response !== undefined) {
+                            if(error.response.data.error === 'JwtTokenExpired') {
+                                removeJwtDataFromSessionStorage()
+                            } else {
+                                this.setState({
+                                    serverResponse: {
+                                        origin: error.response.data.origin,
+                                        content: error.response.data.error
+                                    }
+                                })
+                            }
                         }
                     });
                 } catch(e) {
-                    this.setState({serverResponse: e.message});
+                    this.setState({serverResponse: {
+                        origin: 'axios',
+                        content: e.message
+                    }});
                 }
             }
         } else {
             try {
-                await axios.post('http://localhost:3300/user/list', 
+                await axios.post('/user/list', 
                 {
                     ref: this.props.params.ref,
                     objId: this.props.params.objId
@@ -92,14 +115,24 @@ class UserList extends React.Component {
                     }   
                 })
                 .catch((error) => {
-                    if(error.response.data.error === 'JwtTokenExpired') {
-                        removeJwtDataFromSessionStorage();
-                    } else {
-                        this.setState({serverResponse: error.response.data.error});
+                    if(error !== undefined && error.response !== undefined) {
+                        if(error.response.data.error === 'JwtTokenExpired') {
+                            removeJwtDataFromSessionStorage()
+                        } else {
+                            this.setState({
+                                serverResponse: {
+                                    origin: error.response.data.origin,
+                                    content: error.response.data.error
+                                }
+                            })
+                        }
                     }
                 });
             } catch(e) {
-                this.setState({serverResponse: e.message});
+                this.setState({serverResponse: {
+                    origin: 'axios',
+                    content: e.message
+                }});
             }
         }
     }
@@ -107,7 +140,7 @@ class UserList extends React.Component {
     render() {
         const {t} = this.props;
 
-        if(this.jwt !== null && this.state.auth.userId !== null && this.state.auth.refreshToken !== null) {
+        if(this.jwt !== null && this.state.auth.userId !== null && this.state.auth.accessToken !== null) {
             return(
                 <div>
                     {
@@ -139,13 +172,13 @@ class UserList extends React.Component {
                                     </tr>
                                     ))
                             ) : (
-                                this.state.serverResponse === null ? (
+                                this.state.serverResponse.content === null ? (
                                     <tr>
                                         <td colspan="4" align="center">-</td>
                                     </tr>
                                 ) : (
                                     <tr>
-                                        <td colspan="4" align="center">- {t('content.team.actions.selectTeamList.errorMessages.dataValidation.' + this.state.serverResponse)} -</td>
+                                        <td colspan="4" align="center">- {t('content.team.actions.selectTeamList.errorMessages.dataValidation.' + this.state.serverResponse.content)} -</td>
                                     </tr>
                                 )
                             )}

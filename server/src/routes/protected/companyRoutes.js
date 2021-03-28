@@ -12,12 +12,72 @@ const {
     createResourceUserRole
 } = require('../../services/dbTransactionService');
 
-const {ensureAuthenticated} = require('../../middleware/jwtAuthentication');
+const {isAuthenticated} = require('../../middleware/authenticator');
 
-router.all('*', ensureAuthenticated);
+router.all('*', isAuthenticated);
 
-router.get('/details/:id', async (req, res, next) => {
-    res.status(200).json({message: 'Company ID route'});
+router.post('/details/:companyId', async (req, res, next) => {
+    if(req.body.userId && req.body.companyId) {
+        await getCompany(req.body.userId, req.body.companyId)
+        .then((result) => {
+            if(!result || result === null) {
+                throw new Error('CompanyNotFound');
+            } else {
+                return res.status(200).json({company: result});
+            }
+        })
+        .catch((error) => {
+            if(error) {
+                return res.status(500).json({origin: 'GetCompany', error: error.message});
+            }
+        })
+    } else if(req.body.userId && !req.body.companyId) {
+        await getCompany(req.body.userId)
+        .then((result) => {
+            if(!result || result === null) {
+                throw new Error('CompanyNotFound');
+            } else {
+                return res.status(200).json({company: result});
+            }
+        })
+        .catch((error) => {
+            if(error) {
+                return res.status(500).json({origin: 'GetCompany', error: error.message});
+            }
+        })
+    } else { next() }
+});
+
+router.post('/details', async (req, res, next) => {
+    if(req.body.userId && req.body.companyId) {
+        await getCompany(req.body.userId, req.body.companyId)
+        .then((result) => {
+            if(!result || result === null) {
+                throw new Error('CompanyNotFound');
+            } else {
+                return res.status(200).json({company: result});
+            }
+        })
+        .catch((error) => {
+            if(error) {
+                return res.status(500).json({origin: 'GetCompany', error: error.message});
+            }
+        })
+    } else if(req.body.userId && !req.body.companyId) {
+        await getCompany(req.body.userId)
+        .then((result) => {
+            if(!result || result === null) {
+                throw new Error('CompanyNotFound');
+            } else {
+                return res.status(200).json({company: result});
+            }
+        })
+        .catch((error) => {
+            if(error) {
+                return res.status(500).json({origin: 'GetCompany', error: error.message});
+            }
+        })
+    } else { next() }
 });
 
 router.post('/list', async (req, res, next) => {
@@ -40,18 +100,18 @@ router.post('/create', async (req, res, next) => {
     .catch((error) => {
         if(error) {
             if(error.message === 'MissingOwnerId') {
-                return res.status(406).json({error: error.message});
+                return res.status(406).json({origin: 'CreateCompany', error: error.message});
             } else if(error.message === 'EmptyFormField') {
-                return res.status(406).json({error: error.message});
+                return res.status(406).json({origin: 'CreateCompany', error: error.message});
             } else if(error.message === 'OwnerIdDoesNotExist')  {
-                return res.status(404).json({error: error.message});
+                return res.status(404).json({origin: 'CreateCompany', error: error.message});
             } else if(error.message === 'OwnerIdNotValid') {
-                return res.status(406).json({error: error.message});
+                return res.status(406).json({origin: 'CreateCompany', error: error.message});
             } else {
-                return res.status(500).json({error: error.message});
+                return res.status(500).json({origin: 'CreateCompany', error: error.message});
             }
         } else {
-            return res.status(500).json({error: 'UnknownError'});
+            return res.status(500).json({origin: 'CreateCompany', error: error.message});
         }
     })
 });

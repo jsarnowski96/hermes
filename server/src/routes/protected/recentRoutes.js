@@ -7,9 +7,9 @@ const {
     getRecent
 } = require('../../services/dbTransactionService');
 
-const {ensureAuthenticated} = require('../../middleware/jwtAuthentication');
+const {isAuthenticated} = require('../../middleware/authenticator');
 
-router.all('*', ensureAuthenticated);
+router.all('*', isAuthenticated);
 
 router.post('/', async (req, res, next) => {
     await getRecent(req.body.userId)
@@ -23,7 +23,7 @@ router.post('/', async (req, res, next) => {
     .catch((error) => {
         if(error) {
             console.log(error);
-            return res.status(500).json({error: error.message});
+            return res.status(500).json({origin: '', error: error.message});
         }
     });
 });

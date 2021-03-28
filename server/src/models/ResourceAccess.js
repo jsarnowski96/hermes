@@ -22,16 +22,6 @@ const ResourceAccessSchema = new mongoose.Schema({
         trim: true,
         required: true
     },
-    modified_at: {
-        type: Date,
-        required: true,
-        default: Date.now
-    },
-    created_at: {
-        type: Date,
-        required: true,
-        default: Date.now
-    },
     document: {
         type: mongoose.Schema.Types.ObjectId,
         ref: function() {
@@ -52,6 +42,16 @@ const ResourceAccessSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Role',
         required: true
+    },
+    modified_at: {
+        type: Date,
+        required: true,
+        default: Date.now
+    },
+    created_at: {
+        type: Date,
+        required: true,
+        default: Date.now
     }
 }, {collection: 'resource_access'});
 

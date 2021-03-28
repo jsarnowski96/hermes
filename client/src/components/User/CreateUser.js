@@ -22,32 +22,27 @@ class CreateUser extends React.Component {
             this.state = {
                 auth: {
                     userId: this.jwt.userId,
-                    refreshToken: this.jwt.refreshToken
+                    accessToken: this.jwt.accessToken
                 },
                 fields: {},
-                errors: {}
+                errors: {},
+                serverResponse: {
+                    origin: null,
+                    content: null
+                },
             }
 
             this.headers = {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${this.state.auth.refreshToken}`
+                'Authorization': `Bearer ${this.state.auth.accessToken}`
             };
-        } else {
-            this.state = {
-                auth: {
-                    userId: null,
-                    refreshToken: null
-                },
-                fields: {},
-                errors: {}
-            }
         }
     }
 
     render() {
         const {t} = this.props;
 
-        if(this.jwt !== null && this.state.auth.userId !== null && this.state.auth.refreshToken !== null) {
+        if(this.jwt !== null && this.state.auth.userId !== null && this.state.auth.accessToken !== null) {
             return(
                 <Register />
             )

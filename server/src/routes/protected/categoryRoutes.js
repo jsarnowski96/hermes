@@ -8,13 +8,12 @@ const {
     getCategoryList,
     createCategory,
     updateCategory,
-    deleteCategory,
-    createResourceUserRole
+    deleteCategory
 } = require('../../services/dbTransactionService');
 
-const {ensureAuthenticated} = require('../../middleware/jwtAuthentication');
+const {isAuthenticated} = require('../../middleware/authenticator');
 
-router.all('*', ensureAuthenticated);
+router.all('*', isAuthenticated);
 
 router.get('/details/:id', async (req, res, next) => {
     
@@ -33,14 +32,14 @@ router.post('/list', async (req, res, next) => {
         .catch((error) => {
             if(error) {
                 if(error.message === 'CategoryNotFound') {
-                    return res.status(406).json({error: error.message});
+                    return res.status(406).json({origin: 'CategoryList', error: error.message});
                 } else if(error.message === 'IncorrectNumberOfArguments') {
-                    return res.status(406).json({error: error.message});
+                    return res.status(406).json({origin: 'CategoryList', error: error.message});
                 } else {
-                    return res.status(500).json({error: error.message});
+                    return res.status(500).json({origin: 'CategoryList', error: error.message});
                 }
             } else {
-                return res.status(500).json({error: 'UnknownError'});
+                return res.status(500).json({origin: 'CategoryList', error: error.message});
             }
         })
 });

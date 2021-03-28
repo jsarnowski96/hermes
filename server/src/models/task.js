@@ -23,16 +23,6 @@ const TaskSchema = new mongoose.Schema({
         type: Date,
         required: true
     },
-    modified_at: {
-        type: Date,
-        required: true,
-        default: Date.now
-    },
-    created_at: {
-        type: Date,
-        required: true,
-        default: Date.now
-    },
     project: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Project',
@@ -53,8 +43,17 @@ const TaskSchema = new mongoose.Schema({
     assigned_user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
-        required: true,
         default: this.author
+    },
+    modified_at: {
+        type: Date,
+        required: true,
+        default: Date.now
+    },
+    created_at: {
+        type: Date,
+        required: true,
+        default: Date.now
     }
 });
 

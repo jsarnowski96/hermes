@@ -20,7 +20,7 @@ class Project extends React.Component {
             this.state = {
                 auth: {
                     userId: this.jwt.userId,
-                    refreshToken: this.jwt.refreshToken
+                    accessToken: this.jwt.accessToken
                 },
                 project: null,
                 categories: [],
@@ -31,20 +31,23 @@ class Project extends React.Component {
                 errors: {},
                 enableEdit: false,
                 allowSave: false,
-                serverResponse: null
+                serverResponse: {
+                    origin: null,
+                    content: null
+                }
             }
 
             this.headers = {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${this.state.auth.refreshToken}`
+                'Authorization': `Bearer ${this.state.auth.accessToken}`
             };
         }
 
         this.deleteProject = this.deleteProject.bind(this);
 
-        this.getTeams();
-        this.getUsers();
-        this.getCategories();
+        this.getTeamList();
+        this.getUserList();
+        this.getCategoryList();
         this.getProject();
     }
 
@@ -93,7 +96,12 @@ class Project extends React.Component {
         fields['owner'] = this.state.project.owner.username;
         fields['dueDate'] = moment(this.state.project.dueDate).format('YYYY-MM-DD');
 
-        this.setState({fields, errors: {}, allowSave: false, serverResponse: null});
+        this.setState({fields, errors: {}, allowSave: false, 
+            serverResponse: {
+                origin: null,
+                content: null
+            }
+        });
     }
 
     validateForm() {
@@ -149,8 +157,8 @@ class Project extends React.Component {
         return isValid;
     }
 
-    async getCategories() {
-        await axios.post('http://localhost:3300/category/list', { category_type: 'project'}, {headers: this.headers, withCredentials: true })
+    async getCategoryList() {
+        await axios.post('/category/list', { category_type: 'project'}, {headers: this.headers, withCredentials: true })
             .then((response) => {
                 if(response.data.categories.length > 0 && response.data.categories !== null) {
                     this.setState({categories: response.data.categories});
@@ -159,19 +167,26 @@ class Project extends React.Component {
                 }     
             })
             .catch((error) => {
-                if(error.response.data.error === 'JwtTokenExpired') {
-                    removeJwtDataFromSessionStorage();
-                } else {
-                    this.setState({serverResponse: error.response.data.error});
+                if(error !== undefined && error.response !== undefined) {
+                    if(error.response.data.error === 'JwtTokenExpired') {
+                        removeJwtDataFromSessionStorage()
+                    } else {
+                        this.setState({
+                            serverResponse: {
+                                origin: error.response.data.origin,
+                                content: error.response.data.error
+                            }
+                        })
+                    }
                 }
             });
     }
 
-    async getUsers() {
+    async getUserList() {
         if(this.props.params === undefined) {
             if(this.props.location === undefined && this.props.location.state === undefined) {
                 try {
-                    await axios.post('http://localhost:3300/user/list', 
+                    await axios.post('/user/list', 
                     {
                         ref: 'user',
                         objId: this.state.auth.userId
@@ -182,18 +197,28 @@ class Project extends React.Component {
                         }   
                     })
                     .catch((error) => {
-                        if(error.response.data.error === 'JwtTokenExpired') {
-                            removeJwtDataFromSessionStorage();
-                        } else {
-                            this.setState({serverResponse: error.response.data.error});
+                        if(error !== undefined && error.response !== undefined) {
+                            if(error.response.data.error === 'JwtTokenExpired') {
+                                removeJwtDataFromSessionStorage()
+                            } else {
+                                this.setState({
+                                    serverResponse: {
+                                        origin: error.response.data.origin,
+                                        content: error.response.data.error
+                                    }
+                                })
+                            }
                         }
                     });
                 } catch(e) {
-                    this.setState({serverResponse: e.message});
+                    this.setState({serverResponse: {
+                        origin: 'axios',
+                        content: e.message
+                    }});
                 }
             } else {
                 try {
-                    await axios.post('http://localhost:3300/user/list', 
+                    await axios.post('/user/list', 
                     {
                         ref: this.props.location.state.ref,
                         objId: this.props.location.state.objId
@@ -204,19 +229,29 @@ class Project extends React.Component {
                         }   
                     })
                     .catch((error) => {
-                        if(error.response.data.error === 'JwtTokenExpired') {
-                            removeJwtDataFromSessionStorage();
-                        } else {
-                            this.setState({serverResponse: error.response.data.error});
+                        if(error !== undefined && error.response !== undefined) {
+                            if(error.response.data.error === 'JwtTokenExpired') {
+                                removeJwtDataFromSessionStorage()
+                            } else {
+                                this.setState({
+                                    serverResponse: {
+                                        origin: error.response.data.origin,
+                                        content: error.response.data.error
+                                    }
+                                })
+                            }
                         }
                     });
                 } catch(e) {
-                    this.setState({serverResponse: e.message});
+                    this.setState({serverResponse: {
+                        origin: 'axios',
+                        content: e.message
+                    }});
                 }
             }
         } else {
             try {
-                await axios.post('http://localhost:3300/user/list', 
+                await axios.post('/user/list', 
                 {
                     ref: this.props.params.ref,
                     objId: this.props.params.objId
@@ -227,23 +262,33 @@ class Project extends React.Component {
                     }   
                 })
                 .catch((error) => {
-                    if(error.response.data.error === 'JwtTokenExpired') {
-                        removeJwtDataFromSessionStorage();
-                    } else {
-                        this.setState({serverResponse: error.response.data.error});
+                    if(error !== undefined && error.response !== undefined) {
+                        if(error.response.data.error === 'JwtTokenExpired') {
+                            removeJwtDataFromSessionStorage()
+                        } else {
+                            this.setState({
+                                serverResponse: {
+                                    origin: error.response.data.origin,
+                                    content: error.response.data.error
+                                }
+                            })
+                        }
                     }
                 });
             } catch(e) {
-                this.setState({serverResponse: e.message});
+                this.setState({serverResponse: {
+                    origin: 'axios',
+                    content: e.message
+                }});
             }
         }
     }
 
-    getTeams() {
+    getTeamList() {
         if(this.props.params === undefined) {
             if(this.props.location === undefined && this.props.location.state === undefined) {
                 try {
-                    axios.post('http://localhost:3300/team/list',
+                    axios.post('/team/list',
                     {
                         ref: 'user',
                         objId: this.state.auth.userId
@@ -254,20 +299,28 @@ class Project extends React.Component {
                         }
                     })
                     .catch((error) => {
-                        if(error.response.data.error === 'JwtTokenExpired') {
-                            removeJwtDataFromSessionStorage()
-                        } else {
-                            this.setState({
-                                serverResponse: error.response.data.error
-                            })
+                        if(error !== undefined && error.response !== undefined) {
+                            if(error.response.data.error === 'JwtTokenExpired') {
+                                removeJwtDataFromSessionStorage()
+                            } else {
+                                this.setState({
+                                    serverResponse: {
+                                        origin: error.response.data.origin,
+                                        content: error.response.data.error
+                                    }
+                                })
+                            }
                         }
                     });
                 } catch(e) {
-                    this.setState({serverResponse: e.message});
+                    this.setState({serverResponse: {
+                        origin: 'axios',
+                        content: e.message
+                    }});
                 }
             } else {
                 try {
-                    axios.post('http://localhost:3300/team/list',
+                    axios.post('/team/list',
                     {
                         ref: this.props.location.state.ref,
                         objId: this.props.location.state.objId
@@ -278,21 +331,29 @@ class Project extends React.Component {
                         }
                     })
                     .catch((error) => {
-                        if(error.response.data.error === 'JwtTokenExpired') {
-                            removeJwtDataFromSessionStorage()
-                        } else {
-                            this.setState({
-                                serverResponse: error.response.data.error
-                            })
+                        if(error !== undefined && error.response !== undefined) {
+                            if(error.response.data.error === 'JwtTokenExpired') {
+                                removeJwtDataFromSessionStorage()
+                            } else {
+                                this.setState({
+                                    serverResponse: {
+                                        origin: error.response.data.origin,
+                                        content: error.response.data.error
+                                    }
+                                })
+                            }
                         }
                     });
                 } catch(e) {
-                    this.setState({serverResponse: e.message});
+                    this.setState({serverResponse: {
+                        origin: 'axios',
+                        content: e.message
+                    }});
                 }
             }
         } else {
             try {
-                axios.post('http://localhost:3300/team/list',
+                axios.post('/team/list',
                 {
                     ref: this.props.params.ref,
                     objId: this.props.params.objId
@@ -303,16 +364,24 @@ class Project extends React.Component {
                     }
                 })
                 .catch((error) => {
-                    if(error.response.data.error === 'JwtTokenExpired') {
-                        removeJwtDataFromSessionStorage()
-                    } else {
-                        this.setState({
-                            serverResponse: error.response.data.error
-                        })
+                    if(error !== undefined && error.response !== undefined) {
+                        if(error.response.data.error === 'JwtTokenExpired') {
+                            removeJwtDataFromSessionStorage()
+                        } else {
+                            this.setState({
+                                serverResponse: {
+                                    origin: error.response.data.origin,
+                                    content: error.response.data.error
+                                }
+                            })
+                        }
                     }
                 });
             } catch(e) {
-                this.setState({serverResponse: e.message});
+                this.setState({serverResponse: {
+                    origin: 'axios',
+                    content: e.message
+                }});
             }
         }
     }
@@ -320,7 +389,7 @@ class Project extends React.Component {
     async getProject() {
         let fields = this.state.fields;
         try {
-            await axios.post('http://localhost:3300/project/details', 
+            await axios.post('/project/details', 
             {
                 userId: this.state.auth.userId,
                 projectId: this.props.location.state.projectId
@@ -342,19 +411,25 @@ class Project extends React.Component {
                 }          
             }, {headers: this.headers, withCredentials: true})
             .catch(error => {
-                if(error) {
+                if(error !== undefined && error.response !== undefined) {
                     if(error.response.data.error === 'JwtTokenExpired') {
-                        removeJwtDataFromSessionStorage();
+                        removeJwtDataFromSessionStorage()
                     } else {
                         this.setState({
-                            serverResponse: error.response.data.error
+                            serverResponse: {
+                                origin: error.response.data.origin,
+                                content: error.response.data.error
+                            }
                         })
                     }
                 }
             })    
         } catch(e) {
             this.setState({
-                serverResponse: e.message
+                serverResponse: {
+                    origin: 'axios',
+                    content: e.message
+                }
             })
         }
     }
@@ -362,7 +437,7 @@ class Project extends React.Component {
     async deleteProject() {
         const {t} = this.props;
         try {
-            await axios.post('http://localhost:3300/project/delete',
+            await axios.post('/project/delete',
             {
                 userId: this.state.auth.userId,
                 projectId: this.state.project._id
@@ -373,23 +448,38 @@ class Project extends React.Component {
                 }
             })
             .catch((error) => {
-                if(error !== undefined) {
-                    this.setState({serverResponse: error.response.data.error});
+                if(error !== undefined && error.response !== undefined) {
+                    if(error.response.data.error === 'JwtTokenExpired') {
+                        removeJwtDataFromSessionStorage()
+                    } else {
+                        this.setState({
+                            serverResponse: {
+                                origin: error.response.data.origin,
+                                content: error.response.data.error
+                            }
+                        })
+                    }
                 }
             })
         } catch(e) {
-            this.setState({serverResponse: e.message});
+            this.setState({serverResponse: {
+                origin: 'axios',
+                content: e.message
+            }});
         }
     }
 
     onFormSubmit = (event, errors) => {
         event.preventDefault();
         const {t} = this.props;
-        this.setState({serverResponse: null})
+        this.setState({serverResponse: {
+            origin: null,
+            content: null
+        }})
 
         if(this.validateForm()) {
             try {
-                axios.post('http://localhost:3300/project/update', {
+                axios.post('/project/update', {
                     userId: this.state.auth.userId,
                     projectId: this.state.project._id,
                     projectObj: this.state.fields
@@ -398,19 +488,32 @@ class Project extends React.Component {
                     if(response !== undefined && response.data.project !== null) {
                         this.setState({
                             project: response.data.project,
-                            serverResponse: t('content.project.actions.updateProject.actionResults.success')
+                            serverResponse: {
+                                origin: response.data.origin,
+                                content: t('content.project.actions.updateProject.actionResults.success')
+                            }
                         });
                     }
                 })
                 .catch(error => {
-                    if(error.response.data.error === 'JwtTokenExpired') {
-                        removeJwtDataFromSessionStorage();
-                    } else {
-                        this.setState({serverResponse: error.response.data.error});
+                    if(error !== undefined && error.response !== undefined) {
+                        if(error.response.data.error === 'JwtTokenExpired') {
+                            removeJwtDataFromSessionStorage()
+                        } else {
+                            this.setState({
+                                serverResponse: {
+                                    origin: error.response.data.origin,
+                                    content: error.response.data.error
+                                }
+                            })
+                        }
                     }
                 }) 
             } catch(e) {
-                this.setState({serverResponse: e.message});
+                this.setState({serverResponse: {
+                    origin: 'axios',
+                    content: e.message
+                }});
             }
         } else {
             let errors = document.querySelectorAll('.error-msg-span');
@@ -423,7 +526,7 @@ class Project extends React.Component {
     render() {
         const {t} = this.props;
 
-        if(this.jwt !== null && this.state.auth.userId !== null && this.state.auth.refreshToken !== null) {
+        if(this.jwt !== null && this.state.auth.userId !== null && this.state.auth.accessToken !== null) {
             if(this.props.location.state !== undefined && this.props.location.state.userId && this.props.location.state.projectId) {
                 return( 
                     <div>
@@ -542,17 +645,17 @@ class Project extends React.Component {
                                                 <th>{t('misc.fields.modifiedAt')}</th>
                                                 <td>{moment(this.state.project.modified_at).format('YYYY-MM-DD | hh:mm:ss')}</td>
                                             </tr>
-                                            {this.state.serverResponse !== null ? (
+                                            {this.state.serverResponse.content !== null ? (
                                                 this.state.user !== null ? (
                                                     <tr>
                                                         <td colspan="8" align="center">
-                                                            <span className="error-msg-span" style={{display: "block", color: 'green'}} id="serverResponse">{this.state.serverResponse}</span>                                                            
+                                                            <span className="error-msg-span" style={{display: "block", color: 'green'}} id="serverResponse">{this.state.serverResponse.content}</span>                                                            
                                                         </td>
                                                     </tr>
                                                 ) : (
                                                     <tr>
                                                         <td colspan="8" align="center">
-                                                            <span className="error-msg-span" style={{display: "block"}} id="serverResponse">{t('content.project.actions.updateProject.errorMessages.dataValidation.' + this.state.serverResponse)}</span>
+                                                            <span className="error-msg-span" style={{display: "block"}} id="serverResponse">{t('content.project.actions.updateProject.errorMessages.dataValidation.' + this.state.serverResponse.content)}</span>
                                                         </td>
                                                     </tr>
                                                 )

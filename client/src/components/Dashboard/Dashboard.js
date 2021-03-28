@@ -28,19 +28,27 @@ class Dashboard extends React.Component {
             this.state = {
                 auth: {
                     userId: this.jwt.userId,
-                    refreshToken: this.jwt.refreshToken
+                    accessToken: this.jwt.accessToken
+                },
+                serverResponse: {
+                    origin: null,
+                    content: null
                 }
             }
 
             this.headers = {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${this.state.auth.refreshToken}`
+                'Authorization': `Bearer ${this.state.auth.accessToken}`
             };
         } else {
             this.state = {
                 auth: {
                     userId: null,
-                    refreshToken: null
+                    accessToken: null
+                },
+                serverResponse: {
+                    origin: null,
+                    content: null
                 }
             }
         }
@@ -49,16 +57,20 @@ class Dashboard extends React.Component {
     render() {
         const {t} = this.props;
 
-        if(this.jwt !== null && this.state.auth.userId !== null && this.state.auth.refreshToken !== null) {
+        if(this.jwt !== null && this.state.auth.userId !== null && this.state.auth.accessToken !== null) {
             return(
                 <div className="dashboard">
+                    <div className="tab userAction">
+                        <p className="tab-title"><FontAwesomeIcon icon="cogs" size="xs" />{t('content.userAction.titlePlural')}</p>
+                        <UserAction />
+                    </div>
                     <div className="tab project">
                         <p className="tab-title"><FontAwesomeIcon icon="project-diagram" size="xs" />{t('content.project.titlePlural')}</p>
                         <ProjectList params={{ref: 'user', objId: this.state.auth.userId}} />
                     </div>
                     <div className="tab teams">
                         <p className="tab-title"><FontAwesomeIcon icon="users" size="xs" />{t('content.team.titlePlural')}</p>
-                        <TeamList params={{ref: 'user', objId: this.state.auth.userId}} />
+                        <TeamList params={{ref: 'user', userId: this.state.auth.userId, objId: this.state.auth.userId}} />
                     </div>
                     <div className="tab tasks">
                         <p className="tab-title"><FontAwesomeIcon icon="tasks" size="xs" />{t('content.task.titlePlural')}</p>
@@ -67,10 +79,6 @@ class Dashboard extends React.Component {
                     <div className="tab recent">
                         <p className="tab-title"><FontAwesomeIcon icon="history" size="xs" />{t('content.recent.title')}</p>
                         <Recent />
-                    </div>
-                    <div className="tab userAction">
-                        <p className="tab-title"><FontAwesomeIcon icon="cogs" size="xs" />{t('content.userAction.titlePlural')}</p>
-                        <UserAction />
                     </div>
                 </div>
             )

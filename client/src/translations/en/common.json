@@ -92,7 +92,8 @@
                             "UserNotFound": "User not found",
                             "TeamIdMissing": "Team ID missing",
                             "TeamIdNotValid": "Team ID not valid",
-                            "TeamNotFound": "Team not found"
+                            "TeamNotFound": "Team not found",
+                            "MissingRefreshToken": "Missing refresh token"
                         }
                     }
                 },
@@ -110,7 +111,8 @@
                             "UserNotFound": "User not found",
                             "TeamIdMissing": "Team ID missing",
                             "TeamIdNotValid": "Team ID not valid",
-                            "TeamNotFound": "Team not found"
+                            "TeamNotFound": "Team not found",
+                            "MissingRefreshToken": "Missing refresh token"
                         }
                     }
                 },
@@ -150,7 +152,8 @@
                             "TeamIdUndefined": "Team ID is undefined",
                             "TeamIdMissing": "Team ID missing",
                             "TeamIdNotValid": "Team ID not valid",
-                            "TeamNotFound": "Team does not exist"
+                            "TeamNotFound": "Team does not exist",
+                            "MissingRefreshToken": "Missing refresh token"
                         }
                     }
                 },
@@ -162,7 +165,7 @@
                     },
                     "errorMessages": {
                         "dataValidation": {
-                            
+                            "MissingRefreshToken": "Missing refresh token"
                         }
                     }
                 },
@@ -173,7 +176,7 @@
                     },
                     "errorMessages": {
                         "dataValidation": {
-                            
+                            "MissingRefreshToken": "Missing refresh token"
                         }
                     }
                 }
@@ -204,7 +207,13 @@
                     },
                     "errorMessages": {
                         "dataValidation": {
-                            "missingProps": "No team data provided"
+                            "missingProps": "No team data provided",
+                            "TeamIdMissing": "Team ID missing",
+                            "TeamIdNotValid": "Team ID is not valid",
+                            "UserIdMissing": "User ID missing",
+                            "NoUsersFound": "No users found",
+                            "TeamNotFound": "Team does not exist",
+                            "MissingRefreshToken": "Missing refresh token"
                         }
                     }
                 },
@@ -217,7 +226,9 @@
                     "errorMessages": {
                         "dataValidation": {
                             "NoTeamsFound": "No teams found",
-                            "TeamNotFound": "Team not found"
+                            "TeamNotFound": "Team not found",
+                            "NoUsersFound": "No users found",
+                            "MissingRefreshToken": "Missing refresh token"
                         }
                     }
                 },
@@ -229,7 +240,8 @@
                     },
                     "errorMessages": {
                         "dataValidation": {
-                            "NoOrganizationsFound": "No organizations found"
+                            "NoOrganizationsFound": "No organizations found",
+                            "MissingRefreshToken": "Missing refresh token"
                         }
                     }
                 },
@@ -241,7 +253,7 @@
                     },
                     "errorMessages": {
                         "dataValidation": {
-                            
+                            "MissingRefreshToken": "Missing refresh token"
                         }
                     }
                 },
@@ -252,7 +264,7 @@
                     },
                     "errorMessages": {
                         "dataValidation": {
-                            
+                            "MissingRefreshToken": "Missing refresh token"
                         }
                     }
                 }
@@ -274,7 +286,8 @@
                     },
                     "errorMessages": {
                         "dataValidation": {
-                            "missingProps": "No organization data provided"
+                            "missingProps": "No organization data provided",
+                            "MissingRefreshToken": "Missing refresh token"
                         }
                     }
                 },
@@ -285,19 +298,20 @@
                     },
                     "errorMessages": {
                         "dataValidation": {
-                            "NoOrganizationsFound": "No organizations found"
+                            "NoOrganizationsFound": "No organizations found",
+                            "MissingRefreshToken": "Missing refresh token"
                         }
                     }
                 },
                 "createOrganization": {
                     "actionTitle": "Create organization",
                     "actionResults": {
-                        "success": "",
-                        "failure": ""
+                        "success": "Successfully created an organization",
+                        "failure": "There was an error during creating an organization"
                     },
                     "errorMessages": {
                         "dataValidation": {
-                            
+                            "MissingRefreshToken": "Missing refresh token"
                         }
                     }
                 },
@@ -308,7 +322,7 @@
                     },
                     "errorMessages": {
                         "dataValidation": {
-                            
+                            "MissingRefreshToken": "Missing refresh token"
                         }
                     }
                 },
@@ -319,7 +333,7 @@
                     },
                     "errorMessages": {
                         "dataValidation": {
-                            
+                            "MissingRefreshToken": "Missing refresh token"
                         }
                     }
                 }
@@ -349,7 +363,8 @@
                     },
                     "errorMessages": {
                         "dataValidation": {
-                            "missingProps": "No task data provided"
+                            "missingProps": "No task data provided",
+                            "MissingRefreshToken": "Missing refresh token"
                         }
                     }
                 },
@@ -360,7 +375,8 @@
                     },
                     "errorMessages": {
                         "dataValidation": {
-                            "NoTasksFound": "No tasks found"
+                            "NoTasksFound": "No tasks found",
+                            "MissingRefreshToken": "Missing refresh token"
                         }
                     }
                 },
@@ -372,7 +388,7 @@
                     },
                     "errorMessages": {
                         "dataValidation": {
-                            
+                            "MissingRefreshToken": "Missing refresh token"
                         }
                     }
                 },
@@ -383,7 +399,7 @@
                     },
                     "errorMessages": {
                         "dataValidation": {
-                            
+                            "MissingRefreshToken": "Missing refresh token"
                         }
                     }
                 },
@@ -394,7 +410,7 @@
                     },
                     "errorMessages": {
                         "dataValidation": {
-                            
+                            "MissingRefreshToken": "Missing refresh token"
                         }
                     }
                 }
@@ -419,7 +435,8 @@
                             "CategoryIdNotValid": "Category ID not valid",
                             "CategoryIdEqualsNull": "Category ID equals NULL",
                             "CategoryIdUndefined": "Category ID is undefined",
-                            "CategoryIdMissing": "Category ID missing"
+                            "CategoryIdMissing": "Category ID missing",
+                            "MissingRefreshToken": "Missing refresh token"
                         }
                     }
                 },
@@ -430,7 +447,7 @@
                     },
                     "errorMessages": {
                         "dataValidation": {
-                            
+                            "MissingRefreshToken": "Missing refresh token"
                         }
                     }
                 },
@@ -441,7 +458,7 @@
                     },
                     "errorMessages": {
                         "dataValidation": {
-                            
+                            "MissingRefreshToken": "Missing refresh token"
                         }
                     }
                 },
@@ -452,7 +469,7 @@
                     },
                     "errorMessages": {
                         "dataValidation": {
-                            
+                            "MissingRefreshToken": "Missing refresh token"
                         }
                     }
                 },
@@ -463,7 +480,7 @@
                     },
                     "errorMessages": {
                         "dataValidation": {
-                            
+                            "MissingRefreshToken": "Missing refresh token"
                         }
                     }
                 }
@@ -491,7 +508,8 @@
                             "ResourceUserRoleIdEqualsNull": "ResourceUserRole ID equals NULL",
                             "ResourceUserRoleIdUndefined": "ResourceUserRole ID is undefined",
                             "ResourceUserRoleIdMissing": "ResourceUserRole ID missing",
-                            "ResourceUserRoleIdNotValid": "ResourceUserRole ID not valid"
+                            "ResourceUserRoleIdNotValid": "ResourceUserRole ID not valid",
+                            "MissingRefreshToken": "Missing refresh token"
                         }
                     }
                 },
@@ -522,24 +540,35 @@
         },
         "recent": {
             "title": "Recent activity",
-            "titlePlural": "Recent activities",
             "fields": {
-                "name": "Activity name",
-                "type": "Type",
+                "name": "Name",
+                "status": "status",
+                "field": "field",
+                "settings": "settings",
+                "createdAt": "Date",
+                "date": "date",
                 "description": "Description"
             },
+            "collectionName": {
+                "project": "project",
+                "team": "team",
+                "task": "task",
+                "company": "company",
+                "organization": "organization",
+                "user": "user"
+            },
             "actions": {
-                "selectRecent": {
-                    "actionResults": {
-                        "success": "",
-                        "failure": ""
-                    },
-                    "errorMessages": {
-                        "dataValidation": {
-                            "NoRecentFound": "No recent activity"
-                        }
-                    }
-                }
+                "created": "created",
+                "added": "added",
+                "deleted": "deleted",
+                "edited": "edited",
+                "set": "set"
+            },
+            "errorMessages": {
+                "dataValidation": {
+                    "NoRecentFound": "No recent activity",
+                    "MissingRefreshToken": "Missing refresh token"
+                } 
             }
         },
         "user": {
@@ -564,7 +593,8 @@
                     "errorMessages": {
                         "dataValidation": {
                             "missingProps": "No user data provided",
-                            "UserIdMissing": "User ID missing"
+                            "UserIdMissing": "User ID missing",
+                            "MissingRefreshToken": "Missing refresh token"
                         }
                     }
                 },
@@ -575,7 +605,7 @@
                     },
                     "errorMessages": {
                         "dataValidation": {
-                            
+                            "MissingRefreshToken": "Missing refresh token"
                         }
                     }
                 },
@@ -587,7 +617,7 @@
                     },
                     "errorMessages": {
                         "dataValidation": {
-                            
+                            "MissingRefreshToken": "Missing refresh token"
                         }
                     }
                 },
@@ -598,7 +628,8 @@
                     },
                     "errorMessages": {
                         "dataValidation": {
-                            
+                            "CompanyNotFound": "Company not found",
+                            "MissingRefreshToken": "Missing refresh token"
                         }
                     }
                 },
@@ -609,7 +640,7 @@
                     },
                     "errorMessages": {
                         "dataValidation": {
-                            
+                            "MissingRefreshToken": "Missing refresh token"
                         }
                     }
                 }
@@ -635,7 +666,8 @@
                     },
                     "errorMessages": {
                         "dataValidation": {
-                            "missingProps": "No company data provided"
+                            "missingProps": "No company data provided",
+                            "MissingRefreshToken": "Missing refresh token"
                         }
                     }
                 },
@@ -646,19 +678,19 @@
                     },
                     "errorMessages": {
                         "dataValidation": {
-                            
+                            "MissingRefreshToken": "Missing refresh token"  
                         }
                     }
                 },
                 "createCompany": {
                     "actionTitle": "Tworzenie profilu firmy",
                     "actionResults": {
-                        "success": "",
-                        "failure": ""
+                        "success": "Pomyślnie utworzono firmę",
+                        "failure": "Wystąpił błąd podczas tworzenia firmy"
                     },
                     "errorMessages": {
                         "dataValidation": {
-                            
+                            "MissingRefreshToken": "Missing refresh token"
                         }
                     }
                 },
@@ -669,7 +701,7 @@
                     },
                     "errorMessages": {
                         "dataValidation": {
-                            
+                            "MissingRefreshToken": "Missing refresh token"
                         }
                     }
                 },
@@ -680,7 +712,7 @@
                     },
                     "errorMessages": {
                         "dataValidation": {
-                            
+                            "MissingRefreshToken": "Missing refresh token"
                         }
                     }
                 }
@@ -701,7 +733,7 @@
                     },
                     "errorMessages": {
                         "dataValidation": {
-                            
+                            "MissingRefreshToken": "Missing refresh token"
                         }
                     }
                 },
@@ -712,7 +744,7 @@
                     },
                     "errorMessages": {
                         "dataValidation": {
-                            
+                            "MissingRefreshToken": "Missing refresh token"
                         }
                     }
                 },
@@ -726,7 +758,8 @@
                             "RoleIdEqualsNull": "Role ID equals NULL",
                             "RoleIdUndefined": "Role ID is undefined",
                             "RoleIdMissing": "Role ID missing",
-                            "RoleIdNotValid": "Role ID not valid"
+                            "RoleIdNotValid": "Role ID not valid",
+                            "MissingRefreshToken": "Missing refresh token"
                         }
                     }
                 },
@@ -737,7 +770,7 @@
                     },
                     "errorMessages": {
                         "dataValidation": {
-                            
+                            "MissingRefreshToken": "Missing refresh token"
                         }
                     }
                 },
@@ -748,7 +781,7 @@
                     },
                     "errorMessages": {
                         "dataValidation": {
-                            
+                            "MissingRefreshToken": "Missing refresh token"
                         }
                     }
                 }

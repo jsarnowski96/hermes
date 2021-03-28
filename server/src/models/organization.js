@@ -18,6 +18,17 @@ const OrganizationSchema = new mongoose.Schema({
         trim: true,
         default: 'localhost:3300/images/avatars/org-default.png'
     },
+    owner: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        default: null
+    },
+    company: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Company',
+        required: true
+    },
+    teams: [{type: mongoose.Schema.Types.ObjectId, ref: 'Team'}],
     modified_at: {
         type: Date,
         required: true,
@@ -27,18 +38,7 @@ const OrganizationSchema = new mongoose.Schema({
         type: Date,
         required: true,
         default: Date.now
-    },
-    owner: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        required: true
-    },
-    company: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Company',
-        required: true
-    },
-    teams: [{type: mongoose.Schema.Types.ObjectId, ref: 'Team'}]
+    }
 });
 
 const Organization = mongoose.model('Organization', OrganizationSchema);

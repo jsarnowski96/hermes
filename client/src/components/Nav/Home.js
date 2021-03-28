@@ -14,7 +14,10 @@ class Home extends React.Component {
             this.state = {
                 authenticated: true,
                 redirected: false,
-                serverResponse: null,
+                serverResponse: {
+                    origin: null,
+                    content: null
+                },
                 fields: {},
                 errors: {}
             }
@@ -22,7 +25,10 @@ class Home extends React.Component {
             this.state = {
                 authenticated: false,
                 redirected: false,
-                serverResponse: null,
+                serverResponse: {
+                    origin: null,
+                    content: null
+                },
                 fields: {},
                 errors: {}
             }

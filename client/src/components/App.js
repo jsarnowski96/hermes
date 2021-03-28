@@ -15,31 +15,22 @@ import UserAction from './Dashboard/UserAction';
 
 import Project from './Project/Project';
 import Task from './Task/Task';
-import Comment from './Comment/Comment';
 import Company from './Company/Company';
 import Team from './Team/Team';
-import Repository from './Repository/Repository';
-import Role from './Role/Role';
 import User from './User/User';
 import Organization from './Organization/Organization';
 
 import ProjectList from './Project/ProjectList';
 import TeamList from './Team/TeamList';
-import CommentList from './Comment/CommentList';
 import CompanyList from './Company/CompanyList';
 import UserList from './User/UserList';
-import RepositoryList from './Repository/RepositoryList';
 import TaskList from './Task/TaskList';
-import RoleList from './Role/RoleList';
 import OrganizationList from './Organization/OrganizationList';
 
 import CreateProject from './Project/CreateProject';
 import CreateTask from './Task/CreateTask';
-import CreateComment from './Comment/CreateComment';
 import CreateCompany from './Company/CreateCompany';
 import CreateTeam from './Team/CreateTeam';
-import CreateRepository from './Repository/CreateRepository';
-import CreateRole from './Role/CreateRole';
 import CreateUser from './User/CreateUser';
 import CreateOrganization from './Organization/CreateOrganization';
 
@@ -89,15 +80,7 @@ class App extends React.Component {
                         <Route exact path="/team/details" component={Team} />
                         <Route exact path="/team/list" component={TeamList} />
                         <Route exact path="/team/create" component={CreateTeam} />
-                        <Route exact path="/repository" component={Repository} />
-                        <Route exact path="/repository/list" component={RepositoryList} />
-                        <Route exact path="/repository/create" component={CreateRepository} />
                         <Route exact path="/comment" component={Comment} />
-                        <Route exact path="/comment/list" component={CommentList} />
-                        <Route exact path="/comment/create" component={CreateComment} />
-                        <Route exact path="/role" component={Role} />
-                        <Route exact path="/role/list" component={RoleList} />
-                        <Route exact path="/role/create" component={CreateRole} />
                         <Route exact path="/company" component={Company} />
                         <Route exact path="/company/list" component={CompanyList} />
                         <Route exact path="/company/create" component={CreateCompany} />

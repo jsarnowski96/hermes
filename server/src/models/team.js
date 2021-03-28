@@ -6,7 +6,8 @@ const TeamSchema = new mongoose.Schema({
         type: String,
         validate: /^[ążśźęćńółĄŻŚŹĘĆŃÓŁA-Za-z0-9!@#$%^&*()_+\-=,./;'\\[\]<>?:"|{} ]{1,50}$/,
         trim: true,
-        required: true
+        required: true,
+        unique: true
     },
     description: {
         type: String,
@@ -18,16 +19,6 @@ const TeamSchema = new mongoose.Schema({
         type: String,
         trim: true,
         default: 'localhost:3300/images/avatars/team-default.png'
-    },
-    modified_at: {
-        type: Date,
-        required: true,
-        default: Date.now
-    },
-    created_at: {
-        type: Date,
-        required: true,
-        default: Date.now
     },
     category: {
         type: mongoose.Schema.Types.ObjectId,
@@ -45,6 +36,16 @@ const TeamSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Organization',
         required: true
+    },
+    modified_at: {
+        type: Date,
+        required: true,
+        default: Date.now
+    },
+    created_at: {
+        type: Date,
+        required: true,
+        default: Date.now
     }
 });
 

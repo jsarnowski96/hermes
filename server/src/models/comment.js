@@ -19,11 +19,6 @@ const CommentSchema = new mongoose.Schema({
         required: true,
         default: Date.now
     },
-    created_at: {
-        type: Date,
-        required: true,
-        default: Date.now
-    },
     author: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
@@ -40,6 +35,11 @@ const CommentSchema = new mongoose.Schema({
             }
         },
         required: true
+    },
+    created_at: {
+        type: Date,
+        required: true,
+        default: Date.now
     }
 });
 

@@ -11,9 +11,9 @@ const {
     deleteRepository
 } = require('../../services/dbTransactionService');
 
-const {ensureAuthenticated} = require('../../middleware/jwtAuthentication');
+const {isAuthenticated} = require('../../middleware/authenticator');
 
-router.all('*', ensureAuthenticated);
+router.all('*', isAuthenticated);
 
 router.get('/details/:id', async (req, res, next) => {
     res.status(200).json({message: 'Repository ID route'});

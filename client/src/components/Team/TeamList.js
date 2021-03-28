@@ -17,15 +17,18 @@ class TeamList extends React.Component {
             this.state = {
                 auth: {
                     userId: this.jwt.userId,
-                    refreshToken: this.jwt.refreshToken
+                    accessToken: this.jwt.accessToken
                 },
                 teams: [],
-                serverResponse: null
+                serverResponse: {
+                    origin: null,
+                    content: null
+                }
             }
 
             this.headers = {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${this.state.auth.refreshToken}`
+                'Authorization': `Bearer ${this.state.auth.accessToken}`
             };
         }
 
@@ -36,76 +39,103 @@ class TeamList extends React.Component {
         if(this.props.params === undefined) {
             if(this.props.location === undefined && this.props.location.state === undefined) {
                 try {
-                    axios.post('http://localhost:3300/team/list',
+                    axios.post('/team/list',
                     {
                         ref: 'user',
+                        userId: this.state.auth.userId,
                         objId: this.state.auth.userId
                     }, {headers: this.headers, withCredentials: true})
                     .then((response) => {
-                        if(response.data.teams !== undefined && response.data.teams !== '' && response.data.teams !== null && response.data.teams.length > 0) {
+                        if(response.data.teams !== undefined && response.data.teams !== null && response.data.teams.length > 0) {
                             this.setState({teams: response.data.teams});
                         }
                     })
                     .catch((error) => {
-                        if(error.response.data.error === 'JwtTokenExpired') {
-                            removeJwtDataFromSessionStorage()
-                        } else {
-                            this.setState({
-                                serverResponse: error.response.data.error
-                            })
+                        if(error !== undefined && error.response !== undefined) {
+                            if(error.response.data.error === 'JwtTokenExpired') {
+                                removeJwtDataFromSessionStorage()
+                            } else {
+                                this.setState({
+                                    serverResponse: {
+                                        origin: error.response.data.origin,
+                                        content: error.response.data.error
+                                    }
+                                })
+                            }
                         }
                     });
                 } catch(e) {
-                    this.setState({serverResponse: e.message});
+                    this.setState({serverResponse: {
+                        origin: 'axios',
+                        content: e.message
+                    }});
                 }
             } else {
                 try {
-                    axios.post('http://localhost:3300/team/list',
+                    axios.post('/team/list',
                     {
                         ref: this.props.location.state.ref,
+                        userId: this.props.location.state.userId,
                         objId: this.props.location.state.objId
                     }, {headers: this.headers, withCredentials: true})
                     .then((response) => {
-                        if(response.data.teams !== undefined && response.data.teams !== '' && response.data.teams !== null && response.data.teams.length > 0) {
+                        if(response.data.teams !== undefined && response.data.teams !== null && response.data.teams.length > 0) {
                             this.setState({teams: response.data.teams});
                         }
                     })
                     .catch((error) => {
-                        if(error.response.data.error === 'JwtTokenExpired') {
-                            removeJwtDataFromSessionStorage()
-                        } else {
-                            this.setState({
-                                serverResponse: error.response.data.error
-                            })
+                        if(error !== undefined && error.response !== undefined) {
+                            if(error.response.data.error === 'JwtTokenExpired') {
+                                removeJwtDataFromSessionStorage()
+                            } else {
+                                this.setState({
+                                    serverResponse: {
+                                        origin: error.response.data.origin,
+                                        content: error.response.data.error
+                                    }
+                                })
+                            }
                         }
                     });
                 } catch(e) {
-                    this.setState({serverResponse: e.message});
+                    this.setState({serverResponse: {
+                        origin: 'axios',
+                        content: e.message
+                    }});
                 }
             }
         } else {
             try {
-                axios.post('http://localhost:3300/team/list',
+                axios.post('/team/list',
                 {
                     ref: this.props.params.ref,
+                    userId: this.props.params.userId,
                     objId: this.props.params.objId
                 }, {headers: this.headers, withCredentials: true})
                 .then((response) => {
-                    if(response.data.teams !== undefined && response.data.teams !== '' && response.data.teams !== null && response.data.teams.length > 0) {
+                    if(response.data.teams !== undefined && response.data.teams !== null && response.data.teams.length > 0) {
                         this.setState({teams: response.data.teams});
                     }
                 })
                 .catch((error) => {
-                    if(error.response.data.error === 'JwtTokenExpired') {
-                        removeJwtDataFromSessionStorage()
-                    } else {
-                        this.setState({
-                            serverResponse: error.response.data.error
-                        })
+                    if(error !== undefined && error.response !== undefined) {
+                        if(error.response.data.error === 'JwtTokenExpired') {
+                            removeJwtDataFromSessionStorage()
+                        } else {
+                            this.setState({
+                                serverResponse: {
+                                    origin: error.response.data.origin,
+                                    content: error.response.data.error
+                                }
+                            })
+                        }
                     }
                 });
             } catch(e) {
-                this.setState({serverResponse: e.message});
+                this.setState({serverResponse: {
+                    origin: 'axios',
+                    content: e.message
+                }});
             }
         }
     }
@@ -113,7 +143,7 @@ class TeamList extends React.Component {
     render() {
         const {t} = this.props;
 
-        if(this.jwt !== null && this.state.auth.userId !== null && this.state.auth.refreshToken !== null) {
+        if(this.jwt !== null && this.state.auth.userId !== null && this.state.auth.accessToken !== null) {
             return(
                 <div>
                     {
@@ -130,26 +160,26 @@ class TeamList extends React.Component {
                             <tr>
                                 <th>{t('content.team.fields.name')}</th>
                                 <th>{t('content.team.fields.owner')}</th>
+                                <th>{t('content.team.fields.organization')}</th>
                             </tr>
                         </thead>
                         <tbody>
                             {this.state.teams.length > 0 ? (
                                 this.state.teams.map((team, index) => (
                                     <tr>
-                                        <td><Link to={{pathname: '/team/details', state: {ref: 'team', objId: team._id}}}>{team.name}</Link></td>
+                                        <td><Link to={{pathname: '/team/details', state: {ref: 'team', userId: this.state.auth.userId, objId: team._id}}}>{team.name}</Link></td>
                                         <td><Link to={{pathname: '/user/profile', state: {userId: team.owner._id}}}>{team.owner.firstname + ' ' + team.owner.lastname}</Link></td>
+                                        <td>{team.organization.name}</td>
                                     </tr>
                                     ))
                             ) : (
-                                this.state.serverResponse === null ? (
-                                    <tr>
-                                        <td colspan="2" align="center">-</td>
-                                    </tr>
-                                ) : (
-                                    <tr>
-                                        <td colspan="2" align="center">- {t('content.team.actions.selectTeamList.errorMessages.dataValidation.' + this.state.serverResponse)} -</td>
-                                    </tr>
-                                )
+                                <tr>
+                                    {this.state.serverResponse.content !== null ? (
+                                        <td colspan="6" align="center">- {t('content.team.actions.selectTeamList.errorMessages.dataValidation.' + this.state.serverResponse.content)} -</td>
+                                    ) : (
+                                        <td colspan="6" align="center">-</td>
+                                    )}
+                                </tr>
                             )}
                         </tbody>
                     </table>

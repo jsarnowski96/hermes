@@ -31,16 +31,6 @@ const ProjectSchema = new mongoose.Schema({
         default: false,
         required: true
     },
-    modified_at: {
-        type: Date,
-        required: true,
-        default: Date.now
-    },
-    created_at: {
-        type: Date,
-        required: true,
-        default: Date.now
-    },
     default_role: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Role',
@@ -69,7 +59,17 @@ const ProjectSchema = new mongoose.Schema({
         required: true
     },
     teams: [{type: mongoose.Schema.Types.ObjectId, ref: 'Team'}],
-    tasks: [{type: mongoose.Schema.Types.ObjectId, ref: 'Task'}]
+    tasks: [{type: mongoose.Schema.Types.ObjectId, ref: 'Task'}],
+    modified_at: {
+        type: Date,
+        required: true,
+        default: Date.now
+    },
+    created_at: {
+        type: Date,
+        required: true,
+        default: Date.now
+    }
 });
 
 const Project = mongoose.model('Project', ProjectSchema);

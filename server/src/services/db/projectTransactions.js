@@ -2,6 +2,7 @@ const Project = require('../../models/Project');
 const Team = require('../../models/Team');
 const Organization = require('../../models/Organization');
 const User = require('../../models/User');
+const Company = require('../../models/Company');
 const Category = require('../../models/Category');
 const mongoose = require('mongoose');
 const sanitizeHtml = require('sanitize-html');
@@ -107,6 +108,8 @@ async function getProjectList() {
                 throw new Error('CompanyIdMissing');
             } else if(ref === 'organization') {
                 throw new Error('OrganizationIdMissing');
+            } else if(ref === 'task') {
+                throw new Error('TaskIdMissing');
             }
         }
 
@@ -134,7 +137,7 @@ async function getProjectList() {
             })
             .catch((error) => {
                 if(error) {
-                    console.log(error);
+                    console.log('GET PROJECT LIST\n' + error);
                     throw error;
                 }
             })
@@ -154,13 +157,14 @@ async function getProjectList() {
                                 },
                                 allowedIframeHostnames: ['www.youtube.com']
                             }); 
-                            projects.push(res);
                         })
+
+                        projects = result;
                     }
                 })
                 .catch((error) => {
                     if(error) {
-                        console.log(error);
+                        console.log('GET PROJECT LIST\n' + error);
                         throw error;
                     }
                 })
@@ -184,7 +188,7 @@ async function getProjectList() {
             })
             .catch((error) => {
                 if(error) {
-                    console.log(error);
+                    console.log('GET PROJECT LIST\n' + error);
                     throw error;
                 }
             })
@@ -216,7 +220,7 @@ async function getProjectList() {
             })
             .catch((error) => {
                 if(error) {
-                    console.log(error);
+                    console.log('GET PROJECT LIST\n' + error);
                     throw error;
                 }
             });
@@ -245,11 +249,12 @@ async function getProjectList() {
                         if(!result || result === null || result.length === 0) {
                             throw new Error('NoOrganizationsFound');
                         } else {
-                            organizations.push(result._id);
+                            organizations = result;
                         }
                     })
                     .catch((error) => {
                         if(error) {
+                            console.log('GET PROJECT LIST\n' + error);
                             throw error;
                         }
                     })
@@ -260,35 +265,33 @@ async function getProjectList() {
                     if(!result || result === null || result.length === 0) {
                         throw new Error('NoOrganizationsFound');
                     } else {
-                        organizations.push(result._id);
+                        organizations = result;
                     }
                 })
                 .catch((error) => {
                     if(error) {
+                        console.log('GET PROJECT LIST\n' + error);
                         throw error;
                     }
                 })
             }
-
 
             let projects = [];
 
-            for(var orgId in organizations) {
-                await Project.findOne({organization: orgId}).populate('owner teams category organization')
+            await Project.find({organization: organizations}).populate('owner teams category organization')
                 .then((result) => {
-                    if(!result || result === null) {
-                        throw new Error('ProjectNotFound');
+                    if(!result || result === null || result.length === 0) {
+                        throw new Error('NoProjectsFound');
                     } else {
-                        projects.push(result);
+                        projects = result;
                     }
                 })
                 .catch((error) => {
                     if(error) {
+                        console.log('GET PROJECT LIST\n' + error);
                         throw error;
                     }
                 })
-            }
-            
             return projects;
         } else if(ref === 'organization') {
             if(!mongoose.Types.ObjectId.isValid(objId)) {
@@ -308,20 +311,24 @@ async function getProjectList() {
                 throw new Error('TaskNotFound');
             }
 
-            return await Project.find({tasks: objId}).populate('owner teams')
+            let projects = [];
+
+            await Project.find({tasks: objId}).populate('owner teams category organization')
             .then((result) => {
                 if(!result || result === null) {
                     throw new Error('ProjectNotFound');
                 } else {
-                    return result;
+                    projects = result;
                 }
             })
             .catch((error) => {
                 if(error) {
+                    console.log('GET PROJECT LIST\n' + error);
                     throw error;
                 }
             })
 
+            return projects;
         } else {
             throw new Error('ReferenceIncorrect');
         }

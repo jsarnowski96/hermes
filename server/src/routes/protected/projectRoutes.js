@@ -11,9 +11,9 @@ const {
     deleteProject
 } = require('../../services/dbTransactionService');
 
-const {ensureAuthenticated} = require('../../middleware/jwtAuthentication');
+const {isAuthenticated} = require('../../middleware/authenticator');
 
-router.all('*', ensureAuthenticated);
+router.all('*', isAuthenticated);
 
 router.post('/details', async (req, res, next) => {
     await getProject(req.body.userId, req.body.projectId)
@@ -27,24 +27,24 @@ router.post('/details', async (req, res, next) => {
     .catch((error) => {
         if(error) {
             if(error.message === 'UserIdMissing') {
-                return res.status(406).json({error: error.message});
+                return res.status(406).json({origin: 'ProjectDetails', error: error.message});
             } else if(error.message === 'ProjectIdMissing') {
-                return res.status(406).json({error: error.message});
+                return res.status(406).json({origin: 'ProjectDetails', error: error.message});
             } else if(error.message === 'UserIdNotValid') {
-                return res.status(406).json({error: error.message});
+                return res.status(406).json({origin: 'ProjectDetails', error: error.message});
             } else if(error.message === 'ProjectIdNotValid') {
-                return res.status(406).json({error: error.message});
+                return res.status(406).json({origin: 'ProjectDetails', error: error.message});
             } else if(error.message === 'UserNotFound') {
-                return res.status(404).json({error: error.message});
+                return res.status(404).json({origin: 'ProjectDetails', error: error.message});
             } else if(error.message === 'ProjectNotFound') {
-                return res.status(404).json({error: error.message});
+                return res.status(404).json({origin: 'ProjectDetails', error: error.message});
             } else if(error.message === 'TeamNotFound') {
-                return res.status(404).json({error: error.message});
+                return res.status(404).json({origin: 'ProjectDetails', error: error.message});
             } else {
-                return res.status(500).json({error: error.message});
+                return res.status(500).json({origin: 'ProjectDetails', error: error.message});
             }
         } else {
-            return res.status(500).json({error: 'UnknownError'});
+            return res.status(500).json({origin: 'ProjectDetails', error: error.message});
         }
     })
 });
@@ -61,24 +61,24 @@ router.post('/details/:projectId', async (req, res, next) => {
     .catch((error) => {
         if(error) {
             if(error.message === 'UserIdMissing') {
-                return res.status(406).json({error: error.message});
+                return res.status(406).json({origin: 'ProjectDetails', error: error.message});
             } else if(error.message === 'ProjectIdMissing') {
-                return res.status(406).json({error: error.message});
+                return res.status(406).json({origin: 'ProjectDetails', error: error.message});
             } else if(error.message === 'UserIdNotValid') {
-                return res.status(406).json({error: error.message});
+                return res.status(406).json({origin: 'ProjectDetails', error: error.message});
             } else if(error.message === 'ProjectIdNotValid') {
-                return res.status(406).json({error: error.message});
+                return res.status(406).json({origin: 'ProjectDetails', error: error.message});
             } else if(error.message === 'UserNotFound') {
-                return res.status(404).json({error: error.message});
+                return res.status(404).json({origin: 'ProjectDetails', error: error.message});
             } else if(error.message === 'ProjectNotFound') {
-                return res.status(404).json({error: error.message});
+                return res.status(404).json({origin: 'ProjectDetails', error: error.message});
             } else if(error.message === 'TeamNotFound') {
-                return res.status(404).json({error: error.message});
+                return res.status(404).json({origin: 'ProjectDetails', error: error.message});
             } else {
-                return res.status(500).json({error: error.message});
+                return res.status(500).json({origin: 'ProjectDetails', error: error.message});
             }
         } else {
-            return res.status(500).json({error: 'UnknownError'});
+            return res.status(500).json({origin: 'ProjectDetails', error: error.message});
         }
     })
 });
@@ -96,44 +96,44 @@ router.post('/list', async (req, res, next) => {
         .catch((error) => {
             if(error) {
                 if(error.message === 'UserIdMissing') {
-                    return res.status(406).json({error: error.message});
+                    return res.status(406).json({origin: 'ProjectList', error: error.message});
                 } else if(error.message === 'ProjectIdMissing') {
-                    return res.status(406).json({error: error.message});
+                    return res.status(406).json({origin: 'ProjectList', error: error.message});
                 } else if(error.message === 'UserIdNotValid') {
-                    return res.status(406).json({error: error.message});
+                    return res.status(406).json({origin: 'ProjectList', error: error.message});
                 } else if(error.message === 'ProjectIdNotValid') {
-                    return res.status(406).json({error: error.message});
+                    return res.status(406).json({origin: 'ProjectList', error: error.message});
                 } else if(error.message === 'UserNotFound') {
-                    return res.status(404).json({error: error.message});
+                    return res.status(404).json({origin: 'ProjectList', error: error.message});
                 } else if(error.message === 'ProjectNotFound') {
-                    return res.status(404).json({error: error.message});
+                    return res.status(404).json({origin: 'ProjectList', error: error.message});
                 } else if(error.message === 'ReferenceMissing') {
-                    return res.status(406).json({error: error.message});
+                    return res.status(406).json({origin: 'ProjectList', error: error.message});
                 } else if(error.message === 'ReferenceIncorrect') {
-                    return res.status(406).json({error: error.message});
+                    return res.status(406).json({origin: 'ProjectList', error: error.message});
                 } else if(error.message === 'TeamIdMissing') {
-                    return res.status(406).json({error: error.message});
+                    return res.status(406).json({origin: 'ProjectList', error: error.message});
                 } else if(error.message === 'CompanyIdMissing') {
-                    return res.status(406).json({error: error.message});
+                    return res.status(406).json({origin: 'ProjectList', error: error.message});
                 } else if(error.message === 'OrganizationIdMissing') {
-                    return res.status(406).json({error: error.message});
+                    return res.status(406).json({origin: 'ProjectList', error: error.message});
                 } else if(error.message === 'TeamNotFound') {
-                    return res.status(404).json({error: error.message});
+                    return res.status(404).json({origin: 'ProjectList', error: error.message});
                 } else if(error.message === 'NoProjectsFound') {
-                    return res.status(404).json({error: error.message});
+                    return res.status(404).json({origin: 'ProjectList', error: error.message});
                 } else if(error.message === 'TeamIdNotValid') {
-                    return res.status(406).json({error: error.message});
+                    return res.status(406).json({origin: 'ProjectList', error: error.message});
                 } else if(error.message === 'ObjIdNotValid') {
-                    return res.status(406).json({error: error.message});
+                    return res.status(406).json({origin: 'ProjectList', error: error.message});
                 } else if(error.message === 'NoOrganizationsFound') {
-                    return res.status(404).json({error: error.message});
+                    return res.status(404).json({origin: 'ProjectList', error: error.message});
                 } else if(error.message === 'IncorrectNumberOfArguments') {
-                    return res.status(406).json({error: error.message});
+                    return res.status(406).json({origin: 'ProjectList', error: error.message});
                 } else {
-                    return res.status(500).json({error: error.message});
+                    return res.status(500).json({origin: 'ProjectList', error: error.message});
                 }
             } else {
-                return res.status(500).json({error: 'UnknownError'});
+                return res.status(500).json({origin: 'ProjectList', error: error.message});
             }
         });
     } else {
@@ -148,44 +148,44 @@ router.post('/list', async (req, res, next) => {
         .catch((error) => {
             if(error) {
                 if(error.message === 'UserIdMissing') {
-                    return res.status(406).json({error: error.message});
+                    return res.status(406).json({origin: 'ProjectList', error: error.message});
                 } else if(error.message === 'ProjectIdMissing') {
-                    return res.status(406).json({error: error.message});
+                    return res.status(406).json({origin: 'ProjectList', error: error.message});
                 } else if(error.message === 'UserIdNotValid') {
-                    return res.status(406).json({error: error.message});
+                    return res.status(406).json({origin: 'ProjectList', error: error.message});
                 } else if(error.message === 'ProjectIdNotValid') {
-                    return res.status(406).json({error: error.message});
+                    return res.status(406).json({origin: 'ProjectList', error: error.message});
                 } else if(error.message === 'UserNotFound') {
-                    return res.status(404).json({error: error.message});
+                    return res.status(404).json({origin: 'ProjectList', error: error.message});
                 } else if(error.message === 'ProjectNotFound') {
-                    return res.status(404).json({error: error.message});
+                    return res.status(404).json({origin: 'ProjectList', error: error.message});
                 } else if(error.message === 'ReferenceMissing') {
-                    return res.status(406).json({error: error.message});
+                    return res.status(406).json({origin: 'ProjectList', error: error.message});
                 } else if(error.message === 'ReferenceIncorrect') {
-                    return res.status(406).json({error: error.message});
+                    return res.status(406).json({origin: 'ProjectList', error: error.message});
                 } else if(error.message === 'TeamIdMissing') {
-                    return res.status(406).json({error: error.message});
+                    return res.status(406).json({origin: 'ProjectList', error: error.message});
                 } else if(error.message === 'CompanyIdMissing') {
-                    return res.status(406).json({error: error.message});
+                    return res.status(406).json({origin: 'ProjectList', error: error.message});
                 } else if(error.message === 'OrganizationIdMissing') {
-                    return res.status(406).json({error: error.message});
+                    return res.status(406).json({origin: 'ProjectList', error: error.message});
                 } else if(error.message === 'TeamNotFound') {
-                    return res.status(404).json({error: error.message});
+                    return res.status(404).json({origin: 'ProjectList', error: error.message});
                 } else if(error.message === 'NoProjectsFound') {
-                    return res.status(404).json({error: error.message});
+                    return res.status(404).json({origin: 'ProjectList', error: error.message});
                 } else if(error.message === 'TeamIdNotValid') {
-                    return res.status(406).json({error: error.message});
+                    return res.status(406).json({origin: 'ProjectList', error: error.message});
                 } else if(error.message === 'ObjIdNotValid') {
-                    return res.status(406).json({error: error.message});
+                    return res.status(406).json({origin: 'ProjectList', error: error.message});
                 } else if(error.message === 'NoOrganizationsFound') {
-                    return res.status(404).json({error: error.message});
+                    return res.status(404).json({origin: 'ProjectList', error: error.message});
                 } else if(error.message === 'IncorrectNumberOfArguments') {
-                    return res.status(406).json({error: error.message});
+                    return res.status(406).json({origin: 'ProjectList', error: error.message});
                 } else {
-                    return res.status(500).json({error: error.message});
+                    return res.status(500).json({origin: 'ProjectList', error: error.message});
                 }
             } else {
-                return res.status(500).json({error: 'UnknownError'});
+                return res.status(500).json({origin: 'ProjectList', error: error.message});
             }
         });
     }
@@ -203,32 +203,32 @@ router.post('/create', async (req, res, next) => {
     .catch((error) => {
         if(error) {
             if(error.message === 'EmptyFormField') {
-                return res.status(406).json({error: error.message});
+                return res.status(406).json({origin: 'CreateProject', error: error.message});
             } else if(error.message === 'UserIdMissing') {
-                return res.status(406).json({error: error.message});
+                return res.status(406).json({origin: 'CreateProject', error: error.message});
             } else if(error.message === 'UserIdNotValid') {
-                return res.status(406).json({error: error.message});
+                return res.status(406).json({origin: 'CreateProject', error: error.message});
             } else if(error.message === 'UserNotFound') {
-                return res.status(404).json({error: error.message});
+                return res.status(404).json({origin: 'CreateProject', error: error.message});
             } else if(error.message === 'CategoryNotFound') {
-                return res.status(404).json({error: error.message});
+                return res.status(404).json({origin: 'CreateProject', error: error.message});
             } else if(error.message === 'CategoryIdNotValid') {
-                return res.status(406).json({error: error.message});
+                return res.status(406).json({origin: 'CreateProject', error: error.message});
             } else if(error.message === 'OrganizationNotFound') {
-                return res.status(404).json({error: error.message});
+                return res.status(404).json({origin: 'CreateProject', error: error.message});
             } else if(error.message === 'OrganizationIdNotValid') {
-                return res.status(406).json({error: error.message});
+                return res.status(406).json({origin: 'CreateProject', error: error.message});
             } else if(error.message === 'ProjectNotSaved') {
-                return res.status(304).json({error: error.message});
+                return res.status(304).json({origin: 'CreateProject', error: error.message});
             } else if(error.message === 'ProjectNotFound') {
-                return res.status(404).json({error: error.message});
+                return res.status(404).json({origin: 'CreateProject', error: error.message});
             } else if(error.message === 'ProjectIdNotValid') {
-                return res.status(406).json({error: error.message});
+                return res.status(406).json({origin: 'CreateProject', error: error.message});
             } else {
-                return res.status(500).json({error: error.message});
+                return res.status(500).json({origin: 'CreateProject', error: error.message});
             }
         } else {
-            return res.status(500).json({error: 'UnknownError'});
+            return res.status(500).json({origin: 'CreateProject', error: error.message});
         }
     })
 });
@@ -245,28 +245,28 @@ router.post('/update', async (req, res, next) => {
     .catch((error) => {
         if(error) {
             if(error.message === 'UserIdMissing') {
-                return res.status(406).json({error: error.message});
+                return res.status(406).json({origin: 'UpdateProject', error: error.message});
             } else if(error.message === 'ProjectIdMissing') {
-                return res.status(406).json({error: error.message});
+                return res.status(406).json({origin: 'UpdateProject', error: error.message});
             } else if(error.message === 'UserIdNotValid') {
-                return res.status(406).json({error: error.message});
+                return res.status(406).json({origin: 'UpdateProject', error: error.message});
             } else if(error.message === 'ProjectIdNotValid') {
-                return res.status(406).json({error: error.message});
+                return res.status(406).json({origin: 'UpdateProject', error: error.message});
             } else if(error.message === 'UserNotFound') {
-                return res.status(404).json({error: error.message});
+                return res.status(404).json({origin: 'UpdateProject', error: error.message});
             } else if(error.message === 'ProjectNotFound') {
-                return res.status(404).json({error: error.message});
+                return res.status(404).json({origin: 'UpdateProject', error: error.message});
             } else if(error.message === 'ProjectNotUpdated') {
-                return res.status(304).json({error: error.message});
+                return res.status(304).json({origin: 'UpdateProject', error: error.message});
             } else if(error.message === 'OrganizationNotFound') {
-                return res.status(404).json({error: error.message});
+                return res.status(404).json({origin: 'UpdateProject', error: error.message});
             } else if(error.message === 'CategoryNotFound') {
-                return res.status(404).json({error: error.message});
+                return res.status(404).json({origin: 'UpdateProject', error: error.message});
             } else {
-                return res.status(500).json({error: error.message});
+                return res.status(500).json({origin: 'UpdateProject', error: error.message});
             }
         } else {
-            return res.status(500).json({error: 'UnknownError'});
+            return res.status(500).json({origin: 'UpdateProject', error: error.message});
         }
     })
 });
@@ -283,24 +283,24 @@ router.post('/delete', async (req, res, next) => {
     .catch((error) => {
         if(error) {
             if(error.message === 'UserIdMissing') {
-                return res.status(406).json({error: error.message});
+                return res.status(406).json({origin: 'DeleteProject', error: error.message});
             } else if(error.message === 'ProjectIdMissing') {
-                return res.status(406).json({error: error.message});
+                return res.status(406).json({origin: 'DeleteProject', error: error.message});
             } else if(error.message === 'UserIdNotValid') {
-                return res.status(406).json({error: error.message});
+                return res.status(406).json({origin: 'DeleteProject', error: error.message});
             } else if(error.message === 'ProjectIdNotValid') {
-                return res.status(406).json({error: error.message});
+                return res.status(406).json({origin: 'DeleteProject', error: error.message});
             } else if(error.message === 'UserNotFound') {
-                return res.status(404).json({error: error.message});
+                return res.status(404).json({origin: 'DeleteProject', error: error.message});
             } else if(error.message === 'ProjectNotFound') {
-                return res.status(404).json({error: error.message});
+                return res.status(404).json({origin: 'DeleteProject', error: error.message});
             } else if(error.message === 'ProjectNotDeleted') {
-                return res.status(304).json({error: error.message});
+                return res.status(304).json({origin: 'DeleteProject', error: error.message});
             } else {
-                return res.status(500).json({error: error.message});
+                return res.status(500).json({origin: 'DeleteProject', error: error.message});
             }
         } else {
-            return res.status(500).json({error: 'UnknownError'});
+            return res.status(500).json({origin: 'DeleteProject', error: error.message});
         }
     })
 });

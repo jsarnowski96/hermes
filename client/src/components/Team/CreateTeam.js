@@ -21,27 +21,32 @@ class CreateTeam extends React.Component {
             this.state = {
                 auth: {
                     userId: this.jwt.userId,
-                    refreshToken: this.jwt.refreshToken
+                    accessToken: this.jwt.accessToken
                 },
+                user: null,
                 categories: [],
                 organizations: [],
                 team: null,
                 fields: {},
                 errors: {},
-                serverResponse: null
+                serverResponse: {
+                    origin: null,
+                    content: null
+                }
             }
 
             this.headers = {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${this.state.auth.refreshToken}`
+                'Authorization': `Bearer ${this.state.auth.accessToken}`
             };
         }
 
         this.resetForm = this.resetForm.bind(this);                
 
-        this.getCategories();
-        this.getOrganizations();
-        this.getUsers();
+        this.getUser();
+        this.getCategoryList();
+        this.getOrganizationList();
+        this.getUserList();
     }
 
     componentWillUnmount() {
@@ -110,9 +115,33 @@ class CreateTeam extends React.Component {
         return isValid;
     }
 
-    async getCategories() {
+    async getUser() {
+        let fields = this.state.fields;
+
+        await axios.post('/user/profile', { userId: this.state.auth.userId}, {headers: this.headers, withCredentials: true})
+        .then((response) => {
+            if(response !== undefined) {
+                fields['members'] = response.data.user;
+                this.setState({fields, user: response.data.user});
+            }
+        })
+        .catch((error) => {
+            if(error.response.data.error === 'JwtTokenExpired') {
+                removeJwtDataFromSessionStorage()
+            }
+            
+            this.setState({
+                serverResponse: {
+                    origin: error.response.data.origin,
+                    content: error.response.data.error
+                }
+            })
+        })
+    }
+
+    async getCategoryList() {
         try {
-            await axios.post('http://localhost:3300/category/list', { category_type: 'team'}, {headers: this.headers, withCredentials: true })
+            await axios.post('/category/list', { category_type: 'team'}, {headers: this.headers, withCredentials: true })
             .then((response) => {
                 if(response.data.categories.length > 0 && response.data.categories !== null) {
                     this.setState({categories: response.data.categories});
@@ -124,18 +153,24 @@ class CreateTeam extends React.Component {
                 }
                 
                 this.setState({
-                    serverResponse: error.response.data.error
+                    serverResponse: {
+                        origin: error.response.data.origin,
+                        content: error.response.data.error
+                    }
                 })
             });
         } catch(e) {
-            this.setState({serverResponse: e.message});
+            this.setState({serverResponse: {
+                origin: 'axios',
+                content: e.message
+            }});
         }
         
     }
 
-    async getUsers() {
+    async getUserList() {
         try {
-            await axios.post('http://localhost:3300/user/list', 
+            await axios.post('/user/list', 
             {
                 ref: 'company',
                 objId: this.state.auth.userId
@@ -146,20 +181,30 @@ class CreateTeam extends React.Component {
                 }   
             })
             .catch((error) => {
-                if(error.response.data.error === 'JwtTokenExpired') {
-                    removeJwtDataFromSessionStorage();
-                } else {
-                    this.setState({serverResponse: error.response.data.error});
+                if(error !== undefined && error.response !== undefined) {
+                    if(error.response.data.error === 'JwtTokenExpired') {
+                        removeJwtDataFromSessionStorage()
+                    } else {
+                        this.setState({
+                            serverResponse: {
+                                origin: error.response.data.origin,
+                                content: error.response.data.error
+                            }
+                        })
+                    }
                 }
             });
         } catch(e) {
-            this.setState({serverResponse: e.message});
+            this.setState({serverResponse: {
+                origin: 'axios',
+                content: e.message
+            }});
         }
     }
 
-    async getOrganizations() {
+    async getOrganizationList() {
         try {
-            await axios.post('http://localhost:3300/organization/list', 
+            await axios.post('/organization/list', 
             {
                 ref: 'user',
                 objId: this.state.auth.userId
@@ -170,16 +215,24 @@ class CreateTeam extends React.Component {
                 }   
             })
             .catch((error) => {
-                if(error.response.data.error === 'JwtTokenExpired') {
-                    removeJwtDataFromSessionStorage()
+                if(error !== undefined && error.response !== undefined) {
+                    if(error.response.data.error === 'JwtTokenExpired') {
+                        removeJwtDataFromSessionStorage()
+                    } else {
+                        this.setState({
+                            serverResponse: {
+                                origin: error.response.data.origin,
+                                content: error.response.data.error
+                            }
+                        })
+                    }
                 }
-                
-                this.setState({
-                    serverResponse: error.response.data.error
-                })
             });
         } catch(e) {
-            this.setState({serverResponse: e.message});
+            this.setState({serverResponse: {
+                origin: 'axios',
+                content: e.message
+            }});
         }
     }
 
@@ -187,31 +240,47 @@ class CreateTeam extends React.Component {
         event.preventDefault();
         const fields = this.state.fields;
         const {t} = this.props;
-        this.setState({serverResponse: null})
+        this.setState({serverResponse: {
+            origin: null,
+            content: null
+        }})
 
         if(this.validateForm()) {
             try {
-                axios.post('http://localhost:3300/team/create', {
+                axios.post('/team/create', {
                     userId: this.state.auth.userId,
                     teamObj: this.state.fields
                 }, {headers: this.headers, withCredentials: true})
                 .then((response) => {
                     if(response !== undefined && response.data.team !== null) {
                         this.setState({
-                            team: response.data.team, serverResponse: t('content.team.actions.createTeam.actionResults.success')
+                            team: response.data.team, serverResponse: {
+                                origin: response.data.origin,
+                                content: t('content.team.actions.createTeam.actionResults.success')
+                            }
                         })
                     }  
                 })
                 .catch(error => {
-                    if(error) {
-                        this.setState({
-                            serverResponse: error.response.data.error
-                        })
+                    if(error !== undefined && error.response !== undefined) {
+                        if(error.response.data.error === 'JwtTokenExpired') {
+                            removeJwtDataFromSessionStorage()
+                        } else {
+                            this.setState({
+                                serverResponse: {
+                                    origin: error.response.data.origin,
+                                    content: error.response.data.error
+                                }
+                            })
+                        }
                     }
                 }) 
             } catch(e) {
                 this.setState({
-                    serverResponse: e.message
+                    serverResponse: {
+                        origin: 'axios',
+                        content: e.message
+                    }
                 })
             }
         } else {
@@ -225,7 +294,7 @@ class CreateTeam extends React.Component {
     render() {
         const {t} = this.props;
 
-        if(this.jwt !== null && this.state.auth.userId !== null && this.state.auth.refreshToken !== null) {
+        if(this.jwt !== null && this.state.auth.userId !== null && this.state.auth.accessToken !== null) {
             return(
                 <div>
                     <h2>{t('content.team.actions.createTeam.actionTitle')}</h2>
@@ -311,17 +380,17 @@ class CreateTeam extends React.Component {
                                     </td>
                                 </tr>
                                 <tr><td><span className="error-msg-span">{this.state.errors["description"]}</span></td></tr>
-                                {this.state.serverResponse !== null ? (
+                                {this.state.serverResponse.content !== null ? (
                                     this.state.user !== null ? (
                                         <tr>
                                             <td colspan="4" align="center">
-                                                <span className="error-msg-span" style={{display: "block", color: 'green'}} id="serverResponse">{this.state.serverResponse}</span>                                                            
+                                                <span className="error-msg-span" style={{display: "block", color: 'green'}} id="serverResponse">{this.state.serverResponse.content}</span>                                                            
                                             </td>
                                         </tr>
                                     ) : (
                                         <tr>
                                             <td colspan="4" align="center">
-                                                <span className="error-msg-span" style={{display: "block"}} id="serverResponse">{t('content.team.actions.createTeam.errorMessages.dataValidation.' + this.state.serverResponse)}</span>
+                                                <span className="error-msg-span" style={{display: "block"}} id="serverResponse">{t('content.team.actions.createTeam.errorMessages.dataValidation.' + this.state.serverResponse.content)}</span>
                                             </td>
                                         </tr>
                                     )

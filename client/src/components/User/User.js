@@ -17,23 +17,26 @@ class User extends React.Component {
             this.state = {
                 auth: {
                     userId: this.jwt.userId,
-                    refreshToken: this.jwt.refreshToken
+                    accessToken: this.jwt.accessToken
                 },
                 user: null,
                 fields: {},
                 errors: {},
                 enableEdit: false,
                 allowSave: false,
-                serverResponse: null
+                serverResponse: {
+                    origin: null,
+                    content: null
+                }
             }
 
             this.headers = {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${this.state.auth.refreshToken}`
+                'Authorization': `Bearer ${this.state.auth.accessToken}`
             };
         }
 
-        this.getUserData();
+        this.getUser();
     }
 
     onChange(field, event) {
@@ -62,7 +65,12 @@ class User extends React.Component {
         fields['phone'] = this.state.user.phone;
 
         document.getElementById('serverResponse').innerHTML = '';
-        this.setState({fields, errors: {}, allowSave: false, serverResponse: null});
+        this.setState({fields, errors: {}, allowSave: false, 
+            serverResponse: {
+                origin: null,
+                content: null
+            }
+        });
     }
 
     validateForm() {
@@ -154,12 +162,12 @@ class User extends React.Component {
         return isValid;
     }
 
-    async getUserData() {
+    async getUser() {
         let fields = this.state.fields;
         
         if(this.props.location === undefined && this.props.location.state === undefined) {
             try {
-                await axios.post('http://localhost:3300/user/profile', 
+                await axios.post('/user/profile', 
                 {
                     userId: this.state.auth.userId
                 }, {headers: this.headers, withCredentials: true})
@@ -178,20 +186,28 @@ class User extends React.Component {
                     }
                 })
                 .catch((error) => {
-                    if(error) {
+                    if(error !== undefined && error.response !== undefined) {
                         if(error.response.data.error === 'JwtTokenExpired') {
-                            removeJwtDataFromSessionStorage();
+                            removeJwtDataFromSessionStorage()
                         } else {
-                            this.setState({serverResponse: error.response.data.error});
+                            this.setState({
+                                serverResponse: {
+                                    origin: error.response.data.origin,
+                                    content: error.response.data.error
+                                }
+                            })
                         }
                     }
                 });
             } catch(e) {
-                this.setState({serverResponse: e.message});
+                this.setState({serverResponse: {
+                    origin: 'axios',
+                    content: e.message
+                }});
             }
         } else {
             try {
-                await axios.post('http://localhost:3300/user/profile', 
+                await axios.post('/user/profile', 
                 {
                     userId: this.props.location.state.userId
                 }, {headers: this.headers, withCredentials: true})
@@ -210,16 +226,24 @@ class User extends React.Component {
                     }
                 })
                 .catch((error) => {
-                    if(error) {
+                    if(error !== undefined && error.response !== undefined) {
                         if(error.response.data.error === 'JwtTokenExpired') {
-                            removeJwtDataFromSessionStorage();
+                            removeJwtDataFromSessionStorage()
                         } else {
-                            this.setState({serverResponse: error.response.data.error});
+                            this.setState({
+                                serverResponse: {
+                                    origin: error.response.data.origin,
+                                    content: error.response.data.error
+                                }
+                            })
                         }
                     }
                 });
             } catch(e) {
-                this.setState({serverResponse: e.message});
+                this.setState({serverResponse: {
+                    origin: 'axios',
+                    content: e.message
+                }});
             }
         }
     }
@@ -227,39 +251,50 @@ class User extends React.Component {
     onFormSubmit = (event, errors) => {
         event.preventDefault();
         const {t} = this.props;
-        this.setState({serverResponse: null})
+        this.setState({serverResponse: {
+            origin: null,
+            content: null
+        }})
 
         if(this.validateForm()) {
             try {
-                axios.post('http://localhost:3300/user/update',
+                axios.post('/user/update',
                 {  
                     userId: this.state.auth.userId,
                     docId: this.state.user._id,
                     userObj: this.state.fields
                 }, {headers: this.headers, withCredentials: true})
                 .then((response) => {
-                    if(response !== '' && response.data.user !== null) {
-                        this.setState({user: response.data.user, serverResponse: t('content.user.actions.updateUser.actionResults.success')});
+                    if(response !== undefined && response.data.user !== null) {
+                        this.setState({user: response.data.user, serverResponse: { content: t('content.user.actions.updateUser.actionResults.success')}});
                     }
                 })
                 .catch((error) => {
-                    if(error) {
+                    if(error !== undefined && error.response !== undefined) {
                         if(error.response.data.error === 'JwtTokenExpired') {
                             removeJwtDataFromSessionStorage()
                         } else {
-                            this.setState({serverResponse: error.response.data.error})
+                            this.setState({
+                                serverResponse: {
+                                    origin: error.response.data.origin,
+                                    content: error.response.data.error
+                                }
+                            })
                         }
                     }
                 })
             } catch(e) {
-                this.setState({ serverResponse: e.message});
+                this.setState({ serverResponse: {
+                    origin: 'axios',
+                    content: e.message
+                }});
             }
         }
     }
     
     render() {
         const {t} = this.props;
-        if(this.jwt !== null && this.state.auth.userId !== null && this.state.auth.refreshToken !== null) {
+        if(this.jwt !== null && this.state.auth.userId !== null && this.state.auth.accessToken !== null) {
             if(this.props.location.state !== undefined && this.props.location.state.userId) {
                 return(
                     <div>
@@ -317,17 +352,17 @@ class User extends React.Component {
                                             <td><span className="error-msg-span">{this.state.errors["company"]}</span></td>
                                             <td><span className="error-msg-span">{this.state.errors["avatar_url"]}</span></td>
                                         </tr>
-                                        {this.state.serverResponse !== null ? (
+                                        {this.state.serverResponse.content !== null ? (
                                             this.state.user !== null ? (
                                                 <tr>
                                                     <td colspan="8" align="center">
-                                                        <span className="error-msg-span" style={{display: "block", color: 'green'}} id="serverResponse">{this.state.serverResponse}</span>                                                            
+                                                        <span className="error-msg-span" style={{display: "block", color: 'green'}} id="serverResponse">{this.state.serverResponse.content}</span>                                                            
                                                     </td>
                                                 </tr>
                                             ) : (
                                                 <tr>
                                                     <td colspan="8" align="center">
-                                                        <span className="error-msg-span" style={{display: "block"}} id="serverResponse">{t('content.user.actions.selectUser.errorMessages.dataValidation.' + this.state.serverResponse)}</span>
+                                                        <span className="error-msg-span" style={{display: "block"}} id="serverResponse">{t('content.user.actions.selectUser.errorMessages.dataValidation.' + this.state.serverResponse.content)}</span>
                                                     </td>
                                                 </tr>
                                             )
@@ -357,24 +392,25 @@ class User extends React.Component {
                         </div>
                     ) : (
                         <table className="tab-table">
-                            {this.state.serverResponse !== null ? (
-                                this.state.serverResponse === 'unauthorized' ? (
+                            {this.state.serverResponse.content !== null ? (
+                                this.state.serverResponse.content === 'unauthorized' ? (
                                     <tr>
                                         <td colspan="8" align="center">
-                                            <tr><b>{t('commonErrors.' + this.state.serverResponse)}</b></tr>
+                                            <tr><b>{t('commonErrors.' + this.state.serverResponse.content)}</b></tr>
                                             <tr><Link to='/dashboard'><button className="card-form-button">{t('misc.actionDescription.return')}</button></Link></tr>
                                         </td>
                                     </tr>
                                 ) : (
-                                    <tr>
-                                        <td colspan="8" align="center">{t('content.user.actions.selectUser.errorMessages.dataValidation.' + this.state.serverResponse)}</td>
-                                    </tr>
+                                    <tbody>
+                                        <tr colspan="8"><td align="center">{t('content.user.actions.selectUser.errorMessages.dataValidation.' + this.state.serverResponse.content)}</td></tr>
+                                        <tr colspan="8"><td align="center"><Link to='/dashboard'><button className="card-form-button">{t('misc.actionDescription.return')}</button></Link></td></tr>
+                                    </tbody>
                                     )
-                                ) : (
-                                    <tr>
-                                        <td colspan="8" align="center">-</td>
-                                    </tr>
-                                )}
+                            ) : (
+                                <tr>
+                                    <td colspan="8" align="center">-</td>
+                                </tr>
+                            )}
                         </table>
                         )}
                     </div>

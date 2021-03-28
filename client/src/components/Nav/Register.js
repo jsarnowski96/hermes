@@ -20,14 +20,20 @@ class Register extends React.Component {
                 authenticated: true,
                 fields: {},
                 errors: {},
-                serverResponse: null
+                serverResponse: {
+                    origin: null,
+                    content: null
+                }
             };
         } else {
             this.state = {
                 authenticated: false,
                 fields: {},
                 errors: {},
-                serverResponse: null
+                serverResponse: {
+                    origin: null,
+                    content: null
+                }
             };
         }
 
@@ -35,7 +41,6 @@ class Register extends React.Component {
     }
 
     resetForm() {
-        document.getElementById('serverResponse').innerHTML = '';
         this.setState({fields: {}, errors: {}});
     }
 
@@ -169,7 +174,7 @@ class Register extends React.Component {
 
         if(this.validateForm()) {
             try {
-                axios.post('http://localhost:3300/register', {
+                axios.post('/register', {
                     firstname: fields['firstname'],
                     lastname: fields['lastname'],
                     username: fields['username'],
@@ -179,18 +184,33 @@ class Register extends React.Component {
                     company: fields['company'],
                     password: fields['password']
                 }).then((response) => {
-                    console.log(response);
+                    if(response !== undefined) {
+                        if(response.data.message === 'UserRegistered') {
+                            this.setState({
+                                serverResponse: {
+                                    content: response.data.message
+                                }
+                            })
+                        }
+                    }
                 })
                 .catch(error => {
-                    let err = document.getElementById('serverResponse');
-                    if(error) {
-                        if(error !== undefined) {
-                            this.setState({serverResponse: error.response.data.error});
-                        }
+                    if(error !== undefined && error.response !== undefined) {
+                        this.setState({
+                            serverResponse: {
+                                origin: error.response.data.origin,
+                                content: error.response.data.error
+                            }
+                        })
                     }
                 });
             } catch(e) {
-                this.setState({serverResponse: e.message});
+                this.setState({
+                    serverResponse: {
+                        origin: 'axios',
+                        content: e.message
+                    }
+                });
             }
         } else {
             let errors = document.querySelectorAll('.error-msg-span');
@@ -239,10 +259,11 @@ class Register extends React.Component {
                         <button type="reset" onClick={this.resetForm} className="card-form-button" >{t('misc.actionDescription.reset')}</button>
                         <button type="button" className="card-form-button"><Link to="/" className="card-form-button-link">{t('misc.actionDescription.cancel')}</Link></button>
                     </div>
-                    {this.state.authenticated ? (
-                        <span className="error-msg-span" id="serverResponse">Already authenticated</span>
+                    {this.state.serverResponse.content !== null ? (
+                        this.state.serverResponse.content === 'UserRegistered' & 
+                            <span className="error-msg-span" style={{color: 'green', display: 'block'}} id="serverResponse">{t('content.register.success')}</span>
                     ) : (
-                        <span className="error-msg-span" id="serverResponse">{t('content.register.errorMessages.dataValidation.' + this.state.serverResponse)}</span>
+                        <span className="error-msg-span" id="serverResponse"></span>
                     )}
                 </form>
                 <p className="card-form-reminder">{t('content.register.loginTip')} <Link to="/login">{t('content.register.loginLink')}</Link></p>

@@ -31,11 +31,21 @@ async function getRecent(userId) {
         throw new Error('UserIdNotValid');
     }
 
-    if(!(await User.findById(userId))) {
-        throw new Error('UserNotFound');
-    }
+    let companyId = await User.findById(userId, 'company')
+    .then((result) => {
+        if(!result || result === null) {
+            throw new Error('UserNotFound');
+        } else {
+            return result.company;
+        }
+    })
+    .catch((error) => {
+        if(error) {
+            throw error;
+        }
+    })
 
-    return await Recent.find({})
+    return await Recent.find({company: companyId})
     .then((result) => {
         if(!result || result === null || result.length === 0) {
             throw new Error('NoRecentFound');
@@ -51,16 +61,33 @@ async function getRecent(userId) {
     })
 }
 
-async function createRecent(description, userId, collection, document) {
-    if(!description || !userId || !collection || !document) {
-        throw new Error('EmptyRecent');
+async function createRecent(userId, recentObj) {
+    const {collection_name, action_type, document} = recentObj;
+
+    if(!userId) {
+        throw new Error('UserIdMissing');
     }
+
+    let companyId = await User.findById(userId, 'company')
+    .then((result) => {
+        if(!result || result === null) {
+            throw new Error('UserNotFound');
+        } else {
+            return result.company;
+        }
+    })
+    .catch((error) => {
+        if(error) {
+            throw error;
+        }
+    })
 
     let recent = new Recent({
         _id: new mongoose.Types.ObjectId(),
-        description: description,
+        action_type: action_type,
         user: userId,
-        collection_name: collection,
+        company: companyId,
+        collection_name: collection_name,
         document: document
     })
 

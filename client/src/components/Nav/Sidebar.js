@@ -53,11 +53,14 @@ class Sidebar extends React.Component {
 
     onLogout() {
         try {
-            axios.post('http://localhost:3300/auth/logout');
+            axios.post('/auth/logout');
             sessionStorage.setItem('renderLogoutBtn', false);
             removeJwtDataFromSessionStorage();
         } catch(e) {
-            this.setState({serverResponse: e.message});
+            this.setState({serverResponse: {
+                origin: 'axios',
+                content: e.message
+            }});
         }     
     }
 

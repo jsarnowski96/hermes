@@ -18,15 +18,18 @@ class ProjectList extends React.Component {
             this.state = {
                 auth: {
                     userId: this.jwt.userId,
-                    refreshToken: this.jwt.refreshToken
+                    accessToken: this.jwt.accessToken
                 },
                 projects: [],
-                serverResponse: null
+                serverResponse: {
+                    origin: null,
+                    content: null
+                }
             }
 
             this.headers = {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${this.state.auth.refreshToken}`
+                'Authorization': `Bearer ${this.state.auth.accessToken}`
             };
         }
         
@@ -36,7 +39,7 @@ class ProjectList extends React.Component {
     getProjectList() {
         if(this.props.params === undefined) {
             try {
-                axios.post('http://localhost:3300/project/list', 
+                axios.post('/project/list', 
                 {
 
                 }, {headers: this.headers, withCredentials: true})
@@ -46,22 +49,28 @@ class ProjectList extends React.Component {
                     }
                 })
                 .catch((error) => {
-                    if(error) {
+                    if(error !== undefined && error.response !== undefined) {
                         if(error.response.data.error === 'JwtTokenExpired') {
                             removeJwtDataFromSessionStorage()
                         } else {
                             this.setState({
-                                serverResponse: error.response.data.error
+                                serverResponse: {
+                                    origin: error.response.data.origin,
+                                    content: error.response.data.error
+                                }
                             })
                         }
                     }
                 });
             } catch(e) {
-                this.setState({serverResponse: e.message});
+                this.setState({serverResponse: {
+                    origin: 'axios',
+                    content: e.message
+                }});
             }
         } else {
             try {
-                axios.post('http://localhost:3300/project/list', 
+                axios.post('/project/list', 
                 {
                     ref: this.props.params.ref,
                     objId: this.props.params.objId,
@@ -72,18 +81,24 @@ class ProjectList extends React.Component {
                     }
                 })
                 .catch((error) => {
-                    if(error) {
+                    if(error !== undefined && error.response !== undefined) {
                         if(error.response.data.error === 'JwtTokenExpired') {
                             removeJwtDataFromSessionStorage()
                         } else {
                             this.setState({
-                                serverResponse: error.response.data.error
+                                serverResponse: {
+                                    origin: error.response.data.origin,
+                                    content: error.response.data.error
+                                }
                             })
                         }
                     }
                 });
             } catch(e) {
-                this.setState({serverResponse: e.message});
+                this.setState({serverResponse: {
+                    origin: 'axios',
+                    content: e.message
+                }});
             }
         }
     }
@@ -91,7 +106,7 @@ class ProjectList extends React.Component {
     render() {
         const{t} = this.props;
 
-        if(this.jwt !== null && this.state.auth.userId !== null && this.state.auth.refreshToken !== null) {
+        if(this.jwt !== null && this.state.auth.userId !== null && this.state.auth.accessToken !== null) {
             return(
                 <div>
                     {
@@ -119,7 +134,6 @@ class ProjectList extends React.Component {
                                         <td>
                                             <Link to={{pathname: '/project/details', state: {userId: this.state.auth.userId, projectId: project._id}}}>{project.name}</Link>
                                         </td>
-                                        {/* <td style={{wordWrap: 'break-word', maxWidth: '10vw'}}><p dangerouslySetInnerHTML={{__html: project.description}} style={{whiteSpace: "pre-wrap"}} /></td> */}
                                         <td>
                                             {project.teams.map((team) => {
                                                 return <span style={{marginLeft: '0.5vw'}}><Link to={{pathname: '/team/details', state: {ref: 'team', objId: team._id}}}>{team.name}</Link></span>
@@ -131,8 +145,8 @@ class ProjectList extends React.Component {
                                 ))
                             ) : (
                                 <tr>
-                                    {this.state.serverResponse !== null ? (
-                                        <td colspan="6" align="center">- {t('content.project.actions.selectProjectList.errorMessages.dataValidation.' + this.state.serverResponse)} -</td>
+                                    {this.state.serverResponse.content !== null ? (
+                                        <td colspan="6" align="center">- {t('content.project.actions.selectProjectList.errorMessages.dataValidation.' + this.state.serverResponse.content)} -</td>
                                     ) : (
                                         <td colspan="6" align="center">-</td>
                                     )}

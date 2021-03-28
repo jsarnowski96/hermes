@@ -42,6 +42,12 @@ const CompanySchema = new mongoose.Schema({
         trim: true,
         default: 'localhost:3300/images/avatars/company-default.png'
     },
+    owner: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
+    },
+    organizations: [{type: mongoose.Schema.Types.ObjectId, ref: 'Organization'}],
     modified_at: {
         type: Date,
         required: true,
@@ -51,13 +57,7 @@ const CompanySchema = new mongoose.Schema({
         type: Date,
         required: true,
         default: Date.now
-    },
-    owner: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        required: true
-    },
-    organizations: [{type: mongoose.Schema.Types.ObjectId, ref: 'Organization'}]
+    }
 });
 
 const Company = mongoose.model('Company', CompanySchema);

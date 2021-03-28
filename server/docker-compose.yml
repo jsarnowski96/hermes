@@ -1,0 +1,28 @@
+version: '3.7'
+
+services:
+    webapp-server:
+      build:
+        context: .
+        dockerfile: Dockerfile
+      image: hermes-server
+      container_name: hermes-server
+      volumes:
+       - .:/usr/src/app
+       - /usr/src/app/node_modules
+      ports:
+        - "3300:3300"
+      env_file: .env
+      environment:
+        - ATLAS_URL=$ATLAS_URL
+        - ATLAS_USER=$ATLAS_USER
+        - ATLAS_PASS=$ATLAS_PASS
+        - DB_NAME=$DB_NAME
+        - SERVER_PORT=$SERVER_PORT
+        - CLIENT_PORT=$CLIENT_PORT
+        - ACCESS_TOKEN_SECRET=$ACCESS_TOKEN_SECRET
+        - ACCESS_TOKEN_LIFETIME=$ACCESS_TOKEN_LIFETIME
+        - REFRESH_TOKEN_SECRET=$REFRESH_TOKEN_SECRET
+        - REFRESH_TOKEN_LIFETIME=$REFRESH_TOKEN_LIFETIME
+        - ISSUER=$ISSUER
+        - AUDIENCE=$AUDIENCE

@@ -1,11 +1,12 @@
 import React from 'react';
 import {withTranslation} from 'react-i18next';
-import {Redirect} from 'react-router-dom';
+import {Redirect, Link} from 'react-router-dom';
 import axios from 'axios';
 
 import {getJwtDataFromSessionStorage, removeJwtDataFromSessionStorage} from '../../middleware/jwtSessionStorage';
 
 import '../../assets/css/dashboard.css';
+import moment from 'moment';
 
 class Recent extends React.Component {
     constructor(props) {
@@ -17,15 +18,18 @@ class Recent extends React.Component {
             this.state = {
                 auth: {
                     userId: this.jwt.userId,
-                    refreshToken: this.jwt.refreshToken
+                    accessToken: this.jwt.accessToken
                 },
-                recent: [],
-                serverResponse: null
+                recents: [],
+                serverResponse: {
+                    origin: null,
+                    content: null
+                }
             }
 
             this.headers = {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${this.state.auth.refreshToken}`
+                'Authorization': `Bearer ${this.state.auth.accessToken}`
             };
         }
         
@@ -34,29 +38,35 @@ class Recent extends React.Component {
 
     getRecent() {
         try {
-            axios.post('http://localhost:3300/recent', 
+            axios.post('/recent', 
             {
                 userId: this.state.auth.userId
             }, {headers: this.headers, withCredentials: true})
             .then((response) => {
-                if(response.data.recent !== undefined && response.data.recent !== '' && response.data.recent !== null && response.data.recent.length > 0) {
-                    this.setState({recent: response.data.recent});
+                if(response.data.recents !== undefined && response.data.recents !== null && response.data.recents.length > 0) {
+                    this.setState({recents: response.data.recents});
                 }
             })
             .catch((error) => {
-                if(error) {
+                if(error !== undefined && error.response !== undefined) {
                     if(error.response.data.error === 'JwtTokenExpired') {
                         removeJwtDataFromSessionStorage()
                     } else {
                         this.setState({
-                            serverResponse: error.response.data.error
+                            serverResponse: {
+                                origin: error.response.data.origin,
+                                content: error.response.data.error
+                            }
                         })
                     }
                 }
             });
         } catch(e) {
             this.setState({
-                serverResponse: e.message
+                serverResponse: {
+                        origin: 'axios',
+                        content: e.message
+                    }
             })
         }
     }
@@ -64,30 +74,32 @@ class Recent extends React.Component {
     render() {
         const{t} = this.props;
 
-        if(this.jwt !== null && this.state.auth.userId !== null && this.state.auth.refreshToken !== null) {
+        if(this.jwt !== null && this.state.auth.userId !== null && this.state.auth.accessToken !== null) {
             return(
                 <div>
                     <table className="tab-table">
                         <thead>
                             <tr>
+                                <th>{t('content.recent.fields.createdAt')}</th>
                                 <th>{t('content.recent.fields.description')}</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {this.state.recent.length > 0 ? (
-                                this.state.recent.map((recent, index) => (
+                            {this.state.recents.length > 0 ? (
+                                this.state.recents.map((recent, index) => (
                                     <tr>
-                                        <td>{recent.description}</td>
+                                        <td>{moment(recent.created_at).format('YYYY-MM-DD | hh:mm:ss')}</td>
+                                        <td>{t('content.recent.fields.user')} <Link to={{pathname: '/user/profile', state: { userId: recent.user}}}>{recent.user}</Link> {t('content.recent.actions.' + recent.action_type)} {t('content.recent.fields.' + recent.collection_name)} <Link to={{pathname: '/' + recent.collection_name + '/details', state: { ref: 'user', objId: recent.document}}}>{recent.document.name}</Link></td>
                                     </tr>
                                 ))
                             ) : (
-                                this.state.serverResponse === null ? (
+                                this.state.serverResponse.content === null ? (
                                     <tr>
                                         <td colspan="6" align="center">-</td>
                                     </tr>
                                 ) : (
                                     <tr>
-                                        <td colspan="6" align="center">- {t('content.recent.actions.selectRecent.errorMessages.dataValidation.' + this.state.serverResponse)} -</td>
+                                        <td colspan="6" align="center">- {t('content.recent.errorMessages.dataValidation.' + this.state.serverResponse.content)} -</td>
                                     </tr>
                                 )
                             )}

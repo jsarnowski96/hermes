@@ -27,7 +27,6 @@
     border-collapse: collapse;
     width: 100%;
     margin: 1rem auto 1rem auto;
-    margin-left: 1rem;
     font-size: 0.9em;
     font-family: sans-serif;
     min-width: 10vw;
@@ -70,7 +69,6 @@
     width: 100%;
     font-size: 1.5rem;
     margin: auto;
-    margin-left: 1rem;
     padding-left: 0.5rem;
     text-align: left;
     position: sticky;
@@ -86,10 +84,6 @@
     margin: 0.25rem 0.5rem 0 0;
 }
 
-.tab-hr {
-    width: 90%;
-}
-
 h1,h2,h3,h4 {
     margin-left: 1rem;
 }
@@ -101,7 +95,11 @@ h1,h2,h3,h4 {
         row-gap: 1rem;
     }
 
-    .project, .teams, .tasks, .recent, .UserAction {
+    .tab-hr {
+        width: 100%;
+    }
+
+    .project, .teams, .tasks, .recent, .userAction {
         grid-column: 1;
     }
 
@@ -116,6 +114,18 @@ h1,h2,h3,h4 {
         grid-template-rows: repeat(2, 50% [row-start]);
         column-gap: 1rem;
         row-gap: 0.5rem;
+    }
+
+    .tab-table {
+        margin-left: 1rem;
+    }
+
+    .tab-title {
+        margin-left: 1rem;
+    }
+
+    .tab-hr {
+        width: 90%;
     }
 
     .project {

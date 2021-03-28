@@ -9,6 +9,16 @@ const User = require('../models/User');
 
 require('dotenv').config({ path: __dirname + './../../.env'});
 
+const cookieExtractor = (req) => {
+    let refreshToken = null;
+
+    if(req && req.cookies) {
+        refreshToken = req.cookies.refreshToken;
+    }
+    
+    return refreshToken;
+}
+
 passport.use(new LocalStrategy({
     usernameField: 'login',
     passwordField: 'password'
@@ -27,11 +37,13 @@ passport.use(new LocalStrategy({
                         if (result) {
                             return done(null, user, { message: 'JWT Authentication successfull' });
                         } else {
-                            return done(null, false, new Error("usernameOrPasswordIncorrect"));
+                            console.log('Authentication failed for user ' + login);
+                            return done(null, false, new Error('usernameOrPasswordIncorrect'));
                         }
                     });
                 } else {
-                    return done(null, false, new Error("usernameOrPasswordIncorrect"));
+                    console.log('Authentication failed for user ' + login);
+                    return done(null, false, new Error('usernameOrPasswordIncorrect'));
                 }
             } catch (error) {
                 console.log(error);
@@ -52,11 +64,13 @@ passport.use(new LocalStrategy({
                         if (result) {
                             return done(null, user, { message: 'JWT Authentication successfull' });
                         } else {
-                            return done(null, false, new Error("usernameOrPasswordIncorrect"));
+                            console.log('Authentication failed for user ' + login);
+                            return done(null, false, new Error('usernameOrPasswordIncorrect'));
                         }
                     });
                 } else {
-                    return done(null, false, new Error("usernameOrPasswordIncorrect"));
+                    console.log('Authentication failed for user ' + login);
+                    return done(null, false, new Error('usernameOrPasswordIncorrect'));
                 }
             } catch (error) {
                 console.log(error);
@@ -66,9 +80,9 @@ passport.use(new LocalStrategy({
     }
 ));
 
-passport.use(new JwtStrategy({
-    jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-    secretOrKey: process.env.REFRESH_TOKEN_SECRET,
+passport.use('refreshToken', new JwtStrategy({
+    jwtFromRequest: cookieExtractor,
+    secretOrKey: process.env.ACCESS_TOKEN_SECRET,
     issuer: process.env.ISSUER,
     audience: process.env.AUDIENCE,
     passReqToCallback: true
@@ -79,18 +93,45 @@ passport.use(new JwtStrategy({
                 return done(new TokenExpiredError, false);
             }
 
-            if(global.invalidatedJwt.include(jwtFromRequest)) {
-                return done(null, false, new Error("InvalidatedJwt"));
-            }
-
-            User.findOne({id: jwt_payload._id}, function(err, user) {
+            User.findById(jwt_payload._id, function(err, user) {
                 if (err) {
                     return done(err, false);
                 }
                 if (user) {
                     return done(null, user);
                 } else {
-                    return done(null, false, new Error("usernameOrPasswordIncorrect"));
+                    console.log('Authentication failed for user ' + login);
+                    return done(null, false, new Error('usernameOrPasswordIncorrect'));
+                }
+            });
+        } catch(error) {
+            console.log(error);
+            return done(error, false);
+        }
+    }));
+
+passport.use('accessToken', new JwtStrategy({
+    jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+    secretOrKey: process.env.ACCESS_TOKEN_SECRET,
+    issuer: process.env.ISSUER,
+    audience: process.env.AUDIENCE,
+    passReqToCallback: true
+    },
+    (jwt_payload, done) => {
+        try {
+            if(Date.now() >= jwt_payload.expiresIn * 1000) {
+                return done(new TokenExpiredError, false);
+            }
+
+            User.findById(jwt_payload._id, function(err, user) {
+                if (err) {
+                    return done(err, false);
+                }
+                if (user) {
+                    return done(null, user);
+                } else {
+                    console.log('Authentication failed for user ' + login);
+                    return done(null, false, new Error('usernameOrPasswordIncorrect'));
                 }
             });
         } catch(error) {
@@ -108,5 +149,3 @@ passport.deserializeUser(function(id, done) {
         return done(error, user);
     });
 });
-
-// TODO: Handle Bearer Token auth on refresh/renew

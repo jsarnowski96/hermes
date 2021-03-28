@@ -9,7 +9,6 @@ const recent = require('./db/recentTransactions');
 const role = require('./db/roleTransactions');
 const team = require('./db/teamTransactions');
 const permission = require('./db/permissionTransactions');
-const repository = require('./db/repositoryTransactions');
 const resourceAccess = require('./db/resourceAccessTransactions');
 
-module.exports = Object.assign({}, category, comment, company, project, user, task, organization, recent, role, team, repository, permission, resourceAccess);
+module.exports = Object.assign({}, category, comment, company, project, user, task, organization, recent, role, team, permission, resourceAccess);

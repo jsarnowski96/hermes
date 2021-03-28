@@ -7,12 +7,12 @@ export function getJwtDataFromSessionStorage() {
     }
 }
 
-export function setJwtDataInSessionStorage(userId, refreshToken) {
+export function setJwtDataInSessionStorage(userId, accessToken) {
     if(sessionStorage.getItem('jwt') === null || sessionStorage.getItem('jwt') === '' || sessionStorage.getItem('jwt') === undefined) {
-        if(userId !== null && userId !== '' && userId !== undefined && refreshToken !== null && refreshToken !== '' && refreshToken !== undefined) {
+        if(userId !== null && userId !== '' && userId !== undefined && accessToken !== null && accessToken !== '' && accessToken !== undefined) {
             var jwt = {
                 userId: userId,
-                refreshToken: refreshToken
+                accessToken: accessToken
             }
             sessionStorage.setItem('jwt', JSON.stringify(jwt));
         } else {

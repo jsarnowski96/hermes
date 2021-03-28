@@ -29,7 +29,7 @@ router.post('/login', (req, res, next) => {
 
         req.login(payload, {session: false}, (err) => {
             if(err) {
-                console.log(err);
+                console.log(err.name + '\n' + err.message);
                 return res.status(500).json({error: err.message});
             }
 
@@ -39,7 +39,15 @@ router.post('/login', (req, res, next) => {
                     issuer: process.env.ISSUER, 
                     audience: process.env.AUDIENCE
                 });
-            return res.status(200).json({user, refreshToken});
+            
+            const accessToken = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET,
+                {
+                    expiresIn: process.env.ACCESS_TOKEN_LIFETIME,
+                    issuer: process.env.ISSUER,
+                    audience: process.env.AUDIENCE
+                });
+
+            return res.status(200).cookie('refreshToken', refreshToken, {httpOnly: true, secure: false, expiresIn: 60 * 60 * 1000}).json({user: user, accessToken: accessToken});
         });
     })(req, res);
 });

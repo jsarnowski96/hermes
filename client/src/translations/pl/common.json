@@ -83,15 +83,16 @@
                     "errorMessages": {
                         "dataValidation": {
                             "missingProps": "Brak danych projektu",
-                            "ProjectNotFound": "Nie znaleziono projektu",
+                            "ProjectNotFound": "Brak projektu",
                             "ReferenceMissing": "Brakująca referencja",
-                            "NoProjectsFound": "Nie znaleziono projektów",
+                            "NoProjectsFound": "Brak projektów",
                             "UserIdMissing": "Brakujące ID użytkownika",
                             "UserIdNotValid": "ID użytkownika jest nieprawidłowe",
-                            "UserNotFound": "Nie znaleziono użytkownika",
+                            "UserNotFound": "Brak użytkownika",
                             "TeamIdMissing": "Brakujące ID zespołu",
                             "TeamIdNotValid": "ID zespołu jest nieprawidłowe",
-                            "TeamNotFound": "Brak danych zespołu"
+                            "TeamNotFound": "Brak danych zespołu",
+                            "MissingRefreshToken": "Brakujący token uwierzytelniający"
                         }
                     }
                 },
@@ -103,13 +104,14 @@
                     "errorMessages": {
                         "dataValidation": {
                             "ReferenceMissing": "Brakująca referencja",
-                            "NoProjectsFound": "Nie znaleziono projektów",
+                            "NoProjectsFound": "Brak projektów",
                             "UserIdMissing": "Brakujące ID użytkownika",
                             "UserIdNotValid": "ID użytkownika jest nieprawidłowe",
-                            "UserNotFound": "Nie znaleziono użytkownika",
+                            "UserNotFound": "Brak użytkownika",
                             "TeamIdMissing": "Brakujące ID zespołu",
                             "TeamIdNotValid": "ID zespołu jest nieprawidłowe",
-                            "TeamNotFound": "Brak danych zespołu"
+                            "TeamNotFound": "Brak danych zespołu",
+                            "MissingRefreshToken": "Brakujący token uwierzytelniający"
                         }
                     }
                 },
@@ -150,7 +152,8 @@
                             "TeamIdMissing": "Brakujący ID zespołu",
                             "TeamIdNotValid": "ID zespołu jest nieprawidłowy",
                             "TeamNotFound": "Zespół nie istnieje",
-                            "UnknownError": "Nieznany błąd"
+                            "UnknownError": "Nieznany błąd",
+                            "MissingRefreshToken": "Brakujący token uwierzytelniający"
                         }
                     }
                 },
@@ -161,7 +164,7 @@
                     },
                     "errorMessages": {
                         "dataValidation": {
-                            
+                            "MissingRefreshToken": "Brakujący token uwierzytelniający"
                         }
                     }
                 }
@@ -193,11 +196,11 @@
                     "errorMessages": {
                         "dataValidation": {
                             "missingProps": "Brak danych zespołu",
-                            "TeamIdEqualsNull": "ID zespołu jest równy NULL",
-                            "TeamIdUndefined": "ID zespołu jest niezdefiniowany",
                             "TeamIdMissing": "Brakujący ID zespołu",
                             "TeamIdNotValid": "ID zespołu jest nieprawidłowy",
-                            "TeamNotFound": "Zespół nie istnieje"
+                            "UserIdMissing": "Brakujący ID użytkownika",
+                            "TeamNotFound": "Zespół nie istnieje",
+                            "MissingRefreshToken": "Brakujący token uwierzytelniający"
                         }
                     }
                 },
@@ -209,8 +212,10 @@
                     },
                     "errorMessages": {
                         "dataValidation": {
-                            "NoTeamsFound": "Nie znaleziono zespołów",
-                            "TeamNotFound": "Nie znaleziono zespołu"
+                            "NoTeamsFound": "Brak zespołów",
+                            "TeamNotFound": "Brak zespołu",
+                            "NoUsersFound": "Brak użytkowników",
+                            "MissingRefreshToken": "Brakujący token uwierzytelniający"
                         }
                     }
                 },
@@ -222,7 +227,7 @@
                     },
                     "errorMessages": {
                         "dataValidation": {
-                            
+                            "MissingRefreshToken": "Brakujący token uwierzytelniający"
                         }
                     }
                 },
@@ -234,7 +239,7 @@
                     },
                     "errorMessages": {
                         "dataValidation": {
-                            
+                            "MissingRefreshToken": "Brakujący token uwierzytelniający"
                         }
                     }
                 },
@@ -245,7 +250,7 @@
                     },
                     "errorMessages": {
                         "dataValidation": {
-                            
+                            "MissingRefreshToken": "Brakujący token uwierzytelniający"
                         }
                     }
                 }
@@ -267,7 +272,8 @@
                     },
                     "errorMessages": {
                         "dataValidation": {
-                            "missingProps": "Brak danych organizacji"
+                            "missingProps": "Brak danych organizacji",
+                            "MissingRefreshToken": "Brakujący token uwierzytelniający"
                         }
                     }
                 },
@@ -278,19 +284,20 @@
                     },
                     "errorMessages": {
                         "dataValidation": {
-                            "NoOrganizationsFound": "Nie znaleziono organizacji"
+                            "NoOrganizationsFound": "Brak organizacji",
+                            "MissingRefreshToken": "Brakujący token uwierzytelniający"
                         }
                     }
                 },
                 "createOrganization": {
                     "actionTitle": "Tworzenie organizacji",
                     "actionResults": {
-                        "success": "",
-                        "failure": ""
+                        "success": "Pomyślnie utworzono organizację",
+                        "failure": "Wystąpił błąd podczas tworzenia organizacji"
                     },
                     "errorMessages": {
                         "dataValidation": {
-                            
+                            "MissingRefreshToken": "Brakujący token uwierzytelniający"
                         }
                     }
                 },
@@ -301,7 +308,7 @@
                     },
                     "errorMessages": {
                         "dataValidation": {
-                            
+                            "MissingRefreshToken": "Brakujący token uwierzytelniający"
                         }
                     }
                 },
@@ -312,7 +319,7 @@
                     },
                     "errorMessages": {
                         "dataValidation": {
-                            
+                            "MissingRefreshToken": "Brakujący token uwierzytelniający"
                         }
                     }
                 }
@@ -342,7 +349,8 @@
                     },
                     "errorMessages": {
                         "dataValidation": {
-                            "missingProps": "Brak danych zadania"
+                            "missingProps": "Brak danych zadania",
+                            "MissingRefreshToken": "Brakujący token uwierzytelniający"
                         }
                     }
                 },
@@ -353,7 +361,8 @@
                     },
                     "errorMessages": {
                         "dataValidation": {
-                            "NoTasksFound": "Nie znaleziono zadań"
+                            "NoTasksFound": "Brak zadań",
+                            "MissingRefreshToken": "Brakujący token uwierzytelniający"
                         }
                     }
                 },
@@ -365,7 +374,7 @@
                     },
                     "errorMessages": {
                         "dataValidation": {
-                            
+                            "MissingRefreshToken": "Brakujący token uwierzytelniający"
                         }
                     }
                 },
@@ -376,7 +385,7 @@
                     },
                     "errorMessages": {
                         "dataValidation": {
-                            
+                            "MissingRefreshToken": "Brakujący token uwierzytelniający"
                         }
                     }
                 },
@@ -387,7 +396,7 @@
                     },
                     "errorMessages": {
                         "dataValidation": {
-                            
+                            "MissingRefreshToken": "Brakujący token uwierzytelniający"
                         }
                     }
                 }
@@ -412,7 +421,8 @@
                             "CategoryIdNotValid": "ID kategorii jest nieprawidłowy",
                             "CategoryIdEqualsNull": "ID kategorii jest równy NULL",
                             "CategoryIdUndefined": "ID kategorii jest niezdefiniowany",
-                            "CategoryIdMissing": "Brakujący ID kategorii"
+                            "CategoryIdMissing": "Brakujący ID kategorii",
+                            "MissingRefreshToken": "Brakujący token uwierzytelniający"
                         }
                     }
                 },
@@ -424,7 +434,8 @@
                     "errorMessages": {
                         "dataValidation": {
                             "MissingCategoryType": "Brakujący typ kategorii",
-                            "NoCategoryFound": "Nie znaleziono kategorii"
+                            "NoCategoryFound": "Brak kategorii",
+                            "MissingRefreshToken": "Brakujący token uwierzytelniający"
                         }
                     }
                 },
@@ -435,7 +446,7 @@
                     },
                     "errorMessages": {
                         "dataValidation": {
-                            
+                            "MissingRefreshToken": "Brakujący token uwierzytelniający"
                         }
                     }
                 },
@@ -446,7 +457,7 @@
                     },
                     "errorMessages": {
                         "dataValidation": {
-                            
+                            "MissingRefreshToken": "Brakujący token uwierzytelniający"
                         }
                     }
                 },
@@ -457,7 +468,7 @@
                     },
                     "errorMessages": {
                         "dataValidation": {
-                            
+                            "MissingRefreshToken": "Brakujący token uwierzytelniający"
                         }
                     }
                 }
@@ -507,21 +518,33 @@
             "titlePlural": "Ostatnie aktywności",
             "fields": {
                 "name": "Nazwa aktywności",
-                "type": "Typ",
-                "description": "Treść"
+                "status": "status",
+                "field": "pole",
+                "settings": "ustawienia",
+                "createdAt": "Data utworzenia",
+                "date": "datę",
+                "description": "Opis"
+            },
+            "collectionName": {
+                "project": "projekt",
+                "team": "zespół",
+                "task": "zadanie",
+                "company": "firmę",
+                "organization": "organizację",
+                "user": "użytkownika"
             },
             "actions": {
-                "selectRecent": {
-                    "actionResults": {
-                        "success": "",
-                        "failure": ""
-                    },
-                    "errorMessages": {
-                        "dataValidation": {
-                            "NoRecentFound": "Brak aktywności"
-                        } 
-                    }
-                }
+                "created": "utworzył",
+                "added": "dodał",
+                "deleted": "usunął",
+                "edited": "zmodyfikował",
+                "set": "ustawił"
+            },
+            "errorMessages": {
+                "dataValidation": {
+                    "NoRecentFound": "Brak aktywności",
+                    "MissingRefreshToken": "Brakujący token uwierzytelniający"
+                } 
             }
         },
         "user": {
@@ -546,7 +569,8 @@
                     "errorMessages": {
                         "dataValidation": {
                             "missingProps": "Brak danych użytkownika",
-                            "UserIdMissing": "Brakujące ID użytkownika"
+                            "UserIdMissing": "Brakujące ID użytkownika",
+                            "MissingRefreshToken": "Brakujący token uwierzytelniający"
                         }
                     }
                 },
@@ -557,7 +581,7 @@
                     },
                     "errorMessages": {
                         "dataValidation": {
-                            
+                            "MissingRefreshToken": "Brakujący token uwierzytelniający"
                         }
                     }
                 },
@@ -569,7 +593,7 @@
                     },
                     "errorMessages": {
                         "dataValidation": {
-                            
+                            "MissingRefreshToken": "Brakujący token uwierzytelniający"
                         }
                     }
                 },
@@ -580,7 +604,8 @@
                     },
                     "errorMessages": {
                         "dataValidation": {
-                            
+                            "CompanyNotFound": "Nie znaleziono firmy",
+                            "MissingRefreshToken": "Brakujący token uwierzytelniający"
                         }
                     }
                 },
@@ -591,7 +616,7 @@
                     },
                     "errorMessages": {
                         "dataValidation": {
-                            
+                            "MissingRefreshToken": "Brakujący token uwierzytelniający"
                         }
                     }
                 }
@@ -617,7 +642,8 @@
                     },
                     "errorMessages": {
                         "dataValidation": {
-                            "missingProps": "Brak danych firmy"
+                            "missingProps": "Brak danych firmy",
+                            "MissingRefreshToken": "Brakujący token uwierzytelniający"
                         }
                     }
                 },
@@ -628,18 +654,18 @@
                     },
                     "errorMessages": {
                         "dataValidation": {
-                            
+                            "MissingRefreshToken": "Brakujący token uwierzytelniający"
                         }
                     }
                 },
                 "createCompany": {
                     "actionResults": {
-                        "success": "",
-                        "failure": ""
+                        "success": "Successfully created company",
+                        "failure": "There was an error during creating a company"
                     },
                     "errorMessages": {
                         "dataValidation": {
-                            
+                            "MissingRefreshToken": "Brakujący token uwierzytelniający"
                         }
                     }
                 },
@@ -650,7 +676,7 @@
                     },
                     "errorMessages": {
                         "dataValidation": {
-                            
+                            "MissingRefreshToken": "Brakujący token uwierzytelniający"
                         }
                     }
                 },
@@ -661,7 +687,7 @@
                     },
                     "errorMessages": {
                         "dataValidation": {
-                            
+                            "MissingRefreshToken": "Brakujący token uwierzytelniający"
                         }
                     }
                 }
@@ -682,7 +708,7 @@
                     },
                     "errorMessages": {
                         "dataValidation": {
-                            
+                            "MissingRefreshToken": "Brakujący token uwierzytelniający"
                         }
                     }
                 },
@@ -693,7 +719,7 @@
                     },
                     "errorMessages": {
                         "dataValidation": {
-                            
+                            "MissingRefreshToken": "Brakujący token uwierzytelniający"
                         }
                     }
                 },
@@ -704,7 +730,7 @@
                     },
                     "errorMessages": {
                         "dataValidation": {
-                            
+                            "MissingRefreshToken": "Brakujący token uwierzytelniający"
                         }
                     }
                 },
@@ -715,7 +741,7 @@
                     },
                     "errorMessages": {
                         "dataValidation": {
-                            
+                            "MissingRefreshToken": "Brakujący token uwierzytelniający"
                         }
                     }
                 },
@@ -726,7 +752,7 @@
                     },
                     "errorMessages": {
                         "dataValidation": {
-                            
+                            "MissingRefreshToken": "Brakujący token uwierzytelniający"
                         }
                     }
                 }

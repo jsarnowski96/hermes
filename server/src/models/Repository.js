@@ -23,18 +23,18 @@ const RepositorySchema = new mongoose.Schema({
         required: true,
         default: Date.now
     },
-    created_at: {
-        type: Date,
-        required: true,
-        default: Date.now
-    },
     owner: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         required: true,
         default: null
     },
-    teams: [{type: mongoose.Schema.Types.ObjectId, ref: 'Team'}]
+    teams: [{type: mongoose.Schema.Types.ObjectId, ref: 'Team'}],
+    created_at: {
+        type: Date,
+        required: true,
+        default: Date.now
+    }
 });
 
 const Repository = mongoose.model('Repository', RepositorySchema);

@@ -22,25 +22,20 @@ class CreateCompany extends React.Component {
             this.state = {
                 auth: {
                     userId: this.jwt.userId,
-                    refreshToken: this.jwt.refreshToken
+                    accessToken: this.jwt.accessToken
                 },
                 fields: {},
-                errors: {}
+                errors: {},
+                serverResponse: {
+                    origin: null,
+                    content: null
+                }
             }
 
             this.headers = {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${this.state.auth.refreshToken}`
+                'Authorization': `Bearer ${this.state.auth.accessToken}`
             };
-        } else {
-            this.state = {
-                auth: {
-                    userId: null,
-                    refreshToken: null
-                },
-                fields: {},
-                errors: {}
-            }
         }
 
         this.resetForm = this.resetForm.bind(this);
@@ -140,7 +135,10 @@ class CreateCompany extends React.Component {
         event.preventDefault();
         const {t} = this.props;
         const fields = this.state.fields;
-        this.setState({serverResponse: null})
+        this.setState({serverResponse: {
+            origin: null,
+            content: null
+        }})
 
         if(this.validateForm()) {
             try {
@@ -151,25 +149,34 @@ class CreateCompany extends React.Component {
                 .then((response) => {
                     if(response !== undefined && response.data.company !== null) {
                         this.setState({
-                            company: response.data.company, 
-                            serverResponse: t('content.company.actionc.createCompany.actionResuls.success')
+                            company: response.data.company,
+                            serverResponse: {
+                                origin: response.data.origin,
+                                content: t('content.company.actionc.createCompany.actionResults.success')
+                            }
                         })
                     }      
                 })
                 .catch((error) => {
-                    if(error) {
+                    if(error !== undefined && error.response !== undefined) {
                         if(error.response.data.error === 'JwtTokenExpired') {
-                            removeJwtDataFromSessionStorage();
+                            removeJwtDataFromSessionStorage()
                         } else {
                             this.setState({
-                                serverResponse: error.response.data.error
+                                serverResponse: {
+                                    origin: error.response.data.origin,
+                                    content: error.response.data.error
+                                }
                             })
                         }
                     }
                 })    
             } catch(e) {
                 this.setState({
-                    serverResponse: e.message
+                    serverResponse: {
+                        origin: 'axios',
+                        content: e.message
+                    }
                 })
             }
         } else {
@@ -183,7 +190,7 @@ class CreateCompany extends React.Component {
     render() {
         const {t} = this.props;
 
-        if(this.jwt !== null && this.state.auth.userId !== null && this.state.auth.refreshToken !== null) {
+        if(this.jwt !== null && this.state.auth.userId !== null && this.state.auth.accessToken !== null) {
             return(
                 <div>
                     <h2>{t('content.company.actions.createCompany.actionTitle')}</h2>
@@ -245,17 +252,17 @@ class CreateCompany extends React.Component {
                                         <span className="error-msg-span">{this.state.errors["description"]}</span>
                                     </td>
                                 </tr>
-                                {this.state.serverResponse !== null ? (
+                                {this.state.serverResponse.content !== null ? (
                                     this.state.user !== null ? (
                                         <tr>
                                             <td colspan="8" align="center">
-                                                <span className="error-msg-span" style={{display: "block", color: 'green'}} id="serverResponse">{this.state.serverResponse}</span>                                                            
+                                                <span className="error-msg-span" style={{display: "block", color: 'green'}} id="serverResponse">{this.state.serverResponse.content}</span>                                                            
                                             </td>
                                         </tr>
                                     ) : (
                                         <tr>
                                             <td colspan="8" align="center">
-                                                <span className="error-msg-span" style={{display: "block"}} id="serverResponse">{t('content.company.actions.createCompany.errorMessages.dataValidation.' + this.state.serverResponse)}</span>
+                                                <span className="error-msg-span" style={{display: "block"}} id="serverResponse">{t('content.company.actions.createCompany.errorMessages.dataValidation.' + this.state.serverResponse.content)}</span>
                                             </td>
                                         </tr>
                                     )

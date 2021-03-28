@@ -22,27 +22,92 @@ module.exports = {
 
 // ==================== COMPANY CRUD SECTION ==================== //
 
-async function getCompany(companyId) {
-    if(!companyId) {
-        throw new Error('CompanyIdMissing');
-    }
+async function getCompany() {
+    if(arguments.length === 2) {
+        userId = arguments[0];
+        companyId = arguments[1];
 
-    if(!mongoose.Types.ObjectId.isValid(companyId)) {
-        throw new Error('CompanyIdNotValid');
-    }
-
-    return await Company.findById({companyId})
-        .then((result) => {
+        if(!companyId) {
+            throw new Error('CompanyIdMissing');
+        }
+    
+        if(!mongoose.Types.ObjectId.isValid(companyId)) {
+            throw new Error('CompanyIdNotValid');
+        }
+    
+        if(!userId) {
+            throw new Error('UserIdMissing');
+        }
+    
+        if(!mongoose.Types.ObjectId.isValid(userId)) {
+            throw new Error('UserIdNotValid');
+        }
+    
+        if(!(await User.findById(userId))) {
+            throw new Error('UserNotFound');
+        }
+    
+        let user = await User.findById(userId, 'company')
+        then((result) => {
             if(!result || result === null) {
-                throw new Error('CompanyNotFound');
+                throw new Error('UserNotFound');
             } else {
                 return result;
             }
         })
         .catch((error) => {
-            console.log(error);
-            throw error;
-        });
+            if(error) {
+                throw error;
+            }
+        })
+    
+        if(user.company !== companyId) {
+            throw new Error('AccessDenied');
+        }
+    
+        return await Company.findById(companyId)
+            .then((result) => {
+                if(!result || result === null) {
+                    throw new Error('CompanyNotFound');
+                } else {
+                    return result;
+                }
+            })
+            .catch((error) => {
+                console.log(error);
+                throw error;
+            });
+    } else if(arguments.length === 1) {
+        userId = arguments[0];
+    
+        if(!userId) {
+            throw new Error('UserIdMissing');
+        }
+    
+        if(!mongoose.Types.ObjectId.isValid(userId)) {
+            throw new Error('UserIdNotValid');
+        }
+    
+        if(!(await User.findById(userId))) {
+            throw new Error('UserNotFound');
+        }
+    
+        return await User.findById(userId, 'company').populate('company')
+        .then((result) => {
+            if(!result || result === null) {
+                throw new Error('UserNotFound');
+            } else {
+                return result.company;
+            }
+        })
+        .catch((error) => {
+            if(error) {
+                throw error;
+            }
+        })
+    } else {
+        throw new Error('IncorrectNumberOfArguments');
+    }
 }
 
 async function getCompanyList() {
