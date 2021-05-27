@@ -105,28 +105,28 @@ Hermes uses a session-less, Token Based Authentication system. It consists of se
 </p><br />
 
 <p align="center">
-  <img src="./showcase/create-project.png" width="650" alt="create new project" />
+  <img src="./showcase/create-project.PNG" width="650" alt="create new project" />
 </p>
 <p align="center">
   <em>Figure 6. Create new project</em>
 </p><br />
 
 <p align="center">
-  <img src="./showcase/project-overview.png" width="650" alt="project overview" />
+  <img src="./showcase/project-overview.PNG" width="650" alt="project overview" />
 </p>
 <p align="center">
   <em>Figure 7. Project overview</em>
 </p><br />
 
 <p align="center">
-  <img src="./showcase/create-team.png" width="650" alt="create new team" />
+  <img src="./showcase/create-team.PNG" width="650" alt="create new team" />
 </p>
 <p align="center">
   <em>Figure 8. Create new team</em>
 </p><br />
 
 <p align="center">
-  <img src="./showcase/team-overview.png" width="650" alt="team overview" />
+  <img src="./showcase/team-overview.PNG" width="650" alt="team overview" />
 </p>
 <p align="center">
   <em>Figure 9. Team overview</em>
