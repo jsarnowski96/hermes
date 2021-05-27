@@ -32,7 +32,7 @@ Hermes is a full-stack application consisting of separate client and server sub 
 ### Client
 - `/public` - root directory for serving static content<br />
   - `/images` - directory for public images served by client application<br />
-- `/src` - core client project directory<br />
+- `/src` - core directory in client project<br />
   - `/assets` - directory storing CSS stylesheets, custom scripts etc.<br />
     - `/css` - CSS styles directory<br />
   - `/components` - root directory of all React class based components<br />
@@ -46,7 +46,7 @@ Hermes is a full-stack application consisting of separate client and server sub 
 ### Server
 - `/public` - root directory for serving static content<br />
   - `/images` - directory for public images served by server application<br />
-- `/src` - core server project directory <br />
+- `/src` - core directory in server project<br />
   - `/config` - currently stores only `Passport` config with definition of `Local`/`Jwt` strategies<br />
   - `/middleware` - contains authentication, data validation and error handlers<br />
   - `/models` - implements data models used by `mongoose` library<br />
