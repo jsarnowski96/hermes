@@ -3,11 +3,11 @@ Project Management system written in MERN stack.<br /><br />
 
 ## Table of contents
 [Description](#description)<br />
+[Features](#features)<br />
 [Technology stack](#technology-stack)<br />
 [Architecture](#architecture)<br />
 [Project structure](#project-structure)<br />
 [Security](#security)<br />
-[Features](#features)<br />
 [User Interface examples](#user-interface-examples)<br />
 [TODO](#todo)<br />
 [Licence](#licence)<br /><br />
@@ -16,6 +16,11 @@ Project Management system written in MERN stack.<br /><br />
 Hermes is an open-source web application providing a set of tools designed to perform tasks in the Project Management field. Users can organize into companies, organizational units and teams in order to perform various tasks related to predefined projects.
 
 One of the key features of Hermes is a complete isolation of company's workspace which allows its users to keep their confidential data safe. In other words, users can only access information related directly to their company/organizational unit/team.<br /><br />
+
+## Features
+- re-create your company's structure in Hermes by organizing your employees into organizational units and teams
+- create and manage your projects as well as their related tasks via simple, straightforward User Interface
+- keep your company's data safe from unfair competition by isolating your workspace<br /><br /><br />
 
 ## Technology stack
 Hermes was created in MERN stack which incorporates the following technologies:
@@ -90,11 +95,6 @@ Hermes uses a session-less, Token Based Authentication system. It consists of se
 <p align="center">
   <em>Figure 4. Access/Refresh token characteristics and differences</em>
 </p><br /><br /><br />
-
-## Features
-- re-create your company's structure in Hermes by organizing your employees into organizational units and teams
-- create and manage your projects as well as their related tasks via simple, straightforward User Interface
-- keep your company's data safe from unfair competition by isolating your workspace<br /><br /><br />
 
 ## User Interface examples
 <table>
