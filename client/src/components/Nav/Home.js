@@ -54,18 +54,10 @@ class Home extends React.Component {
                 <section>
                     <hr /><h1 className="title">{t('content.home.title')}</h1><hr />
                     <div className="home">
-                        <div className="tab item">
-                            <img src={process.env.PUBLIC_URL + '/images/dashboard.PNG'} alt="" />
-                        </div>
-                        <div className="tab item">
-                            <img src={process.env.PUBLIC_URL + '/images/createProject.PNG'} alt="" />
-                        </div>
-                        <div className="tab item">
-                            <img src={process.env.PUBLIC_URL + '/images/createTeam.PNG'} alt="" />
-                        </div>
-                        <div className="tab item">
-                            <img src={process.env.PUBLIC_URL + '/images/createTask.PNG'} alt="" />
-                        </div>
+                        <a href={process.env.PUBLIC_URL + '/images/dashboard.PNG'}><img className="image" src={process.env.PUBLIC_URL + '/images/dashboard.PNG'} alt=""/></a>
+                        <a href={process.env.PUBLIC_URL + '/images/createProject.PNG'}><img className="image" src={process.env.PUBLIC_URL + '/images/createProject.PNG'} alt="" /></a>
+                        <a href={process.env.PUBLIC_URL + '/images/createTeam.PNG'}><img className="image" src={process.env.PUBLIC_URL + '/images/createTeam.PNG'} alt="" /></a>
+                        <a href={process.env.PUBLIC_URL + '/images/createTask.PNG'}><img className="image" src={process.env.PUBLIC_URL + '/images/createTask.PNG'} alt="" /></a>
                     </div>
                 </section>
             )

@@ -7,24 +7,17 @@
     justify-content: center;
 }
 
-.tab {
+.image {
     margin: 0;
     padding: 0;
     width: 100%;
+    height: 100%;
     background-color: white;
     box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
-    display: block;
+    display: flexbox;
     flex-direction: column;
     align-items: center;
-    height: 50vh;
     overflow: hidden;
-}
-
-.tab > img {
-    width: 100%;
-    object-fit: contain;
-    margin: 0;
-    padding: 0;
 }
 
 .tab::-webkit-scrollbar {
