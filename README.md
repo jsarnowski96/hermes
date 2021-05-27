@@ -20,7 +20,7 @@ One of the key features of Hermes is a complete isolation of company's workspace
 ## Features
 - re-create your company's structure in Hermes by organizing your employees into organizational units and teams
 - create and manage your projects as well as their related tasks via simple, straightforward User Interface
-- keep your company's data safe from unfair competition by isolating your workspace
+- keep your company's data safe from unfair competition and strangers by isolating your workspace
 - `JoditEditor` allows user to easily embed HTML tags and custom formatting in text description of project, task or team<br /><br /><br />
 
 ## Technology stack
