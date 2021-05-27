@@ -98,7 +98,7 @@ Hermes uses a session-less, Token Based Authentication system. It consists of se
 
 ## User Interface
 <p align="center">
-  <img src="./showcase/dashboard.png" width="650" alt="dashboard" />
+  <img src="./showcase/dashboard.PNG" width="650" alt="dashboard" />
 </p>
 <p align="center">
   <em>Figure 5. Dashboard view</em>
