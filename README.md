@@ -63,4 +63,7 @@ Hermes uses a session-less, Token Based Authentication system. It consists of se
 - `LocalStrategy` handles Basic Auth employed in `/auth/login` route
 - `JwtStrategy` handles access to restricted resources via Bearer Token
 
-<img src="./showcase/auth-flow.png" width="500" alt ="user authentication flow" />
+<img src="./showcase/auth-flow.png" width="650" alt ="user authentication flow" />
+
+### Access and Refresh tokens
+<img src="./showcase/access-refresh-tokens.png" width="650" alt="access and refresh token" />
