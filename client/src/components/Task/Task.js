@@ -676,7 +676,7 @@ class Task extends React.Component {
                                                     )}
                                                 </td>
                                                 <td>
-                                                    <select onChange={this.onChange.bind(this, 'status')} value={this.state.fields['status']} type="status" className="" name="status">
+                                                    <select onChange={this.onChange.bind(this, 'status')} value={this.state.fields['status']} type="status" className="" name="status" disabled={!this.state.enableEdit}>
                                                         <option selected value="none">{t('misc.actionDescription.selectStatus')}</option>
                                                         {this.state.statuses.map((status, index) => {
                                                             if(index === 0) {
@@ -738,7 +738,6 @@ class Task extends React.Component {
                                         <thead>
                                             <tr>
                                                 <th colspan="7">{t('content.task.fields.description')}</th>
-                                                
                                             </tr>
                                         </thead>
                                         <tbody>

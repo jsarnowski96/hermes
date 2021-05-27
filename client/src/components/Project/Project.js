@@ -530,9 +530,9 @@ class Project extends React.Component {
             if(this.props.location.state !== undefined && this.props.location.state.userId && this.props.location.state.projectId) {
                 return( 
                     <div>
+                        <h2>{t('content.project.fields.overview')}</h2>
                         {this.state.project !== null ? (
                             <div>
-                                <h2>{t('content.project.fields.overview')}</h2>
                                 <form id="form" onSubmit={this.onFormSubmit}>
                                     <table className="tab-table">
                                         <thead>
@@ -584,7 +584,7 @@ class Project extends React.Component {
                                                         })}
                                                     </select>
                                                 </td>
-                                                <td>
+                                                <td style={{maxWidth: '10vw'}}>
                                                     <Select 
                                                         options={this.state.teams} 
                                                         isMulti
@@ -637,8 +637,8 @@ class Project extends React.Component {
                                                         //onBlur={newContent => { let fields = this.state.fields; fields['description'] = newContent; this.setState({fields})}} // preferred to use only this option to update the content for performance reasons
                                                     />
                                                 </td>
-                                                <td><span className="error-msg-span">{this.state.errors["description"]}</span></td>
                                             </tr>
+                                            <tr><td><span className="error-msg-span">{this.state.errors["description"]}</span></td></tr>
                                             <tr>
                                                 <th>{t('misc.fields.createdAt')}</th>
                                                 <td>{moment(this.state.project.created_at).format('YYYY-MM-DD | hh:mm:ss')}</td>
@@ -648,13 +648,13 @@ class Project extends React.Component {
                                             {this.state.serverResponse.content !== null ? (
                                                 this.state.user !== null ? (
                                                     <tr>
-                                                        <td colspan="8" align="center">
+                                                        <td colspan="6" align="center">
                                                             <span className="error-msg-span" style={{display: "block", color: 'green'}} id="serverResponse">{this.state.serverResponse.content}</span>                                                            
                                                         </td>
                                                     </tr>
                                                 ) : (
                                                     <tr>
-                                                        <td colspan="8" align="center">
+                                                        <td colspan="6" align="center">
                                                             <span className="error-msg-span" style={{display: "block"}} id="serverResponse">{t('content.project.actions.updateProject.errorMessages.dataValidation.' + this.state.serverResponse.content)}</span>
                                                         </td>
                                                     </tr>

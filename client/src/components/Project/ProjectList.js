@@ -41,7 +41,8 @@ class ProjectList extends React.Component {
             try {
                 axios.post('/project/list', 
                 {
-
+                    ref: 'user',
+                    objId: this.state.auth.userId
                 }, {headers: this.headers, withCredentials: true})
                 .then((response) => {
                     if(response !== undefined && response.data.projects !== null && response.data.projects.length > 0) {
@@ -136,7 +137,7 @@ class ProjectList extends React.Component {
                                         </td>
                                         <td>
                                             {project.teams.map((team) => {
-                                                return <span style={{marginLeft: '0.5vw'}}><Link to={{pathname: '/team/details', state: {ref: 'team', objId: team._id}}}>{team.name}</Link></span>
+                                                return <span style={{marginLeft: '0.5vw'}}><Link to={{pathname: '/team/details', state: {ref: 'team', userId: team.owner, objId: team._id}}}>{team.name}</Link></span>
                                             })}
                                         </td>
                                         <td>{project.category.name}</td>

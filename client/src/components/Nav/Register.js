@@ -199,7 +199,7 @@ class Register extends React.Component {
                         this.setState({
                             serverResponse: {
                                 origin: error.response.data.origin,
-                                content: error.response.data.error
+                                content: error.response.data.content
                             }
                         })
                     }
@@ -260,8 +260,13 @@ class Register extends React.Component {
                         <button type="button" className="card-form-button"><Link to="/" className="card-form-button-link">{t('misc.actionDescription.cancel')}</Link></button>
                     </div>
                     {this.state.serverResponse.content !== null ? (
-                        this.state.serverResponse.content === 'UserRegistered' & 
+                        this.state.serverResponse.content === "UserRegistered" ? (
                             <span className="error-msg-span" style={{color: 'green', display: 'block'}} id="serverResponse">{t('content.register.success')}</span>
+                        ) : this.state.serverResponse.content === "CompanyNotFound" ? (
+                            <span className="error-msg-span" style={{color: 'green', display: 'block'}} id="serverResponse">{t('content.company.actions.selectCompany.errorMessages.CompanyNotFound')}</span>
+                        ) : (
+                            <span className="error-msg-span" id="serverResponse">{this.state.serverResponse.content}</span>
+                        )
                     ) : (
                         <span className="error-msg-span" id="serverResponse"></span>
                     )}

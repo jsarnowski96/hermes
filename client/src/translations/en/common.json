@@ -665,6 +665,7 @@
                         "failure": ""
                     },
                     "errorMessages": {
+                        "CompanyNotFound": "Company not found",
                         "dataValidation": {
                             "missingProps": "No company data provided",
                             "MissingRefreshToken": "Missing refresh token"

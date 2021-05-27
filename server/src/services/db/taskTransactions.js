@@ -459,6 +459,28 @@ async function updateTask(userId, taskId, taskObj) {
         }
     })
 
+    task.isNew = false;
+
+    ownerId = await User.findById(taskObj.owner, '_id')
+    .then((result) => {
+        if(!result || result === null) {
+            throw new Error('UserNotFound');
+        } else {
+            return result._id;
+        }
+    })
+    .catch((error) => {
+        if(error) {
+            console.log('UPDATE TASK\n' + error);
+            throw error;
+        }
+    })
+
+    if(ownerId.toString() !== userId) {
+        console.log('UPDATE TASK: !!! UNAUTHORIZED !!!');
+        throw new Error('Unauthorized');
+    }
+
     categoryId = await Category.findOne({name: taskObj.category}, '_id')
     .then((result) => {
         if(!result || result === null) {

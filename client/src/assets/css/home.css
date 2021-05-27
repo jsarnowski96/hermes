@@ -1,0 +1,160 @@
+.home {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    display: grid;
+}
+
+.tab {
+    margin: auto;
+    padding: 0;
+    width: 100%;
+    background-color: white;
+    box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
+    display: block;
+    flex-direction: column;
+    align-items: center;
+    height: 50vh;
+    overflow: hidden;
+}
+
+.tab > img {
+    height: 100%;
+    object-fit: contain;
+    margin: 0;
+}
+
+.tab::-webkit-scrollbar {
+    background-color: transparent;
+}
+
+.tab-table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 1rem auto 1rem auto;
+    font-size: 0.9em;
+    font-family: sans-serif;
+    min-width: 10vw;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+}
+
+.tab-table thead tr {
+    background-color: #009879;
+    color: #ffffff;
+    text-align: left;
+}
+
+.tab-table th,
+.tab-table td {
+    padding: 12px 15px;
+}
+
+.selectStatus, .selectTeams {
+    max-width: 10vw;
+}
+
+.tab-table tbody tr {
+    border-bottom: 1px solid #dddddd;
+}
+
+.tab-table tbody tr:nth-of-type(even) {
+    background-color: #f3f3f3;
+}
+
+.tab-table tbody tr:last-of-type {
+    border-bottom: 2px solid #009879;
+}
+
+.tab-table tbody tr.active-row {
+    font-weight: bold;
+    color: #009879;
+}
+
+.tab-title {
+    width: 100%;
+    font-size: 1.5rem;
+    margin: auto;
+    padding-left: 0.5rem;
+    text-align: left;
+    position: sticky;
+    display: flex;
+    align-items: center;
+    top: 0;
+    background: white;
+    box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
+}
+
+.tab-title svg {
+    min-width: 2rem;
+    margin: 0.25rem 0.5rem 0 0;
+}
+
+h1,h2,h3,h4 {
+    margin-left: 1rem;
+}
+
+@media screen and (max-width: 599px) {
+    .home {
+        grid-template-columns: 100%;
+        grid-auto-rows: auto;
+        row-gap: 1rem;
+    }
+
+    .tab-hr {
+        width: 100%;
+    }
+
+    .intro, .showcase, .register, .login {
+        grid-column: 1;
+    }
+
+    .tab {
+        margin-left: 1.25rem;
+    }
+}
+
+@media screen and (min-width: 600px) {
+    .home {
+        grid-template-columns: repeat(2, 25% [col-start]);
+        grid-template-rows: repeat(2, 50% [row-start]);
+        column-gap: 1rem;
+        row-gap: 0.5rem;
+    }
+
+    .tab-table {
+        margin-left: 1rem;
+    }
+
+    .tab-title {
+        margin-left: 1rem;
+    }
+
+    .tab-hr {
+        width: 90%;
+    }
+
+    .intro {
+        grid-column: span 2;
+        grid-row: 1;
+    }
+
+    .showcase {
+        grid-column: span 2;
+        grid-row: 1;
+    }
+    
+    .register {
+        grid-column: span 2;
+        grid-row: 2;
+    }
+
+    .login {
+        grid-column: span 2;
+        grid-row: 2;
+    }
+}
+
+.title {
+    text-align: center;
+}

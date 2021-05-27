@@ -167,7 +167,7 @@ class TeamList extends React.Component {
                             {this.state.teams.length > 0 ? (
                                 this.state.teams.map((team, index) => (
                                     <tr>
-                                        <td><Link to={{pathname: '/team/details', state: {ref: 'team', userId: this.state.auth.userId, objId: team._id}}}>{team.name}</Link></td>
+                                        <td><Link to={{pathname: '/team/details', state: {ref: 'user', userId: this.state.auth.userId, objId: this.state.auth.userId}}}>{team.name}</Link></td>
                                         <td><Link to={{pathname: '/user/profile', state: {userId: team.owner._id}}}>{team.owner.firstname + ' ' + team.owner.lastname}</Link></td>
                                         <td>{team.organization.name}</td>
                                     </tr>

@@ -11,7 +11,7 @@ router.post('/', async (req, res, next) => {
         if(error) {
             if(error.message === 'KeyDuplication') {
                 return res.status(406).json({origin: 'RegisterService', content: error.message});
-            } else if(error.message === 'CompanyDoesNotExist') {
+            } else if(error.message === 'CompanyNotFound') {
                 return res.status(404).json({origin: 'RegisterService', content: error.message});
             } else if(error.message === 'EmptyFormField') {
                 return res.status(406).json({origin: 'RegisterService', content: error.message});

@@ -542,15 +542,12 @@ async function updateTeam(userId, teamId, teamObj) {
         }
     })
 
-    if(team.owner !== userId) {
-        console.log('UPDATE TEAM: !!! UNAUTHORIZED !!!');
-        throw new Error('Unauthorized');
-    }
+    team.isNew = false;
 
-    organizationId = await Organization.findOne({name: teamObj.organization}, '_id')
+    ownerId = await User.findById(teamObj.owner, '_id')
     .then((result) => {
         if(!result || result === null) {
-            throw new Error('OrganizationNotFound');
+            throw new Error('UserNotFound');
         } else {
             return result._id;
         }
@@ -562,10 +559,15 @@ async function updateTeam(userId, teamId, teamObj) {
         }
     })
 
-    ownerId = await User.findById(teamObj.owner, '_id')
+    if(ownerId.toString() !== userId) {
+        console.log('UPDATE TEAM: !!! UNAUTHORIZED !!!');
+        throw new Error('Unauthorized');
+    }
+
+    organizationId = await Organization.findOne({name: teamObj.organization}, '_id')
     .then((result) => {
         if(!result || result === null) {
-            throw new Error('UserNotFound');
+            throw new Error('OrganizationNotFound');
         } else {
             return result._id;
         }
@@ -649,22 +651,22 @@ async function updateTeam(userId, teamId, teamObj) {
 
 async function deleteTeam(userId, teamId) {
     if(!userId) {
-        console.log('UPDATE TEAM: User ID missing');
+        console.log('DELETE TEAM: User ID missing');
         throw new Error('UserIdMissing');
     }
 
     if(!teamId) {
-        console.log('UPDATE TEAM: Team ID missing');
+        console.log('DELETE TEAM: Team ID missing');
         throw new Error('TeamIdMissing');
     }
 
     if(!mongoose.Types.ObjectId.isValid(userId)) {
-        console.log('UPDATE TEAM: User ID not valid');
+        console.log('DELETE TEAM: User ID not valid');
         throw new Error('UserIdNotValid');
     }
 
     if(!mongoose.Types.ObjectId.isValid(teamId)) {
-        console.log('UPDATE TEAM: Team ID not valid');
+        console.log('DELETE TEAM: Team ID not valid');
         throw new Error('TeamIdNotValid');
     }
 
@@ -673,12 +675,27 @@ async function deleteTeam(userId, teamId) {
         throw new Error('UserNotFound');
     }
 
-    let owner = await Team.findById(teamId, 'owner')
+    // let owner = await Team.findById(teamId, 'owner')
+    // .then((result) => {
+    //     if(!result || result === null) {
+    //         throw new Error('TeamNotFound');
+    //     } else {
+    //         return result.owner;
+    //     }
+    // })
+    // .catch((error) => {
+    //     if(error) {
+    //         console.log('DELETE TEAM\n' + error);
+    //         throw error;
+    //     }
+    // })
+
+    let team = await Team.findById(teamId)
     .then((result) => {
         if(!result || result === null) {
             throw new Error('TeamNotFound');
         } else {
-            return result.owner;
+            return result;
         }
     })
     .catch((error) => {
@@ -688,8 +705,10 @@ async function deleteTeam(userId, teamId) {
         }
     })
 
-    if(userId !== owner) {
+    if(userId !== team.owner.toString()) {
         console.log('DELETE TEAM - !!! UNAUTHORIZED !!!');
+        console.log(Object(userId));
+        console.log(Object(team.owner._id));
         throw new Error('Unauthorized');
     }
 

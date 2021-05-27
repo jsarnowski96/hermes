@@ -302,6 +302,7 @@ async function getProjectList() {
                 throw new Error('OrganizationNotFound');
             }
 
+            // TODO: Proper project listing for tasks
         } else if(ref === 'task') {
             if(!mongoose.Types.ObjectId.isValid(objId)) {
                 throw new Error('TaskIdNotValid');
@@ -311,14 +312,12 @@ async function getProjectList() {
                 throw new Error('TaskNotFound');
             }
 
-            let projects = [];
-
-            await Project.find({tasks: objId}).populate('owner teams category organization')
+            let taskId = await Task.findById(objId, '_id')
             .then((result) => {
                 if(!result || result === null) {
-                    throw new Error('ProjectNotFound');
+                    throw new Error('TaskNotFound');
                 } else {
-                    projects = result;
+                    return result._id;
                 }
             })
             .catch((error) => {
@@ -328,6 +327,40 @@ async function getProjectList() {
                 }
             })
 
+            if(taskId instanceof Error) {
+                throw taskId;
+            }
+
+            if(!mongoose.Types.ObjectId.isValid(taskId)) {
+                throw new Error('TaskIdNotValid');
+            }
+
+            //60514b1502487d3880da1ed5
+            let projects = [];
+            return await Project.find({tasks: taskId}).populate('owner teams tasks category organization')
+            // return await Project.find({}).populate('owner teams tasks category organization')
+            .then((result) => {
+                if(!result || result === null) {
+                    throw new Error('NoProjectsFound');
+                } else {
+                    result.forEach(res => {
+                        res.description = sanitizeHtml(res.description, {
+                            allowedTags: [ 'b', 'i', 'em', 'strong', 'a', 'ul', 'ol', 'li', 'p', 'img', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'],
+                            allowedAttributes: {
+                              'a': [ 'href' ], 'img': [ 'src' ]
+                            },
+                            allowedIframeHostnames: ['www.youtube.com']
+                        }); 
+                    });
+                    projects = result;
+                }
+            })
+            .catch((error) => {
+                if(error) {
+                    console.log('GET PROJECT LIST\n' + error);
+                    throw error;
+                }
+            });
             return projects;
         } else {
             throw new Error('ReferenceIncorrect');
@@ -520,9 +553,24 @@ async function updateProject(userId, projectId, projectObj) {
         }
     })
 
-    if(project instanceof Error) {
-        console.log('PROJECT OBJECT: ' + project);
-        throw project;
+    ownerId = await User.findById(project.owner, '_id')
+    .then((result) => {
+        if(!result || result === null) {
+            throw new Error('UserNotFound');
+        } else {
+            return result._id;
+        }
+    })
+    .catch((error) => {
+        if(error) {
+            console.log('UPDATE PROJECT\n' + error);
+            throw error;
+        }
+    })
+
+    if(ownerId.toString() !== userId) {
+        console.log('UPDATE PROJECT: !!! UNAUTHORIZED !!!');
+        throw new Error('Unauthorized');
     }
 
     project.isNew = false;
@@ -531,21 +579,6 @@ async function updateProject(userId, projectId, projectObj) {
     .then((result) => {
         if(!result || result === null) {
             throw new Error('OrganizationNotFound');
-        } else {
-            return result._id;
-        }
-    })
-    .catch((error) => {
-        if(error) {
-            console.log(error.message);
-            throw error;
-        }
-    })
-
-    ownerId = await User.findOne({username: projectObj.owner}, '_id')
-    .then((result) => {
-        if(!result || result === null) {
-            throw new Error('UserNotFound');
         } else {
             return result._id;
         }
@@ -627,6 +660,41 @@ async function deleteProject(userId, projectId) {
 
     if(!(await Project.findById(projectId))) {
         throw new Error('ProjectNotFound');
+    }
+
+    let project = await Project.findById(projectId)
+    .then((result) => {
+        if(!result || result === null) {
+            throw new Error('ProjectNotFound');
+        } else {
+            return result;
+        }
+    })
+    .catch((error) => {
+        if(error) {
+            console.log('DELETE PROJECT\n' + error);
+            throw error;
+        }
+    })
+
+    ownerId = await User.findById(project.owner, '_id')
+    .then((result) => {
+        if(!result || result === null) {
+            throw new Error('UserNotFound');
+        } else {
+            return result._id;
+        }
+    })
+    .catch((error) => {
+        if(error) {
+            console.log('UPDATE TEAM\n' + error);
+            throw error;
+        }
+    })
+
+    if(ownerId.toString() !== userId) {
+        console.log('DELETE PROJECT: !!! UNAUTHORIZED !!!');
+        throw new Error('Unauthorized');
     }
 
     let tasks = await Task.find({project: projectId});
