@@ -57,3 +57,10 @@ Hermes is a full-stack application consisting of separate client and server sub 
     - `/db` - MongoDB transactional services<br/>
 
 ## Security
+Hermes uses a session-less, Token Based Authentication system. It consists of several aspects:
+- it uses a pair of JWT tokens - `access` and `refresh`
+- every route stored in `/routes/protected` directory has applied authentication middleware
+- `LocalStrategy` handles Basic Auth employed in `/auth/login` route
+- `JwtStrategy` handles access to restricted resources via Bearer Token
+
+![auth-flow](./showcase/auth-flow.PNG)<br />
