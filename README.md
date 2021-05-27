@@ -99,16 +99,13 @@ Hermes uses a session-less, Token Based Authentication system. It consists of se
 ## User Interface
 <table>
   <tr>
-    <td><img src="./showcase/create-project.PNG" width="650" alt="create new project" /><em>Figure 6. Create new project</em></td>
-    <td><img src="./showcase/project-overview.PNG" width="650" alt="project overview" /><em>Figure 7. Project overview</em></td>
-  </tr>                                                                           
-  <tr>
-    <td><img src="./showcase/create-team.PNG" width="650" alt="create new team" /><em>Figure 8. Create new team</em></td>
-    <td><img src="./showcase/team-overview.PNG" width="650" alt="team overview" /><em>Figure 9. Team overview</em></td>
-  </tr>                                                                           
-  <tr>
-    <td colspan="2><img src="./showcase/dashboard.PNG" width="650" alt="dashboard" /><em>Figure 5. Dashboard view</em></td>
+    <td><img src="./showcase/dashboard.PNG" height="250" alt="dashboard" /><br /><em>Figure 5. Dashboard view</em></td>
+    <td><img src="./showcase/team-overview.PNG" height="250" alt="team overview" /><br /><em>Figure 6. Team overview</em></td>
   </tr>
+  <tr>
+    <td><img src="./showcase/create-project.PNG" height="250" alt="create new project" /><br /><em>Figure 7. Create new project</em></td>
+    <td><img src="./showcase/project-overview.PNG" height="250" alt="project overview" /><br /><em>Figure 8. Project overview</em></td>
+  </tr>                                                                           
 </table>
 
 
