@@ -531,10 +531,11 @@
                 "createProject": "Create project",
                 "createTeam": "Create team",
                 "createTask": "Create task",
-                "projectsOverview": "Projects overview",
-                "tasksOverview": "Tasks overview",
-                "teamOverview": "Team overview",
-                "usersOverview": "Users overview",
+                "teamDetails": "Team details",
+                "projectsOverview": "Projects",
+                "tasksOverview": "Tasks",
+                "teamsOverview": "Teams",
+                "usersOverview": "Users",
                 "userProfile": "User profile"
             }
         },

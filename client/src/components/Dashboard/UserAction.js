@@ -61,7 +61,7 @@ class UserAction extends React.Component {
                             <td align="center"><Link to={{pathname: '/user/profile', state: { userId: this.state.auth.userId}}}>{t('content.userAction.actions.userProfile')}</Link></td>
                         </tr>
                         <tr>
-                            <td align="center"><Link to={{pathname: '/team/details', state: { ref: 'user', userId: this.state.auth.userId, objId: this.state.auth.userId}}}>{t('content.userAction.actions.teamOverview')}</Link></td>
+                            <td align="center"><Link to={{pathname: '/team/details', state: { ref: 'user', userId: this.state.auth.userId, objId: this.state.auth.userId}}}>{t('content.userAction.actions.teamDetails')}</Link></td>
                         </tr>
                         <tr>
                             <td align="center"><Link to="/project/create">{t('content.userAction.actions.createProject')}</Link></td>
