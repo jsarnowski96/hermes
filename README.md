@@ -92,7 +92,7 @@ Hermes uses a session-less, Token Based Authentication system. It consists of se
 </p><br /><br /><br />
 
 ## Features
-- re-create your company's structure in Hermes by organizing your employees into organizational untis and teams
+- re-create your company's structure in Hermes by organizing your employees into organizational units and teams
 - create and manage your projects as well as their related tasks via simple, straightforward User Interface
 - keep your company's data safe from unfair competition by isolating your workspace<br /><br /><br />
 
