@@ -8,15 +8,14 @@ Project Management system written in MERN stack.
 [Project structure](#project-structure)<br />
 [Security](#security)<br />
 [Features](#features)<br />
-[Installation](#installation)<br />
-[Showcase](#showcase)<br />
+[User Interface](#user-interface)<br />
 [TODO](#todo)<br />
 [Licence](#licence)<br /><br />
 
 ## Description
 Hermes is an open-source web application providing a set of tools designed to perform tasks in the Project Management field. Users can organize into companies, organizational units and teams in order to perform various tasks related to predefined projects.
 
-One of the key features of Hermes is a complete isolation of company's ecosystem which allows its users to keep their confidential data safe. In other words, users can only access information related directly to their company/organizational unit/team.
+One of the key features of Hermes is a complete isolation of company's workspace which allows its users to keep their confidential data safe. In other words, users can only access information related directly to their company/organizational unit/team.
 
 ## Technology stack
 Hermes was created in MERN stack which incorporates the following technologies:
@@ -27,6 +26,13 @@ Hermes was created in MERN stack which incorporates the following technologies:
 
 ## Architecture
 Hermes is a full-stack application consisting of separate client and server sub services. Communication between these services is provided by REST API implemented on backend and is actively used in various CRUD-related operations and is a core element of Token Based Authentication. 
+
+<p align="center">
+  <img src="./showcase/client-server-communication-flow.png" width="650" alt="client-server communication flow" />
+</p>
+<p align="center">
+  <em>Figure 1. Client-Server communication Flow</em>
+</p>
 
 ## Project structure
 ### Client
@@ -46,7 +52,7 @@ Hermes is a full-stack application consisting of separate client and server sub 
   <img src="./showcase/component-hierarchy.png" width="650" alt="Component hierarchy in client app" />
 </p>
 <p align="center">
-  <em>Figure 1. Component hierarchy in client app</em>
+  <em>Figure 2. Component hierarchy in client app</em>
 </p><br />
 
 ### Server
@@ -75,14 +81,34 @@ Hermes uses a session-less, Token Based Authentication system. It consists of se
   <img src="./showcase/auth-flow.png" width="650" alt ="user authentication flow" />
 </p>
 <p align="center">
-  <em>Figure 2. User Authentication Flow</em>
+  <em>Figure 3. User Authentication Flow</em>
 </p><br />
-  
-### Access and Refresh tokens
 
 <p align="center">
   <img src="./showcase/access-refresh-tokens.png" width="650" alt="access and refresh token" />
 </p>
 <p align="center">
-  <em>Figure 3. Access/Refresh token characteristics and differences</em>
+  <em>Figure 4. Access/Refresh token characteristics and differences</em>
 </p>
+
+## Features
+- re-create your company's structure in Hermes by organizing your employees into organizational untis and teams
+- create and manage your projects as well as their related tasks via simple, straightforward User Interface
+- keep your company's data safe from unfair competition by isolating your workspace
+
+## User Interface
+<p align="center">
+  <img src="" width="650" alt="access and refresh token" />
+</p>
+<p align="center">
+  <img src="./showcase/access-refresh-tokens.png" width="650" alt="access and refresh token" />
+</p>
+<p align="center">
+  <img src="./showcase/access-refresh-tokens.png" width="650" alt="access and refresh token" />
+</p>
+
+## TODO
+
+## Licensing
+Hermes is being distributed under GPL-3.0 licence.<br />
+https://www.gnu.org/licenses/gpl-3.0.html
