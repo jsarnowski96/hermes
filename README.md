@@ -31,7 +31,7 @@ Hermes is a full-stack application consisting of separate client and server sub 
   <img src="./showcase/client-server-communication-flow.png" width="650" alt="client-server communication flow" />
 </p>
 <p align="center">
-  <em>Figure 1. Client-Server communication Flow</em>
+  <em>Figure 1. Client-Server communication Flow within Hermes</em>
 </p><br /><br />
 
 ## Project structure
