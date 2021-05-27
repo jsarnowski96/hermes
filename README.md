@@ -98,14 +98,40 @@ Hermes uses a session-less, Token Based Authentication system. It consists of se
 
 ## User Interface
 <p align="center">
-  <img src="" width="650" alt="access and refresh token" />
+  <img src="./showcase/dashboard.png" width="650" alt="dashboard" />
 </p>
 <p align="center">
-  <img src="./showcase/access-refresh-tokens.png" width="650" alt="access and refresh token" />
+  <em>Figure 5. Dashboard view</em>
+</p><br />
+
+<p align="center">
+  <img src="./showcase/create-project.png" width="650" alt="create new project" />
 </p>
 <p align="center">
-  <img src="./showcase/access-refresh-tokens.png" width="650" alt="access and refresh token" />
+  <em>Figure 6. Create new project</em>
+</p><br />
+
+<p align="center">
+  <img src="./showcase/project-overview.png" width="650" alt="project overview" />
 </p>
+<p align="center">
+  <em>Figure 7. Project overview</em>
+</p><br />
+
+<p align="center">
+  <img src="./showcase/create-team.png" width="650" alt="create new team" />
+</p>
+<p align="center">
+  <em>Figure 8. Create new team</em>
+</p><br />
+
+<p align="center">
+  <img src="./showcase/team-overview.png" width="650" alt="team overview" />
+</p>
+<p align="center">
+  <em>Figure 9. Team overview</em>
+</p><br />
+
 
 ## TODO
 
