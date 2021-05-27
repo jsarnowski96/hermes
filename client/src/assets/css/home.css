@@ -4,10 +4,11 @@
     margin: 0;
     padding: 0;
     display: grid;
+    justify-content: center;
 }
 
 .tab {
-    margin: auto;
+    margin: 0;
     padding: 0;
     width: 100%;
     background-color: white;
@@ -20,9 +21,10 @@
 }
 
 .tab > img {
-    height: 100%;
+    width: 100%;
     object-fit: contain;
     margin: 0;
+    padding: 0;
 }
 
 .tab::-webkit-scrollbar {
@@ -134,24 +136,9 @@ h1,h2,h3,h4 {
         width: 90%;
     }
 
-    .intro {
-        grid-column: span 2;
-        grid-row: 1;
-    }
-
-    .showcase {
-        grid-column: span 2;
-        grid-row: 1;
-    }
-    
-    .register {
-        grid-column: span 2;
-        grid-row: 2;
-    }
-
-    .login {
-        grid-column: span 2;
-        grid-row: 2;
+    .item {
+        grid-column: auto;
+        grid-row: auto;
     }
 }
 

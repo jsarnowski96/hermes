@@ -54,16 +54,16 @@ class Home extends React.Component {
                 <section>
                     <hr /><h1 className="title">{t('content.home.title')}</h1><hr />
                     <div className="home">
-                        <div className="tab">
+                        <div className="tab item">
                             <img src={process.env.PUBLIC_URL + '/images/dashboard.PNG'} alt="" />
                         </div>
-                        <div className="tab">
+                        <div className="tab item">
                             <img src={process.env.PUBLIC_URL + '/images/createProject.PNG'} alt="" />
                         </div>
-                        <div className="tab">
+                        <div className="tab item">
                             <img src={process.env.PUBLIC_URL + '/images/createTeam.PNG'} alt="" />
                         </div>
-                        <div className="tab">
+                        <div className="tab item">
                             <img src={process.env.PUBLIC_URL + '/images/createTask.PNG'} alt="" />
                         </div>
                     </div>

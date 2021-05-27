@@ -17,7 +17,7 @@ const app = express();
 
 app.use(cors({
     methods: 'GET, POST, OPTIONS',
-    origin: ['http://localhost:3000', 'http://78.46.150.191:3000', '78.46.150.191'],
+    origin: ['http://localhost:3000'],
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Origin', 'Accept'],
     preflightContinue: false,
     credentials: true
@@ -26,7 +26,7 @@ app.use(cors({
 app.options('*', cors());
 
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.urlencoded({extended: true}));
 
 //app.use(errorHandler);
 
