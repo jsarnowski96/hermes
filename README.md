@@ -1,5 +1,5 @@
 # Hermes
-Project Management system written in MERN stack.
+Project Management system written in MERN stack.<br /><br />
 
 ## Table of contents
 [Description](#description)<br />
@@ -15,14 +15,14 @@ Project Management system written in MERN stack.
 ## Description
 Hermes is an open-source web application providing a set of tools designed to perform tasks in the Project Management field. Users can organize into companies, organizational units and teams in order to perform various tasks related to predefined projects.
 
-One of the key features of Hermes is a complete isolation of company's workspace which allows its users to keep their confidential data safe. In other words, users can only access information related directly to their company/organizational unit/team.
+One of the key features of Hermes is a complete isolation of company's workspace which allows its users to keep their confidential data safe. In other words, users can only access information related directly to their company/organizational unit/team.<br /><br />
 
 ## Technology stack
 Hermes was created in MERN stack which incorporates the following technologies:
 - MongoDB
 - ExpressJS
 - React
-- Node.js
+- Node.js<br /><br />
 
 ## Architecture
 Hermes is a full-stack application consisting of separate client and server sub services. Communication between these services is provided by REST API implemented on backend and is actively used in various CRUD-related operations and is a core element of Token Based Authentication. 
@@ -32,7 +32,7 @@ Hermes is a full-stack application consisting of separate client and server sub 
 </p>
 <p align="center">
   <em>Figure 1. Client-Server communication Flow</em>
-</p>
+</p><br /><br />
 
 ## Project structure
 ### Client
@@ -53,7 +53,7 @@ Hermes is a full-stack application consisting of separate client and server sub 
 </p>
 <p align="center">
   <em>Figure 2. Component hierarchy in client app</em>
-</p><br />
+</p><br /><br />
 
 ### Server
 - `/public` - root directory for serving static content<br />
@@ -66,7 +66,7 @@ Hermes is a full-stack application consisting of separate client and server sub 
     - `/protected` - routes protected by authentication middleware<br />
     - `/public` - routes publicly accessible without authentication<br />
   - `/services` - root directory of services related to user registration and Atlas cloud<br />
-    - `/db` - MongoDB transactional services<br/>
+    - `/db` - MongoDB transactional services<br/><br /><br />
 
 ## Security
 Hermes uses a session-less, Token Based Authentication system. It consists of several aspects:
@@ -75,7 +75,7 @@ Hermes uses a session-less, Token Based Authentication system. It consists of se
 - `LocalStrategy` handles Basic Auth employed in `/auth/login` route
 - `JwtStrategy` handles access to restricted resources via Bearer Token
 - Sensitive information like DB url, username or password are stored in environmental variables and are managed by `dotenv` library. For security reasons, `.env` file is disconnected from Git version control system.
-- both in registration and authentication flow, password is encrypted by `bcrypt` library and its hash is stored in Atlas cloud.<br />
+- both in registration and authentication flow, password is encrypted by `bcrypt` library and its hash is stored in Atlas cloud.<br /><br />
 
 <p align="center">
   <img src="./showcase/auth-flow.png" width="650" alt ="user authentication flow" />
@@ -89,12 +89,12 @@ Hermes uses a session-less, Token Based Authentication system. It consists of se
 </p>
 <p align="center">
   <em>Figure 4. Access/Refresh token characteristics and differences</em>
-</p>
+</p><br /><br /><br />
 
 ## Features
 - re-create your company's structure in Hermes by organizing your employees into organizational untis and teams
 - create and manage your projects as well as their related tasks via simple, straightforward User Interface
-- keep your company's data safe from unfair competition by isolating your workspace
+- keep your company's data safe from unfair competition by isolating your workspace<br /><br /><br />
 
 ## User Interface
 <table>
@@ -106,7 +106,7 @@ Hermes uses a session-less, Token Based Authentication system. It consists of se
     <td><img src="./showcase/create-project.PNG" height="250" alt="create new project" /><br /><em>Figure 7. Create new project</em></td>
     <td><img src="./showcase/project-overview.PNG" height="250" alt="project overview" /><br /><em>Figure 8. Project overview</em></td>
   </tr>                                                                           
-</table>
+</table><br /><br />
 
 
 ## TODO
