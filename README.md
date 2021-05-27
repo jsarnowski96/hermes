@@ -65,7 +65,7 @@ Hermes is a full-stack application consisting of separate client and server sub 
 ## Security
 Hermes uses a session-less, Token Based Authentication system. It consists of several aspects:
 - it uses a pair of JWT tokens - `access` and `refresh`
-- every route stored in `/routes/protected` directory has applied authentication middleware
+- every route stored in `/routes/protected` directory has applied authentication middleware ensuring that user requesting specific resource is authenticated
 - `LocalStrategy` handles Basic Auth employed in `/auth/login` route
 - `JwtStrategy` handles access to restricted resources via Bearer Token
 - Sensitive information like DB url, username or password are stored in environmental variables and are managed by `dotenv` library. For security reasons, `.env` file is disconnected from Git version control system.
