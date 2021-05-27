@@ -16,8 +16,8 @@ const { isAuthenticated } = require('./middleware/authenticator');
 const app = express();
 
 app.use(cors({
-    methods: 'GET, POSTgit push, OPTIONS',
-    origin: ['http://localhost:3000'],
+    methods: 'GET, POST, OPTIONS',
+    origin: ['http://localhost:3000', '78.46.150.191:3000'],
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Origin', 'Accept'],
     preflightContinue: false,
     credentials: true
