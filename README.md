@@ -8,7 +8,7 @@ Project Management system written in MERN stack.<br /><br />
 [Project structure](#project-structure)<br />
 [Security](#security)<br />
 [Features](#features)<br />
-[User Interface](#user-interface)<br />
+[User Interface examples](#user-interface-examples)<br />
 [TODO](#todo)<br />
 [Licence](#licence)<br /><br />
 
@@ -96,7 +96,7 @@ Hermes uses a session-less, Token Based Authentication system. It consists of se
 - create and manage your projects as well as their related tasks via simple, straightforward User Interface
 - keep your company's data safe from unfair competition by isolating your workspace<br /><br /><br />
 
-## User Interface
+## User Interface examples
 <table>
   <tr>
     <td><img src="./showcase/dashboard.PNG" height="250" alt="dashboard" /><br /><em>Figure 5. Dashboard view</em></td>
