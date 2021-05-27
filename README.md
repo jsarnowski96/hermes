@@ -20,7 +20,8 @@ One of the key features of Hermes is a complete isolation of company's workspace
 ## Features
 - re-create your company's structure in Hermes by organizing your employees into organizational units and teams
 - create and manage your projects as well as their related tasks via simple, straightforward User Interface
-- keep your company's data safe from unfair competition by isolating your workspace<br /><br /><br />
+- keep your company's data safe from unfair competition by isolating your workspace
+- `JoditEditor` allows user to easily embed HTML tags and custom formatting in text description of project, task or team<br /><br /><br />
 
 ## Technology stack
 Hermes was created in MERN stack which incorporates the following technologies:
@@ -34,10 +35,12 @@ Hermes is a full-stack application consisting of separate client and server sub 
 
 <p align="center">
   <img src="./showcase/client-server-communication-flow.png" width="650" alt="client-server communication flow" />
-</p>
+</p><br />
 <p align="center">
   <em>Figure 1. Client-Server communication Flow within Hermes</em>
-</p><br /><br />
+</p><br />
+
+Data exchange between client and server is entirely based on `async`/`await` and global Promises approach, which allowed for increasing data integrity between certain endpoints and made the whole system generally more resilient to multi-access and high traffic scenarios.<br /><br />
 
 ## Project structure
 ### Client
