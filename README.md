@@ -97,40 +97,19 @@ Hermes uses a session-less, Token Based Authentication system. It consists of se
 - keep your company's data safe from unfair competition by isolating your workspace
 
 ## User Interface
-<p align="center">
-  <img src="./showcase/dashboard.PNG" width="650" alt="dashboard" />
-</p>
-<p align="center">
-  <em>Figure 5. Dashboard view</em>
-</p><br />
-
-<p align="center">
-  <img src="./showcase/create-project.PNG" width="650" alt="create new project" />
-</p>
-<p align="center">
-  <em>Figure 6. Create new project</em>
-</p><br />
-
-<p align="center">
-  <img src="./showcase/project-overview.PNG" width="650" alt="project overview" />
-</p>
-<p align="center">
-  <em>Figure 7. Project overview</em>
-</p><br />
-
-<p align="center">
-  <img src="./showcase/create-team.PNG" width="650" alt="create new team" />
-</p>
-<p align="center">
-  <em>Figure 8. Create new team</em>
-</p><br />
-
-<p align="center">
-  <img src="./showcase/team-overview.PNG" width="650" alt="team overview" />
-</p>
-<p align="center">
-  <em>Figure 9. Team overview</em>
-</p><br />
+<table>
+  <tr>
+    <td><img src="./showcase/create-project.PNG" width="650" alt="create new project" /><em>Figure 6. Create new project</em></td>
+    <td><img src="./showcase/project-overview.PNG" width="650" alt="project overview" /><em>Figure 7. Project overview</em></td>
+  </tr>                                                                           
+  <tr>
+    <td><img src="./showcase/create-team.PNG" width="650" alt="create new team" /><em>Figure 8. Create new team</em></td>
+    <td><img src="./showcase/team-overview.PNG" width="650" alt="team overview" /><em>Figure 9. Team overview</em></td>
+  </tr>                                                                           
+  <tr>
+    <td colspan="2><img src="./showcase/dashboard.PNG" width="650" alt="dashboard" /><em>Figure 5. Dashboard view</em></td>
+  </tr>
+</table>
 
 
 ## TODO
