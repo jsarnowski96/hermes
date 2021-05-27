@@ -40,8 +40,12 @@ Hermes is a full-stack application consisting of separate client and server sub 
   - `/services` - currently stores only `i18n` translation service<br />
   - `/translations` - root directory of translations<br />
     - `/pl` - Polish translation via `common.json`<br />
-    - `/en` - English translation via `common.json`<br />
-    
+    - `/en` - English translation via `common.json`<br /><br />
+
+<p align="center">
+  <img src="./showcase/component-hierarchy.png" width="650" alt="Component hierarchy in client app" />
+  <em>Figure 1. Component hierarchy in client app</em>
+</p>
 
 ### Server
 - `/public` - root directory for serving static content<br />
@@ -62,8 +66,17 @@ Hermes uses a session-less, Token Based Authentication system. It consists of se
 - every route stored in `/routes/protected` directory has applied authentication middleware
 - `LocalStrategy` handles Basic Auth employed in `/auth/login` route
 - `JwtStrategy` handles access to restricted resources via Bearer Token
+- Sensitive information like DB url, username or password are stored in environmental variables and are managed by `dotenv` library. For security reasons, `.env` file is disconnected from Git version control system.
+- both in registration and authentication flow, password is encrypted by `bcrypt` library and its hash is stored in Atlas cloud.<br />
 
+<p align="center">
 <img src="./showcase/auth-flow.png" width="650" alt ="user authentication flow" />
-
+<em>Figure 2. User Authentication Flow</em>
+</p>
+  
 ### Access and Refresh tokens
-<img src="./showcase/access-refresh-tokens.png" width="650" alt="access and refresh token" />
+
+<p align="center">
+  <img src="./showcase/access-refresh-tokens.png" width="650" alt="access and refresh token" />
+  <em>Figure 3. Access/Refresh token characteristics and differences</em>
+</p>
